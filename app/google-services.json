@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "379608859805",
+    "firebase_url": "https://nustown.firebaseio.com",
+    "project_id": "nustown",
+    "storage_bucket": "nustown.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:379608859805:android:c066d63fcca9e9c1c0c074",
+        "android_client_info": {
+          "package_name": "com.example.prototype1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "379608859805-rord1jgr5oc7p4lpmrivq012cipp5b99.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtbdOD_UvdZ0J1RNWYoIaYDlFHWe2sbGQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "379608859805-rord1jgr5oc7p4lpmrivq012cipp5b99.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

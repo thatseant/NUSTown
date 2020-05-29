@@ -1,0 +1,93 @@
+<resources>
+    <string name="app_name">NUSTown</string>
+
+    <string name="value_any_category">All Events</string>
+    <string name="value_any_place">Anywhere</string>
+    <string name="value_any_price">Any price</string>
+
+    <string name="price_1">$</string>
+    <string name="price_2">$$</string>
+    <string name="price_3">$$$</string>
+
+    <string name="label_category">Category</string>
+    <string name="label_city">City</string>
+    <string name="label_price">Price</string>
+    <string name="label_sort_by">Sort By</string>
+
+    <string name="fmt_num_ratings" translatable="false">(%d)</string>
+    <string name="all_events">All Events</string>
+    <string name="header_filters">Filter</string>
+    <string name="search">Search</string>
+
+    <string name="sort_by_rating">Sort by Rating</string>
+    <string name="sort_by_name">Sort by Name</string>
+
+    <string name="sorted_by_rating">sorted by rating</string>
+    <string name="sorted_by_name">sorted by name</string>
+
+    <string name="add_random_items">Add Random Items</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="delete_all">Delete All</string>
+    <string name="divider_bullet">•</string>
+    <string name="apply">Apply</string>
+    <string name="cancel">Cancel</string>
+    <string name="message_no_results">Oops, couldn\'t find any results\nthat matched your filter</string>
+    <string name="message_no_reviews">Be the first to leave a review!</string>
+    <string name="hint_review">How was your experience?</string>
+    <string name="submit">Submit</string>
+    <string name="filter_add_review">Add review</string>
+    <string name="titleCellPlaceholder">Title</string>
+    <string name="statusCellPlaceholder">More Info</string>
+
+    <!-- Types of food I could think of in 5 minutes -->
+    <string-array name="categories">
+        <item>@string/value_any_category</item>
+
+        <item>NUS CCAs</item>
+        <item>Hall and RC CCAs </item>
+        <item>Sports Competitions</item>
+        <item>Other Competitions</item>
+        <item>Open Classes</item>
+        <item>Talks and Seminars</item>
+        <item>Workshops</item>
+        <item>Overseas Expeditions</item>
+        <item>Outdoors</item>
+        <item>Career Fairs</item>
+        <item>Sports Events</item>
+        <item>Other Events</item>
+    </string-array>
+    ite
+
+    <string-array name="places">
+        <item>@string/value_any_place</item>
+
+        <item>NUS-Wide</item>
+        <item>USC</item>
+        <item>UTown</item>
+        <item>Engineering</item>
+        <item>Computing</item>
+        <item>Business</item>
+        <item>Raffles Hall</item>
+        <item>Kent Ridge Hall</item>
+        <item>Temasek Hall</item>
+        <item>Tembusu College</item>
+    </string-array>
+
+    <!-- Price filters -->
+    <string-array name="prices">
+        <item>@string/value_any_price</item>
+
+        <item>@string/price_1</item>
+        <item>@string/price_2</item>
+        <item>@string/price_3</item>
+    </string-array>
+
+    <!-- Ways you can sort restaurants -->
+    <string-array name="sort_by">
+        <item>@string/sort_by_rating</item>
+        <item>@string/sort_by_name</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
