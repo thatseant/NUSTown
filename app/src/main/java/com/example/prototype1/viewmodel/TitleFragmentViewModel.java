@@ -47,4 +47,6 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mLiveData;
     }
 
+    public void updateEvent(NEvent updatedEvent) {mRepository.updateEvent(updatedEvent);}
+
 }

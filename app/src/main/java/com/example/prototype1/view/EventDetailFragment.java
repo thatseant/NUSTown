@@ -69,7 +69,7 @@ public class EventDetailFragment extends Fragment {
             //Displays dialog for organisers to edit event
             editButton.setOnClickListener(v -> {
                 NavController navController = Navigation.findNavController(rootView);
-                navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditEvent());
+                navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditEvent(mEvent));
             });
         }
 

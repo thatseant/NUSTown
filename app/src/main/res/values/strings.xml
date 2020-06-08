@@ -91,4 +91,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="edit_event">Edit Event</string>
+    <string name="change_name">Change Name:</string>
+    <string name="newEventName">Name</string>
+    <string name="change_place">Change Place:</string>
+    <string name="newEventPlace">Place</string>
+    <string name="newEventCat">Category</string>
+    <string name="eventCatTitle">Change Category:</string>
 </resources>

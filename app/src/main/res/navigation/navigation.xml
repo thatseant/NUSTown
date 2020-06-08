@@ -30,8 +30,15 @@
     </fragment>
     <fragment
         android:id="@+id/editEvent"
-        android:name="com.example.prototype1.view.EditEvent"
+        android:name="com.example.prototype1.view.EditEventFragment"
         android:label="fragment_edit_event"
-        tools:layout="@layout/fragment_edit_event" />
+        tools:layout="@layout/fragment_edit_event" >
+        <argument
+            android:name="EventToEdit"
+            app:argType="com.example.prototype1.model.NEvent" />
+        <action
+            android:id="@+id/action_editEvent_to_eventDetailFragment"
+            app:destination="@id/eventDetailFragment" />
+    </fragment>
 
 </navigation>
