@@ -85,7 +85,7 @@ public class TitleFragment extends Fragment implements EventListAdapter.OnItemSe
         ImageView clearFilter = rootView.findViewById(R.id.button_clear_filter);
         clearFilter.setOnClickListener(v -> {
             mSearchDialog.resetFlag = 1; //Flag needed due to bug where resetting spinner setSelection is not saved; reset later onResume
-            mModel.changeFilter(new Filters()); //Reset mFilter in ViewModel as mFilter is parameter ofgetData()
+            mModel.changeFilter(new Filters()); //Reset mFilter in ViewModel as mFilter is parameter of getData()
             mModel.mSearchCat.setValue("<b> All Events <b>");
             mModel.mSearchSort.setValue("sorted by Rating");
             mModel.getData();
