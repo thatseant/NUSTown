@@ -1,3 +1,11 @@
-
+*.iml
+.gradle
+/Android/local.properties
+/Android/.idea/
 .DS_Store
-.DS_Store
+/Android/.DS_Store
+/Android/build
+/Android/captures
+.externalNativeBuild
+.cxx
+Android/.DS_Store
