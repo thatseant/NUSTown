@@ -47,6 +47,7 @@ public class EventRepository {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     NEvent newEvent = document.toObject(NEvent.class); //Converts document to NEvent object
+                    newEvent.setID(document.getId());
                     mResults.add(newEvent); //Adds to list of NEvent objects that matches query
                 }
                 myCallback.onCallback(mResults); //Callback required as Firebase query performed asynchronously; code after onCompleteListener will execute before it finishes
@@ -56,6 +57,10 @@ public class EventRepository {
 
     public void getAll(final MyCallback myCallback) { //Returns all documents in Events collection
         search(myCallback, new Filters());
+    }
+
+    public void updateEvent(NEvent updatedEvent) {
+        db.collection("events").document(updatedEvent.getID()).set(updatedEvent);
     }
 
 }

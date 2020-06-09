@@ -1,9 +1,11 @@
 package com.example.prototype1.view;
 
 import android.os.Bundle;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,11 +16,14 @@ import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 public class EventDetailFragment extends Fragment {
     private ImageView mImage;
+    private View editButton;
 
 
     @Override
@@ -29,11 +34,12 @@ public class EventDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         // Retrieve NEvent object clicked on in RecyclerView
         NEvent mEvent = EventDetailFragmentArgs.fromBundle(getArguments()).getMEvent();
 
         View rootView = inflater.inflate(R.layout.fragment_event_detail, container, false);
+
 
         //Get image reference from cloud storage
         mImage = rootView.findViewById(R.id.restaurant_image);
@@ -49,6 +55,13 @@ public class EventDetailFragment extends Fragment {
         mPlace.setText(mEvent.getPlace());
         TextView mName = rootView.findViewById(R.id.restaurant_name);
         mName.setText(mEvent.getName());
+        TextView mNum = rootView.findViewById(R.id.event_number_attend);
+        mNum.setText("Number Attending: " + mEvent.getNumberAttending());
+        TextView mInfo = rootView.findViewById(R.id.event_info_text);
+        mInfo.setText(mEvent.getInfo());
+        TextView mURL = rootView.findViewById(R.id.event_url_text);
+        mURL.setText(mEvent.getUrl());
+        Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
 
         //Close EventDetailFragment on buttonClose clicked
         ImageView buttonClose = rootView.findViewById(R.id.restaurant_button_back);
@@ -56,6 +69,19 @@ public class EventDetailFragment extends Fragment {
             NavController navController = Navigation.findNavController(rootView);
             navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToTitleFragment());
         });
+
+        //Allows organisers to edit events
+        if (user.getEmail().equals("sean@tan.com")) {
+            editButton = rootView.findViewById(R.id.edit_event_button);
+            editButton.setVisibility(View.VISIBLE);
+            //Displays dialog for organisers to edit event
+            editButton.setOnClickListener(v -> {
+                NavController navController = Navigation.findNavController(rootView);
+                navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditEvent(mEvent));
+            });
+        }
+
+
 
 
         return rootView;
