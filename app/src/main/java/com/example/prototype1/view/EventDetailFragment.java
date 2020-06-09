@@ -1,6 +1,7 @@
 package com.example.prototype1.view;
 
 import android.os.Bundle;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,13 @@ public class EventDetailFragment extends Fragment {
         mPlace.setText(mEvent.getPlace());
         TextView mName = rootView.findViewById(R.id.restaurant_name);
         mName.setText(mEvent.getName());
+        TextView mNum = rootView.findViewById(R.id.event_number_attend);
+        mNum.setText("Number Attending: " + mEvent.getNumberAttending());
+        TextView mInfo = rootView.findViewById(R.id.event_info_text);
+        mInfo.setText(mEvent.getInfo());
+        TextView mURL = rootView.findViewById(R.id.event_url_text);
+        mURL.setText(mEvent.getUrl());
+        Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
 
         //Close EventDetailFragment on buttonClose clicked
         ImageView buttonClose = rootView.findViewById(R.id.restaurant_button_back);

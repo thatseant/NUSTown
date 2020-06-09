@@ -1,17 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.prototype1.view.EditEventFragment">
 
-
+    <ImageView
+        android:id="@+id/edit_button_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:layout_alignStart="@+id/restaurant_name"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        app:srcCompat="@drawable/ic_close_black_24dp" />
     <TextView
         android:id="@+id/editEventTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text="@string/edit_event"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textStyle="bold" />
@@ -20,7 +35,8 @@
         android:id="@+id/eventNameTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text="@string/change_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="@android:color/black" />
@@ -30,7 +46,7 @@
         android:id="@+id/newEventName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
         android:ems="10"
         android:hint="@string/newEventName"
         android:inputType="textPersonName" />
@@ -39,7 +55,8 @@
         android:id="@+id/eventPlaceTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/change_place"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="#000000" />
@@ -49,7 +66,7 @@
         android:id="@+id/newEventPlace"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
         android:ems="10"
         android:hint="@string/newEventPlace"
         android:inputType="textPersonName" />
@@ -58,7 +75,8 @@
         android:id="@+id/eventCatTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/eventCatTitle"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="#000000" />
@@ -68,16 +86,78 @@
         android:id="@+id/newEventCat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
         android:ems="10"
         android:hint="@string/newEventCat"
         android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/eventTimeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/change_time"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000" />
+
+
+    <EditText
+        android:id="@+id/newEventTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:ems="10"
+        android:hint="@string/time"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/eventUrlTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/event_url_title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000" />
+
+    <EditText
+        android:id="@+id/newEventUrl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:ems="10"
+        android:hint="@string/newEventURL"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/eventDescriptionTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Change Description:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000" />
+
+    <EditText
+        android:id="@+id/newEventDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="?attr/colorControlHighlight"
+        android:ems="10"
+        android:gravity="top"
+        android:hint="Add description"
+        android:inputType="textMultiLine" />
 
     <Button
         android:id="@+id/confirmEditButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text="Confirm Changes" />
 
 </LinearLayout>
+</ScrollView>

@@ -23,7 +23,9 @@
             app:argType="com.example.prototype1.model.NEvent" />
         <action
             android:id="@+id/action_eventDetailFragment_to_titleFragment"
-            app:destination="@id/titleFragment" />
+            app:destination="@id/titleFragment"
+            app:popUpTo="@id/titleFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_eventDetailFragment_to_editEvent"
             app:destination="@id/editEvent" />
@@ -38,7 +40,9 @@
             app:argType="com.example.prototype1.model.NEvent" />
         <action
             android:id="@+id/action_editEvent_to_eventDetailFragment"
-            app:destination="@id/eventDetailFragment" />
+            app:destination="@id/eventDetailFragment"
+            app:popUpTo="@id/eventDetailFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
 </navigation>

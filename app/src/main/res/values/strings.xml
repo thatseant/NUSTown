@@ -97,4 +97,8 @@
     <string name="newEventPlace">Place</string>
     <string name="newEventCat">Category</string>
     <string name="eventCatTitle">Change Category:</string>
+    <string name="change_time">Change Time:</string>
+    <string name="time">Time</string>
+    <string name="event_url_title">Change URL:</string>
+    <string name="newEventURL">URL:</string>
 </resources>
