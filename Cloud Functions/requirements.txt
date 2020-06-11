@@ -1,0 +1,13 @@
+# Function dependencies, for example:
+# package>=version
+
+pyTelegramBotAPI
+firebase-admin
+firebase_admin
+firebase
+python_jwt
+google-cloud
+gcloud
+sseclient
+pycryptodome
+requests_toolbelt
