@@ -19,7 +19,8 @@
             android:layout_height="200dp"
             android:alpha="1.0"
             android:scaleType="centerCrop"
-            tools:src="@drawable/climb" />
+            tools:src="@drawable/climb"
+            android:contentDescription="@string/eventdetailimage" />
 
         <View
             android:layout_width="match_parent"
@@ -34,7 +35,8 @@
             android:background="?attr/selectableItemBackground"
             android:layout_alignStart="@+id/restaurant_name"
             android:layout_marginTop="16dp"
-            app:srcCompat="@drawable/ic_close_white_24px" />
+            app:srcCompat="@drawable/ic_close_white_24px"
+            android:contentDescription="@string/back_button" />
 
         <TextView
             android:id="@+id/restaurant_name"
@@ -59,7 +61,6 @@
             app:mrb_secondaryProgressTint="@android:color/white" />
 
         <TextView
-            android:id="@+id/restaurant_num_ratings"
             style="@style/AppTheme.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -103,7 +104,6 @@
             tools:text="Place" />
 
         <TextView
-            android:id="@+id/restaurant_price"
             style="@style/AppTheme.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -138,7 +138,7 @@
         android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView

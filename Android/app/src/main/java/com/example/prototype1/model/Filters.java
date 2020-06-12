@@ -4,8 +4,6 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.example.prototype1.R;
-//import com.google.firebase.example.fireeats.model.Restaurant;
-//import com.google.firebase.example.fireeats.util.RestaurantUtil;
 import com.google.firebase.firestore.Query;
 
 /**
@@ -98,7 +96,7 @@ public class Filters {
     }
 
     public String getOrderDescription(Context context) {
-        if (sortBy == "name") {
+        if (sortBy.equals("name")) {
             return context.getString(R.string.sorted_by_name);
         } else {
             return context.getString(R.string.sorted_by_rating);

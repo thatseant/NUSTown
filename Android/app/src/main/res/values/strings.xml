@@ -3,21 +3,9 @@
 
     <string name="value_any_category">All Events</string>
     <string name="value_any_place">Anywhere</string>
-    <string name="value_any_price">Any price</string>
 
-    <string name="price_1">$</string>
-    <string name="price_2">$$</string>
-    <string name="price_3">$$$</string>
-
-    <string name="label_category">Category</string>
-    <string name="label_city">City</string>
-    <string name="label_price">Price</string>
-    <string name="label_sort_by">Sort By</string>
-
-    <string name="fmt_num_ratings" translatable="false">(%d)</string>
     <string name="all_events">All Events</string>
     <string name="header_filters">Filter</string>
-    <string name="search">Search</string>
 
     <string name="sort_by_rating">Sort by Rating</string>
     <string name="sort_by_name">Sort by Name</string>
@@ -27,15 +15,10 @@
 
     <string name="add_random_items">Add Random Items</string>
     <string name="sign_out">Sign Out</string>
-    <string name="delete_all">Delete All</string>
     <string name="divider_bullet">•</string>
     <string name="apply">Apply</string>
     <string name="cancel">Cancel</string>
     <string name="message_no_results">Oops, couldn\'t find any results\nthat matched your filter</string>
-    <string name="message_no_reviews">Be the first to leave a review!</string>
-    <string name="hint_review">How was your experience?</string>
-    <string name="submit">Submit</string>
-    <string name="filter_add_review">Add review</string>
     <string name="titleCellPlaceholder">Title</string>
     <string name="statusCellPlaceholder">More Info</string>
 
@@ -74,13 +57,6 @@
     </string-array>
 
     <!-- Price filters -->
-    <string-array name="prices">
-        <item>@string/value_any_price</item>
-
-        <item>@string/price_1</item>
-        <item>@string/price_2</item>
-        <item>@string/price_3</item>
-    </string-array>
 
     <!-- Ways you can sort restaurants -->
     <string-array name="sort_by">
@@ -89,7 +65,6 @@
     </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="edit_event">Edit Event</string>
     <string name="change_name">Change Name:</string>
     <string name="newEventName">Name</string>
@@ -101,4 +76,9 @@
     <string name="time">Time</string>
     <string name="event_url_title">Change URL:</string>
     <string name="newEventURL">URL:</string>
+    <string name="new_description">Add description</string>
+    <string name="confirm_changes">Confirm Changes</string>
+    <string name="edit_description">Change Description:</string>
+    <string name="back_button">back_button</string>
+    <string name="eventdetailimage">eventDetailImage</string>
 </resources>

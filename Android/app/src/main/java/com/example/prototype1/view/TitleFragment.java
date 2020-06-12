@@ -2,7 +2,6 @@ package com.example.prototype1.view;
 
 
 import android.os.Bundle;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +9,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.text.HtmlCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -28,8 +27,8 @@ import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
+
 public class TitleFragment extends Fragment implements EventListAdapter.OnItemSelectedListener {
-    private static final String TAG = "SEAN";
     private TitleFragmentViewModel mModel; //Events ViewModel
     private SearchDialogFragment mSearchDialog;
 
@@ -39,7 +38,7 @@ public class TitleFragment extends Fragment implements EventListAdapter.OnItemSe
 
         View rootView = inflater.inflate(R.layout.fragment_title, container, false);
         Toolbar mToolbar = rootView.findViewById(R.id.toolbar);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbar);
 
         mSearchDialog = new SearchDialogFragment();
 
@@ -48,38 +47,27 @@ public class TitleFragment extends Fragment implements EventListAdapter.OnItemSe
         final EventListAdapter mAdapter = new EventListAdapter(this);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mModel = new ViewModelProvider(getActivity()).get(TitleFragmentViewModel.class);
-        mModel.getData().observe(getViewLifecycleOwner(), nEvents -> {
-            mAdapter.submitList(nEvents); //Link Adapter to getData() in ViewModel; getData() returns eventList
-        });
+        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
+        //Link Adapter to getData() in ViewModel; getData() returns eventList
+        mModel.getData().observe(getViewLifecycleOwner(), mAdapter::submitList);
 
         //Automatically changes text to in search box to reflect current filter
         TextView mSearchCat = rootView.findViewById(R.id.text_current_search);
-        mSearchCat.setText(Html.fromHtml("<b>All Events<b>"));
+        mSearchCat.setText(HtmlCompat.fromHtml("<b>All Events<b>",  HtmlCompat.FROM_HTML_MODE_LEGACY));
         TextView mSearchSort = rootView.findViewById(R.id.text_current_sort_by);
-        final Observer<String> searchCatObserver = new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable final String searchCat) {
-                // Update the UI, in this case, a TextView.
-                mSearchCat.setText(Html.fromHtml(searchCat));
-            }
+        final Observer<String> searchCatObserver = searchCat -> {
+            // Update the UI, in this case, a TextView.
+            mSearchCat.setText(HtmlCompat.fromHtml(searchCat,  HtmlCompat.FROM_HTML_MODE_LEGACY));
         };
         mModel.mSearchCat.observe(getViewLifecycleOwner(), searchCatObserver);
 
-        final Observer<String> searchSortObserver = new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable final String searchSort) {
-                // Update the UI, in this case, a TextView.
-                mSearchSort.setText(searchSort);
-            }
-        };
+        // Update the UI, in this case, a TextView.
+        final Observer<String> searchSortObserver = mSearchSort::setText;
         mModel.mSearchSort.observe(getViewLifecycleOwner(), searchSortObserver);
 
         //Shows search dialog when searchBox clicked
         RelativeLayout searchBox = rootView.findViewById(R.id.searchBox);
-        searchBox.setOnClickListener(v -> {
-            mSearchDialog.show(getActivity().getSupportFragmentManager(), SearchDialogFragment.TAG);
-        });
+        searchBox.setOnClickListener(v -> mSearchDialog.show(requireActivity().getSupportFragmentManager(), SearchDialogFragment.TAG));
 
 
         ImageView clearFilter = rootView.findViewById(R.id.button_clear_filter);

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="32dp">
@@ -17,11 +16,10 @@
             style="@style/TextAppearance.AppCompat.Headline"
             android:textSize="24sp"
             android:paddingStart="16dp"
-            android:layout_alignTop="@+id/imageCell"
             android:paddingEnd="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/titleCellPlaceholder"></TextView>
+            android:text="@string/titleCellPlaceholder" />
 
         <ImageView
             android:id="@+id/imageCell"
@@ -29,7 +27,6 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:transitionName="imageTrans">
-<!--            app:srcCompat="@drawable/dining_table">-->
 
         </ImageView>
 
@@ -38,11 +35,10 @@
             style="@style/TextAppearance.AppCompat.Headline"
             android:textSize="24sp"
             android:paddingStart="16dp"
-            android:layout_alignBottom="@+id/imageCell"
             android:paddingEnd="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/statusCellPlaceholder"></TextView>
+            android:text="@string/statusCellPlaceholder" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

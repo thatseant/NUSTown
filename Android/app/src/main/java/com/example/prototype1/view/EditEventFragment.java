@@ -10,7 +10,6 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -39,9 +38,10 @@ public class EditEventFragment extends Fragment {
         View EditEventView = inflater.inflate(R.layout.fragment_edit_event, container, false);
 
         // Retrieve NEvent object to be edited
+        assert getArguments() != null;
         eventToEdit = EditEventFragmentArgs.fromBundle(getArguments()).getEventToEdit();
 
-        mModel = new ViewModelProvider(getActivity()).get(TitleFragmentViewModel.class);
+        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
 
         //Uses existing event properties as default in EditText
         EditText newEventName = EditEventView.findViewById(R.id.newEventName);

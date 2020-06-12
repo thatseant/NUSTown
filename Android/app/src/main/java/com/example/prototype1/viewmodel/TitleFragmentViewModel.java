@@ -16,16 +16,16 @@ import java.util.ArrayList;
 public class TitleFragmentViewModel extends AndroidViewModel {
     private boolean mIsSigningIn;
     private Filters mFilters = new Filters();
-    private EventRepository mRepository;
-    private MutableLiveData<ArrayList<NEvent>> mLiveData = new MutableLiveData<>();
-    public MutableLiveData<String> mSearchCat = new MutableLiveData<>();
-    public MutableLiveData<String> mSearchSort = new MutableLiveData<>();
+    private final EventRepository mRepository;
+    private final MutableLiveData<ArrayList<NEvent>> mLiveData = new MutableLiveData<>();
+    public final MutableLiveData<String> mSearchCat = new MutableLiveData<>();
+    public final MutableLiveData<String> mSearchSort = new MutableLiveData<>();
 
 
     public TitleFragmentViewModel(Application application, SavedStateHandle savedStateHandle) {
         super(application);
         mRepository = new EventRepository();
-        mRepository.getAll(eventList -> mLiveData.setValue(eventList));
+        mRepository.getAll(mLiveData::setValue);
 //        mState = savedStateHandle; //Planned to be used to save scroll position, still resolving
     }
 
@@ -43,7 +43,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<ArrayList<NEvent>> getData() {//Called when TitleFragment first launches and whenever a query is performed
-        mRepository.search(eventList -> mLiveData.setValue(eventList), mFilters); //First parameter is a callback; mLiveData value is set AFTER asynchronous completion of Firebase Query
+        mRepository.search(mLiveData::setValue, mFilters); //First parameter is a callback; mLiveData value is set AFTER asynchronous completion of Firebase Query
         return mLiveData;
     }
 

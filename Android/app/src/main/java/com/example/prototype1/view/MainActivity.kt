@@ -1,4 +1,4 @@
-package com.example.prototype1.view;
+package com.example.prototype1.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,11 +6,8 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
-import androidx.savedstate.SavedStateRegistryOwner
 import com.example.prototype1.R
 import com.example.prototype1.databinding.ActivityMainBinding
 import com.example.prototype1.viewmodel.TitleFragmentViewModel
