@@ -21,8 +21,7 @@
             android:id="@+id/icon_category"
             style="@style/AppTheme.FilterIcon"
             android:layout_centerVertical="true"
-            android:tint="@color/greySecondary"
-            />
+            android:tint="@color/greySecondary" />
 
         <Spinner
             android:id="@+id/spinner_category"

@@ -83,8 +83,6 @@ public class EventDetailFragment extends Fragment {
         }
 
 
-
-
         return rootView;
 
 

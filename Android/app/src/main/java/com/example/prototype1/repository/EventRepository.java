@@ -1,13 +1,11 @@
 package com.example.prototype1.repository;
 
 
-
 import com.example.prototype1.model.Filters;
 import com.example.prototype1.model.NEvent;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -15,14 +13,8 @@ import java.util.Objects;
 
 public class EventRepository {
 
-    public interface MyCallback {
-        void onCallback(ArrayList<NEvent> eventList);
-    }
-
-
     public EventRepository() {
     }
-
 
     public void search(final MyCallback myCallback, Filters filters) {
         ArrayList<NEvent> mResults = new ArrayList<>();
@@ -58,6 +50,10 @@ public class EventRepository {
 
     public void updateEvent(NEvent updatedEvent) {
         FirebaseFirestore.getInstance().collection("events").document(updatedEvent.getID()).set(updatedEvent);
+    }
+
+    public interface MyCallback {
+        void onCallback(ArrayList<NEvent> eventList);
     }
 
 }

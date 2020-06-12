@@ -17,7 +17,7 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
     private val newListener: OnItemSelectedListener = mListener
 
 
-        interface OnItemSelectedListener {
+    interface OnItemSelectedListener {
         fun onItemSelected(mEvent: NEvent, view: View)
     }
 
