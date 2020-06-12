@@ -43,16 +43,16 @@ android {
 dependencies {
 
     implementation "androidx.recyclerview:recyclerview:1.1.0"
-    implementation 'com.google.firebase:firebase-analytics:17.2.2'
+    implementation 'com.google.firebase:firebase-analytics:17.4.3'
     implementation 'com.google.firebase:firebase-firestore:21.4.3'
     implementation "androidx.activity:activity-ktx:1.1.0"
-    implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
+    implementation 'com.firebaseui:firebase-ui-auth:6.2.1'
     implementation 'com.google.firebase:firebase-storage:19.1.1'
     implementation 'com.firebaseui:firebase-ui-storage:6.2.0'
     implementation 'me.zhanghai.android.materialratingbar:library:1.4.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0'
     // Java language implementation
-    def nav_version = "2.3.0-beta01"
+    def nav_version = "2.3.0-rc01"
 
     // Java language implementation
     implementation "androidx.navigation:navigation-fragment:$nav_version"
@@ -64,7 +64,7 @@ dependencies {
 
     // Dynamic Feature Module Support
     implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
-    implementation "androidx.fragment:fragment-ktx:1.2.4"
+    implementation "androidx.fragment:fragment-ktx:1.2.5"
 
     // Testing Navigation
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"

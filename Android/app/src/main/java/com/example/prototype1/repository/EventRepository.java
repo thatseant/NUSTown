@@ -4,18 +4,16 @@ package com.example.prototype1.repository;
 
 import com.example.prototype1.model.Filters;
 import com.example.prototype1.model.NEvent;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class EventRepository {
-    private static FirebaseFirestore db;
 
     public interface MyCallback {
         void onCallback(ArrayList<NEvent> eventList);
@@ -23,14 +21,13 @@ public class EventRepository {
 
 
     public EventRepository() {
-        db = FirebaseFirestore.getInstance(); //Initialize Firebase database reference
     }
 
 
     public void search(final MyCallback myCallback, Filters filters) {
         ArrayList<NEvent> mResults = new ArrayList<>();
 
-        Query query = db.collection("events");
+        Query query = FirebaseFirestore.getInstance().collection("events");
 
         if (filters.hasCategory()) {
             query = query.whereEqualTo("category", filters.getCategory());
@@ -45,7 +42,7 @@ public class EventRepository {
 
         query.get().addOnCompleteListener(task -> { //Performs query
             if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot document : task.getResult()) {
+                for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                     NEvent newEvent = document.toObject(NEvent.class); //Converts document to NEvent object
                     newEvent.setID(document.getId());
                     mResults.add(newEvent); //Adds to list of NEvent objects that matches query
@@ -60,7 +57,7 @@ public class EventRepository {
     }
 
     public void updateEvent(NEvent updatedEvent) {
-        db.collection("events").document(updatedEvent.getID()).set(updatedEvent);
+        FirebaseFirestore.getInstance().collection("events").document(updatedEvent.getID()).set(updatedEvent);
     }
 
 }

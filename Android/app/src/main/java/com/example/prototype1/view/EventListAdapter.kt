@@ -45,7 +45,7 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
             val imageRef = storageReference.child("events/" + item.image)
 
             imageRef.downloadUrl.addOnSuccessListener {
-                Glide.with(holder.eventImage.context).load(it).into(eventImage);
+                Glide.with(holder.eventImage.context).load(it).into(eventImage)
 
             }
             itemView.setOnClickListener { view ->
@@ -73,7 +73,7 @@ class NEventDiffCallback : DiffUtil.ItemCallback<NEvent>() {
     }
 
     override fun areContentsTheSame(oldItem: NEvent, newItem: NEvent): Boolean {
-        return oldItem == newItem;
+        return oldItem == newItem
     }
 
 

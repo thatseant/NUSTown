@@ -8,7 +8,7 @@
     android:layout_width="match_parent">
 <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     tools:context="com.example.prototype1.view.EditEventFragment">
 
@@ -17,12 +17,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
-        android:layout_alignStart="@+id/restaurant_name"
         android:layout_marginTop="16dp"
         android:layout_marginStart="8dp"
-        app:srcCompat="@drawable/ic_close_black_24dp" />
+        app:srcCompat="@drawable/ic_close_black_24dp"
+        android:contentDescription="@string/back_button" />
     <TextView
-        android:id="@+id/editEventTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -32,7 +31,6 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/eventNameTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -49,10 +47,10 @@
         android:layout_marginStart="16dp"
         android:ems="10"
         android:hint="@string/newEventName"
+        android:importantForAutofill="no"
         android:inputType="textPersonName" />
 
     <TextView
-        android:id="@+id/eventPlaceTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -69,10 +67,10 @@
         android:layout_marginStart="16dp"
         android:ems="10"
         android:hint="@string/newEventPlace"
+        android:importantForAutofill="no"
         android:inputType="textPersonName" />
 
     <TextView
-        android:id="@+id/eventCatTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -88,11 +86,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:ems="10"
+        android:importantForAutofill="no"
         android:hint="@string/newEventCat"
         android:inputType="textPersonName" />
 
     <TextView
-        android:id="@+id/eventTimeTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -108,11 +106,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:ems="10"
+        android:importantForAutofill="no"
         android:hint="@string/time"
         android:inputType="textPersonName" />
 
     <TextView
-        android:id="@+id/eventUrlTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -127,16 +125,17 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:ems="10"
+        android:importantForAutofill="no"
         android:hint="@string/newEventURL"
-        android:inputType="textPersonName" />
+        android:inputType="textUri" />
 
     <TextView
-        android:id="@+id/eventDescriptionTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="Change Description:"
+        android:importantForAutofill="no"
+        android:text="@string/edit_description"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="#000000" />
 
@@ -147,8 +146,9 @@
         android:layout_margin="16dp"
         android:background="?attr/colorControlHighlight"
         android:ems="10"
+        android:importantForAutofill="no"
         android:gravity="top"
-        android:hint="Add description"
+        android:hint="@string/new_description"
         android:inputType="textMultiLine" />
 
     <Button
@@ -157,7 +157,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Confirm Changes" />
+        android:text="@string/confirm_changes" />
 
 </LinearLayout>
 </ScrollView>

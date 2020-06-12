@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/filters_form"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -30,7 +28,7 @@
             android:id="@+id/spinner_category"
             style="@style/AppTheme.FilterSpinner"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/icon_category"
+            android:layout_toEndOf="@+id/icon_category"
             android:entries="@array/categories" />
 
     </RelativeLayout>
@@ -50,7 +48,7 @@
             android:id="@+id/spinner_place"
             style="@style/AppTheme.FilterSpinner"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/icon_city"
+            android:layout_toEndOf="@+id/icon_city"
             android:entries="@array/places" />
 
     </RelativeLayout>
@@ -70,7 +68,7 @@
             android:id="@+id/spinner_sort"
             style="@style/AppTheme.FilterSpinner"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/icon_sort"
+            android:layout_toEndOf="@+id/icon_sort"
             android:entries="@array/sort_by" />
     </RelativeLayout>
 

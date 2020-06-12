@@ -11,28 +11,9 @@
         <item name="android:actionOverflowButtonStyle">@style/AppTheme.Overflow</item>
     </style>
 
-    <style name="AppTheme.Activity" parent="AppTheme" />
-
     <style name="AppTheme.Overflow" parent="Base.Widget.AppCompat.ActionButton.Overflow">
         <item name="android:padding">0dp</item>
         <item name="android:tint">@android:color/white</item>
-    </style>
-
-    <style name="AppTheme.FormLabel">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">18dp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:layout_marginBottom">4dp</item>
-        <item name="android:layout_marginTop">8dp</item>
-    </style>
-
-    <style name="AppTheme.Divider">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:layout_marginBottom">8dp</item>
-        <item name="android:layout_marginTop">4dp</item>
-        <item name="android:background">#BDBDBD</item>
     </style>
 
     <style name="AppTheme.FilterIcon">
@@ -73,11 +54,6 @@
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="AppTheme.Body2">
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
     <style name="AppTheme.Caption">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textSize">12sp</item>
@@ -89,11 +65,6 @@
         <item name="android:layout_marginLeft">4dp</item>
         <item name="android:layout_marginRight">4dp</item>
         <item name="android:textColor">@color/greySecondary</item>
-    </style>
-
-    <style name="AppTheme.PizzaGuy">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">150dp</item>
     </style>
 
 </resources>

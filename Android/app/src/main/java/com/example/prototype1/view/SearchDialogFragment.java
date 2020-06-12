@@ -17,6 +17,8 @@ import com.example.prototype1.model.Filters;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import com.google.firebase.firestore.Query;
 
+import java.util.Objects;
+
 /**
  * Dialog Fragment containing filter form.
  */
@@ -48,7 +50,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         mRootView.findViewById(R.id.button_search).setOnClickListener(this);
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
 
-        mModel = new ViewModelProvider(getActivity()).get(TitleFragmentViewModel.class); //returns same instance of ViewModel in TitleFragment
+        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class); //returns same instance of ViewModel in TitleFragment
         return mRootView;
     }
 
@@ -60,7 +62,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
             resetFlag=0;
         }
         super.onResume();
-        getDialog().getWindow().setLayout(
+        Objects.requireNonNull(Objects.requireNonNull(getDialog()).getWindow()).setLayout(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
     }

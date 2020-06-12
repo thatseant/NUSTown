@@ -5,7 +5,6 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,10 +20,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Objects;
+
 public class EventDetailFragment extends Fragment {
     private ImageView mImage;
-    private View editButton;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +35,7 @@ public class EventDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         // Retrieve NEvent object clicked on in RecyclerView
+        assert getArguments() != null;
         NEvent mEvent = EventDetailFragmentArgs.fromBundle(getArguments()).getMEvent();
 
         View rootView = inflater.inflate(R.layout.fragment_event_detail, container, false);
@@ -46,7 +46,7 @@ public class EventDetailFragment extends Fragment {
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef = storageReference.child("events/" + mEvent.getImage());
 
-        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(getContext()).load(uri).into(mImage)); //TODO: Figure out how to load image without needing URL
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).into(mImage)); //TODO: Figure out how to load image without needing URL
 
         //Sets text in TextView
         TextView mCat = rootView.findViewById(R.id.restaurant_category);
@@ -71,8 +71,9 @@ public class EventDetailFragment extends Fragment {
         });
 
         //Allows organisers to edit events
-        if (user.getEmail().equals("sean@tan.com")) {
-            editButton = rootView.findViewById(R.id.edit_event_button);
+        assert user != null;
+        if (Objects.equals(user.getEmail(), "sean@tan.com")) {
+            View editButton = rootView.findViewById(R.id.edit_event_button);
             editButton.setVisibility(View.VISIBLE);
             //Displays dialog for organisers to edit event
             editButton.setOnClickListener(v -> {
