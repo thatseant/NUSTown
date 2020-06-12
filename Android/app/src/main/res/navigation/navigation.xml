@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:startDestination="@id/titleFragment"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/titleFragment">
     <fragment
         android:id="@+id/titleFragment"
         android:name="com.example.prototype1.view.TitleFragment"
@@ -17,8 +17,9 @@
         android:id="@+id/eventDetailFragment"
         android:name="com.example.prototype1.view.EventDetailFragment"
         android:label="fragment_event_detail"
-        tools:layout="@layout/fragment_event_detail" >
-        <argument android:name="mEvent"
+        tools:layout="@layout/fragment_event_detail">
+        <argument
+            android:name="mEvent"
             app:argType="com.example.prototype1.model.NEvent" />
         <action
             android:id="@+id/action_eventDetailFragment_to_titleFragment"
@@ -33,7 +34,7 @@
         android:id="@+id/editEvent"
         android:name="com.example.prototype1.view.EditEventFragment"
         android:label="fragment_edit_event"
-        tools:layout="@layout/fragment_edit_event" >
+        tools:layout="@layout/fragment_edit_event">
         <argument
             android:name="EventToEdit"
             app:argType="com.example.prototype1.model.NEvent" />

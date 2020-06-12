@@ -53,11 +53,11 @@ public class TitleFragment extends Fragment implements EventListAdapter.OnItemSe
 
         //Automatically changes text to in search box to reflect current filter
         TextView mSearchCat = rootView.findViewById(R.id.text_current_search);
-        mSearchCat.setText(HtmlCompat.fromHtml("<b>All Events<b>",  HtmlCompat.FROM_HTML_MODE_LEGACY));
+        mSearchCat.setText(HtmlCompat.fromHtml("<b>All Events<b>", HtmlCompat.FROM_HTML_MODE_LEGACY));
         TextView mSearchSort = rootView.findViewById(R.id.text_current_sort_by);
         final Observer<String> searchCatObserver = searchCat -> {
             // Update the UI, in this case, a TextView.
-            mSearchCat.setText(HtmlCompat.fromHtml(searchCat,  HtmlCompat.FROM_HTML_MODE_LEGACY));
+            mSearchCat.setText(HtmlCompat.fromHtml(searchCat, HtmlCompat.FROM_HTML_MODE_LEGACY));
         };
         mModel.mSearchCat.observe(getViewLifecycleOwner(), searchCatObserver);
 

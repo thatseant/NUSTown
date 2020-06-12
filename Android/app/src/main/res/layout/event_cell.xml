@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="32dp">
@@ -14,12 +13,12 @@
         <TextView
             android:id="@+id/titleCell"
             style="@style/TextAppearance.AppCompat.Headline"
-            android:textSize="24sp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/titleCellPlaceholder" />
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/titleCellPlaceholder"
+            android:textSize="24sp" />
 
         <ImageView
             android:id="@+id/imageCell"
@@ -33,12 +32,12 @@
         <TextView
             android:id="@+id/statusCell"
             style="@style/TextAppearance.AppCompat.Headline"
-            android:textSize="24sp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/statusCellPlaceholder" />
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/statusCellPlaceholder"
+            android:textSize="24sp" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

@@ -18,9 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:alpha="1.0"
+            android:contentDescription="@string/eventdetailimage"
             android:scaleType="centerCrop"
-            tools:src="@drawable/climb"
-            android:contentDescription="@string/eventdetailimage" />
+            tools:src="@drawable/climb" />
 
         <View
             android:layout_width="match_parent"
@@ -32,11 +32,11 @@
             android:id="@+id/restaurant_button_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
             android:layout_alignStart="@+id/restaurant_name"
             android:layout_marginTop="16dp"
-            app:srcCompat="@drawable/ic_close_white_24px"
-            android:contentDescription="@string/back_button" />
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@string/back_button"
+            app:srcCompat="@drawable/ic_close_white_24px" />
 
         <TextView
             android:id="@+id/restaurant_name"
@@ -53,8 +53,8 @@
         <me.zhanghai.android.materialratingbar.MaterialRatingBar
             android:id="@+id/restaurant_rating"
             style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_above="@+id/restaurant_category"
             android:layout_alignStart="@+id/restaurant_name"
             app:mrb_progressTint="@android:color/white"
@@ -64,8 +64,8 @@
             style="@style/AppTheme.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/restaurant_rating"
             android:layout_alignTop="@+id/restaurant_rating"
+            android:layout_alignBottom="@+id/restaurant_rating"
             android:layout_marginStart="4dp"
             android:layout_toEndOf="@+id/restaurant_rating"
             android:gravity="center"
@@ -77,10 +77,10 @@
             style="@style/AppTheme.Subheader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/restaurant_image"
             android:layout_alignStart="@+id/restaurant_name"
-            android:layout_marginBottom="8dp"
+            android:layout_alignBottom="@+id/restaurant_image"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:textColor="@android:color/white"
             tools:text="Category" />
 
@@ -97,8 +97,8 @@
             style="@style/AppTheme.Subheader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/restaurant_category"
             android:layout_below="@+id/restaurant_category"
+            android:layout_alignTop="@+id/restaurant_category"
             android:layout_toEndOf="@+id/restaurant_city_divider"
             android:textColor="@android:color/white"
             tools:text="Place" />
@@ -107,10 +107,10 @@
             style="@style/AppTheme.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_alignTop="@+id/restaurant_name"
-            android:layout_marginEnd="8dp"
+            android:layout_alignParentEnd="true"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:textColor="@android:color/white"
             android:textStyle="bold"
             tools:text="" />
@@ -123,64 +123,66 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/restaurant_top_card"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="-28dp"
         android:layout_marginEnd="16dp"
-        app:srcCompat="@drawable/ic_edit_white_24dp"
-        android:visibility="invisible"/>
+        android:layout_marginBottom="-28dp"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/ic_edit_white_24dp" />
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/restaurant_top_card"
         android:layout_margin="32dp">
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/event_number_attend"
-                style="@style/AppTheme.Headline"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:textColor="@android:color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                tools:text="Number Attending: 0" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/event_number_attend"
+                    style="@style/AppTheme.Headline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    tools:text="Number Attending: 0" />
 
 
-            <TextView
-                android:id="@+id/event_url_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                tools:text="" />
+                <TextView
+                    android:id="@+id/event_url_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    tools:text="" />
 
-            <TextView
-                android:id="@+id/event_info_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
-                tools:text="" />
+                <TextView
+                    android:id="@+id/event_info_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    tools:text="" />
 
 
-        </LinearLayout>
+            </LinearLayout>
 
-    </ScrollView>
+        </ScrollView>
     </androidx.cardview.widget.CardView>
 
 

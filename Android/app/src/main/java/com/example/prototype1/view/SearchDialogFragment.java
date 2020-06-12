@@ -25,11 +25,8 @@ import java.util.Objects;
 public class SearchDialogFragment extends DialogFragment implements View.OnClickListener {
 
     static final String TAG = "FilterDialog";
-
-
-    private View mRootView;
     int resetFlag = 0; //resetFlag due to bug where Spinner setSelection does not save
-
+    private View mRootView;
     private Spinner mCategorySpinner;
     private Spinner mPlaceSpinner;
     private Spinner mSortSpinner;
@@ -57,9 +54,9 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
 
     @Override
     public void onResume() {
-        if (resetFlag==1) {
+        if (resetFlag == 1) {
             resetFilters();
-            resetFlag=0;
+            resetFlag = 0;
         }
         super.onResume();
         Objects.requireNonNull(Objects.requireNonNull(getDialog()).getWindow()).setLayout(
@@ -132,7 +129,8 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         String selected = (String) mSortSpinner.getSelectedItem();
         if (getString(R.string.sort_by_rating).equals(selected)) {
             return "rating";
-        } if (getString(R.string.sort_by_name).equals(selected)) {
+        }
+        if (getString(R.string.sort_by_name).equals(selected)) {
             return "name";
         }
 
@@ -144,7 +142,8 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         String selected = (String) mSortSpinner.getSelectedItem();
         if (getString(R.string.sort_by_rating).equals(selected)) {
             return Query.Direction.DESCENDING;
-        } if (getString(R.string.sort_by_name).equals(selected)) {
+        }
+        if (getString(R.string.sort_by_name).equals(selected)) {
             return Query.Direction.ASCENDING;
         }
         return null;

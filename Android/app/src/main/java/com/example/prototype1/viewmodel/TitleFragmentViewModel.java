@@ -14,12 +14,12 @@ import java.util.ArrayList;
 
 
 public class TitleFragmentViewModel extends AndroidViewModel {
-    private boolean mIsSigningIn;
-    private Filters mFilters = new Filters();
-    private final EventRepository mRepository;
-    private final MutableLiveData<ArrayList<NEvent>> mLiveData = new MutableLiveData<>();
     public final MutableLiveData<String> mSearchCat = new MutableLiveData<>();
     public final MutableLiveData<String> mSearchSort = new MutableLiveData<>();
+    private final EventRepository mRepository;
+    private final MutableLiveData<ArrayList<NEvent>> mLiveData = new MutableLiveData<>();
+    private boolean mIsSigningIn;
+    private Filters mFilters = new Filters();
 
 
     public TitleFragmentViewModel(Application application, SavedStateHandle savedStateHandle) {
@@ -47,6 +47,8 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mLiveData;
     }
 
-    public void updateEvent(NEvent updatedEvent) {mRepository.updateEvent(updatedEvent);}
+    public void updateEvent(NEvent updatedEvent) {
+        mRepository.updateEvent(updatedEvent);
+    }
 
 }
