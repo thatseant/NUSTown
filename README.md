@@ -10,6 +10,6 @@ Import into Android Studio to test the app.
 3. Events can be edited.
 
 [Working on]
-
+1. Extract Info from Captions
 
 [To work on]
