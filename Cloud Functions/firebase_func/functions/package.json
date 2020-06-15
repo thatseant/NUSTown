@@ -18,7 +18,8 @@
     "moment": "^2.26.0",
     "uuid": "^8.1.0",
     "axios": "^0.19.2",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "chrono-node": "^1.4.6"
   },
   "devDependencies": {
     "eslint": "^5.12.0",
