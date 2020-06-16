@@ -115,3 +115,18 @@ async function download (newURL, downloadPath) {
         writer.on('error', reject)
     })
 }
+
+//trigger when a new use signed up
+exports.newUserSignUp = functions.auth.user().onCreate(user => {
+    // for background triggers you must return a value/promise
+    return admin.firestore().collection('users').doc(user.uid).set({
+      email: user.email,
+      eventAttending: [],
+    });
+  });
+
+//trigger when a user is deleted
+exports.userDeleted = functions.auth.user().onDelete(user => {
+    const doc = admin.firestore().collection('users').doc(user.uid);
+    return doc.delete();
+  });
