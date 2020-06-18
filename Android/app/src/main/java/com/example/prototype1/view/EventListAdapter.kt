@@ -32,13 +32,17 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
     }
 
     class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val eventName: TextView = itemView.findViewById(R.id.titleCell)
-        private val eventInfo: TextView = itemView.findViewById(R.id.statusCell)
+        private val eventCCA: TextView = itemView.findViewById(R.id.titleCell)
+        private val eventDate: TextView = itemView.findViewById(R.id.statusCell)
         private val eventImage: ImageView = itemView.findViewById(R.id.imageCell)
 
         fun bind(item: NEvent, holder: ViewHolder, listener: OnItemSelectedListener) {
-            eventName.text = item.name
-            eventInfo.text = item.category
+            eventCCA.text = item.name
+            val regex = "^[^,]*,[^,]*".toRegex()
+            val matchResult = regex.find(item.time)
+            if (matchResult != null) {
+                eventDate.text = matchResult.value
+            }
 
             //Sets ImageView
             val storageReference = FirebaseStorage.getInstance().reference

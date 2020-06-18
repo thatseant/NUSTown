@@ -6,7 +6,7 @@ const admin = require('firebase-admin');
 const path = require('path');
 const os = require('os');
 const fs = require("fs");
-const serviceAccount = require("./NUSTown-984db999f43e.json");
+const serviceAccount = require("./NUSTown-ffc8c62cae11");
 const { v4: uuidv4 } = require('uuid');
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -15,6 +15,7 @@ admin.initializeApp({
 const axios = require('axios').default;
 const bucket = admin.storage().bucket();
 const moment = require('moment');
+var chrono = require('chrono-node');
 
 exports.createEvent = functions.https.onRequest(async (req, res) => {
 
@@ -23,6 +24,15 @@ exports.createEvent = functions.https.onRequest(async (req, res) => {
         await createProfileEvents("3585406095", numberOfPosts)
         await createProfileEvents("2280311232", numberOfPosts)
         await createProfileEvents("1921006487", numberOfPosts)
+        await createProfileEvents("6809880112", numberOfPosts)
+        await createProfileEvents("1529240926", numberOfPosts)
+        await createProfileEvents("5896733377", numberOfPosts)
+        await createProfileEvents("2166697202", numberOfPosts)
+        await createProfileEvents("1509888327", numberOfPosts)
+        await createProfileEvents("7190465670", numberOfPosts)
+        await createProfileEvents("2048683536", numberOfPosts)
+        await createProfileEvents("8241519518", numberOfPosts)
+        await createProfileEvents("623560288", numberOfPosts)
         res.status(200).json({ result: `Success` });
     } catch (err) {
         console.log(err);
@@ -45,57 +55,162 @@ async function createProfileEvents (userID, numberOfPosts) {
 
 async function tasks(allMedia, i, userID) {
     var id, cat, name, place, url;
+    var firstDate, firstText;
     let imageURL = allMedia.edges[i].node.display_resources[2].src //get url for ith image
     let caption = allMedia.edges[i].node.edge_media_to_caption.edges[0].node.text
-    let date = moment.unix(allMedia.edges[i].node.taken_at_timestamp)
-    if (userID === "3585406095") {
-        cat = "Sports Events"
-        name = "Some Kayak Event"
-        place = "UTown"
-        url = "https://www.instagram.com/nuskayaking/"
-        id = "kayak_" + date
-    }
-    else if (userID === "2280311232") {
-        cat = "NUS CCAs"
-        name = "Some Climb Event"
-        place = "USC"
-        url = "https://www.instagram.com/nus_climbing/"
-        id = "climb_" + date
-    }
-    else if (userID === "1921006487") {
-        cat = "Open Classes"
-        name = "Some Dance Event"
-        place = "NUS-Wide"
-        url = "https://www.instagram.com/breakinus/"
-        id = "dance_" + date
-    }
-    else {
-        cat = "Other Events"
-        id = "other_" + date
-    }
-    let newDoc = {
-        image: id + ".png",
-        info: caption,
-        time: moment(date).format("dddd, MMMM Do YYYY, h:mm:ss a"),
-        category: cat,
-        numberAttending: 0,
-        name: name,
-        place: place,
-        rating: 3,
-        url: url,
-        id: id
-    }
+    let post_date = moment.unix(allMedia.edges[i].node.taken_at_timestamp).toDate()
+    let results = await chrono.strict.parse(caption, post_date)
+    let casualResults = await chrono.parse(caption, post_date)
 
-    await admin.firestore().collection('events').doc(id).set(newDoc)
-
-    const picName = id + ".png";
-    const tempFilePath = path.join(os.tmpdir(), picName);
-    await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
-        {destination: "events/"+ picName,  metadata: {metadata :{
-                    firebaseStorageDownloadTokens: uuidv4(),
+    if (results.length!==0) {
+        for (j=0;j<results.length;j++) {
+            if (results[j].text !== "9/20") {
+                if (results[j].tags) {
+                    if (results[j].tags.ENMonthNameParser) {
+                        continue
+                    }
                 }
-            },}))
+                if (!firstDate | (firstDate<post_date)) {
+                    firstDate = results[j].start.date()
+                    firstText = results[j].text
+                    if (!results[j].start.knownValues.day) {
+                        if (casualResults.length !== 0) {
+                            if ((casualResults[0].start.knownValues.weekday!==null) | casualResults[0].start.knownValues.day) {
+                                firstDate = casualResults[0].start.date()
+                                firstText = casualResults[0].text
+                            }
+                        }
+                        if (results[1]) {
+                            if (results[1].start.knownValues.day) {
+                                firstDate = results[1].start.date()
+                                firstText = results[1].text
+                            }
+                        }
+                    }
+                }
+                if (results[j].start.knownValues.hour) {
+                    if (!results[j].start.knownValues.day) {
+                        firstDate.setHours(results[j].start.knownValues.hour)
+                        if (results[j].start.knownValues.minute) {
+                            firstDate.setMinutes(results[j].start.knownValues.minute)
+                        }
+                    }
+                    else {
+                        firstDate = results[j].start.date()
+                        firstText = results[j].text
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    else if (casualResults.length!==0) {
+        for (j=0;j<casualResults.length;j++) {
+            if (casualResults[j].text !== "9/20" && casualResults[j].text !== "now" && casualResults[j].text !== "Now") {
+                firstDate = casualResults[j].start.date()
+                firstText = casualResults[j].text
+                break;
+            }
+        }
+    }
+
+    if (firstDate >= post_date) {//Only runs below if post is a valid event
+        stringDate = moment(firstDate).format("YYMMDD");
+        if (userID === "3585406095") {
+            cat = "Sports Events"
+            name = "NUS Kayaking"
+            place = "UTown"
+            url = "https://www.instagram.com/nuskayaking/"
+            id = "kayak_" + stringDate
+        }
+        else if (userID === "2280311232") {
+            cat = "NUS CCAs"
+            name = "NUS Climbing"
+            place = "USC"
+            url = "https://www.instagram.com/nus_climbing/"
+            id = "climb_" + stringDate
+        }
+        else if (userID === "1921006487") {
+            cat = "Open Classes"
+            name = "NUS Dance"
+            place = "NUS-Wide"
+            url = "https://www.instagram.com/breakinus/"
+            id = "dance_" + stringDate
+        }
+        else if (userID === "1529240926") {
+            cat = "NUS CCAs"
+            name = "NUS Boxing"
+            place = "NUS-Wide"
+            url = "https://www.instagram.com/nusboxing/"
+            id = "boxing_" + stringDate
+        }
+        else if (userID === "5896733377") {
+            cat = "Sports Events"
+            name = "NUS Volleyball"
+            place = "NUS-Wide"
+            url = "https://www.instagram.com/nus.volleyball/"
+            id = "volleyball_" + stringDate
+        }
+        else {
+            name = "An Event"
+            cat = "Other Events"
+            url = ""
+            place = "Some Place"
+            id = "other_" + stringDate
+        }
+        let newDoc = {
+            image: id + ".png",
+            info: caption,
+            time: moment(firstDate).format("dddd, MMMM Do YYYY, h:mm:ss a"),
+            category: cat,
+            numberAttending: 0,
+            name: name,
+            place: place,
+            rating: 3,
+            url: url,
+            id: id
+        }
+
+
+        await admin.firestore().collection('events').doc(id).get().then(
+            async (doc) => {
+                if (!doc.exists) {
+                    await admin.firestore().collection('events').doc(id).set(newDoc)
+                    const picName = id + ".png";
+                    const tempFilePath = path.join(os.tmpdir(), picName);
+                    await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
+                        {destination: "events/"+ picName,  metadata: {metadata :{
+                                    firebaseStorageDownloadTokens: uuidv4(),
+                                }
+                            },}))
+                }
+                return null;
+            }
+        )
+    }
+
 }
+
+// await db.runTransaction(t => { //transaction method
+//     return t.get(docRef)
+//         .then(doc => {
+//             if (!doc.exists) {
+//                 t.set(docRef, newDoc)
+//             } else {
+//
+//             }
+//         });
+// }).then(async result => {
+//     const picName = id + ".png";
+//     const tempFilePath = path.join(os.tmpdir(), picName);
+//     await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
+//         {destination: "events/"+ picName,  metadata: {metadata :{
+//                     firebaseStorageDownloadTokens: uuidv4(),
+//                 }
+//             },}))
+// }).catch(err => {
+//     console.log('Transaction failure:', err);
+// });
 
 async function download (newURL, downloadPath) {
     const url = newURL
