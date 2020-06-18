@@ -43,7 +43,9 @@ exports.createEvent = functions.https.onRequest(async (req, res) => {
 
 exports.nusSync = functions.https.onRequest(async (req, res) => {
     try {
-        await createNSyncEvents("2020-06-01")
+        let todayDate = "2020-06-01"
+        let apiURL = "https://nus.campuslabs.com/engage/api/discovery/event/search?endsAfter="+ todayDate +"T12%3A17%3A23%2B08%3A00&orderByField=endsOn&orderByDirection=ascending&status=&take=1000&query="
+        await createNSync(apiURL, "event")
         res.status(200).json({ result: `Success` });
     } catch (err) {
         console.log(err);
@@ -51,19 +53,96 @@ exports.nusSync = functions.https.onRequest(async (req, res) => {
     }
 })
 
+exports.nusClubs = functions.https.onRequest(async (req, res) => {
+    try {
+        let apiURL = "https://nus.campuslabs.com/engage/api/discovery/search/organizations?orderBy%5B0%5D=UpperName%20asc&top=500&filter=&query=&skip=0"
+        await createNSync(apiURL, "club")
+        res.status(200).json({ result: `Success` });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+})
 
-async function createNSyncEvents (startDate) {
+async function createNSync(URL, type) {
     let promises = []
-    let apiURL = "https://nus.campuslabs.com/engage/api/discovery/event/search?endsAfter="+ startDate +"T12%3A17%3A23%2B08%3A00&orderByField=endsOn&orderByDirection=ascending&status=&take=1000&query="
-    const JSONData = await axios.get(apiURL)
-    const allEvents = JSONData.data.value
-    for (i=0; i<allEvents.length; i++) {
-        promises.push(NSyncToDatabase(allEvents, i))
+    const JSONData = await axios.get(URL)
+    const numberResults = JSONData.data.value
+    for (i=0; i<numberResults.length; i++) {
+        if (type==="event") {
+            promises.push(NSyncEventToDatabase(numberResults, i))
+        }
+        else if (type==="club") {
+            promises.push(NSyncClubToDatabase(numberResults, i))
+        }
     }
     await Promise.all(promises)
 }
 
-async function NSyncToDatabase(allEvents, i) {
+async function NSyncClubToDatabase(allClubs, i) {
+    let club = allClubs[i]
+    let imageURL = ""
+    let catID = ""
+    if (club.CategoryIds[0]) {
+        catID = club.CategoryIds[0]
+    }
+    let catName = ""
+    if (club.CategoryNames[0]) {
+        catName = club.CategoryNames[0]
+    }
+    let websiteKey = ""
+    if (club.WebsiteKey) {
+        websiteKey = club.WebsiteKey
+    }
+    let shortName = club.ShortName
+    if (!shortName) {
+        shortName = club.Name.replace(/\s/g, "")
+    }
+    let name = ""
+    if (club.Name) {
+        name = club.Name
+    }
+    let id = ""
+    if (club.Id) {
+        id = club.Id
+    }
+    let branchId = ""
+    if (club.BranchId) {
+        branchId = club.BranchId
+    }
+    let clubInfoHttp = ""
+    let clubInfoText = ""
+    if (club.Description) {
+        clubInfoHttp = club.Description
+        clubInfoText = clubInfoHttp.replace(/(<([^>]+)>)/ig, '', "")
+    }
+    if (club.ProfilePicture) {
+        imageURL = "https://se-infra-imageserver2.azureedge.net/clink/images/"+ club.ProfilePicture
+    }
+    let newDoc = {
+        name: name,
+        id: id,
+        branchId: branchId,
+        catID: catID,
+        catName: catName,
+        websiteKey: websiteKey,
+        info: clubInfoText,
+        url: "https://nus.campuslabs.com/engage/organization/"+ club.WebsiteKey,
+        imgUrl: imageURL
+    }
+
+    await admin.firestore().collection('clubs').doc(shortName).get().then(
+        async (doc) => {
+            if (!doc.exists) {
+                await admin.firestore().collection('clubs').doc(shortName).set(newDoc)
+            }
+            return null;
+        }
+    )
+
+}
+
+async function NSyncEventToDatabase(allEvents, i) {
     let event = allEvents[i]
     let eventStartDateTime = event.startsOn
     let eventStartDate = eventStartDateTime.split("T")[0];
