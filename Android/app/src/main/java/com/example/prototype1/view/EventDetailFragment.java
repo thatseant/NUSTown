@@ -5,9 +5,11 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -15,15 +17,23 @@ import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class EventDetailFragment extends Fragment {
     private ImageView mImage;
+    private FirebaseFunctions mFunctions;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,6 +43,7 @@ public class EventDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mFunctions = FirebaseFunctions.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         // Retrieve NEvent object clicked on in RecyclerView
         assert getArguments() != null;
@@ -70,6 +81,13 @@ public class EventDetailFragment extends Fragment {
             navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToTitleFragment());
         });
 
+        //RSVP Button invokes cloud function
+        Button rsvpButton = rootView.findViewById(R.id.rsvp_button);
+        rsvpButton.setOnClickListener(v -> {
+            rsvpFunction(user.getEmail(), mEvent.getID());
+        });
+
+
         //Allows organisers to edit events
         assert user != null;
         if (Objects.equals(user.getEmail(), "sean@tan.com")) {
@@ -86,5 +104,23 @@ public class EventDetailFragment extends Fragment {
         return rootView;
 
 
+    }
+
+    private Task<String> rsvpFunction(String email, String ID) {
+        // Create the arguments to the callable function.
+        Map<String, Object> data = new HashMap<>();
+        data.put("email", email);
+        data.put("event_id", ID);
+
+        return mFunctions
+                .getHttpsCallable("rsvpFunction")
+                .call(data)
+                .continueWith(new Continuation<HttpsCallableResult, String>() {
+                    @Override
+                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        return null;
+                    }
+
+                });
     }
 }

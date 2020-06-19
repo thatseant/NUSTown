@@ -1,146 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E0E0E0"
     tools:context="com.example.prototype1.view.EventDetailFragment">
 
     <RelativeLayout
-        android:id="@+id/restaurant_top_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="4dp">
-
-        <ImageView
-            android:id="@+id/restaurant_image"
-            android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:alpha="1.0"
-            android:contentDescription="@string/eventdetailimage"
-            tools:src="@drawable/climb" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:background="@drawable/gradient_up" />
-
-        <!-- Back button -->
-        <ImageView
-            android:id="@+id/restaurant_button_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/restaurant_name"
-            android:layout_marginTop="16dp"
-            android:background="?attr/selectableItemBackground"
-            android:contentDescription="@string/back_button"
-            app:srcCompat="@drawable/ic_close_white_24px" />
-
-        <TextView
-            android:id="@+id/restaurant_name"
-            style="@style/AppTheme.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/restaurant_rating"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            tools:text="Some Event" />
-
-        <me.zhanghai.android.materialratingbar.MaterialRatingBar
-            android:id="@+id/restaurant_rating"
-            style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/restaurant_category"
-            android:layout_alignStart="@+id/restaurant_name"
-            app:mrb_progressTint="@android:color/white"
-            app:mrb_secondaryProgressTint="@android:color/white" />
-
-        <TextView
-            style="@style/AppTheme.Body1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/restaurant_rating"
-            android:layout_alignBottom="@+id/restaurant_rating"
-            android:layout_marginStart="4dp"
-            android:layout_toEndOf="@+id/restaurant_rating"
-            android:gravity="center"
-            android:textColor="@android:color/white"
-            tools:text="(10)" />
-
-        <TextView
-            android:id="@+id/restaurant_category"
-            style="@style/AppTheme.Subheader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/restaurant_name"
-            android:layout_alignBottom="@+id/restaurant_image"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:textColor="@android:color/white"
-            tools:text="Category" />
-
-        <TextView
-            android:id="@+id/restaurant_city_divider"
-            style="@style/AppTheme.TextDivider"
-            android:layout_alignTop="@+id/restaurant_category"
-            android:layout_toEndOf="@+id/restaurant_category"
-            android:text="@string/divider_bullet"
-            android:textColor="@android:color/white" />
-
-        <TextView
-            android:id="@+id/restaurant_city"
-            style="@style/AppTheme.Subheader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/restaurant_category"
-            android:layout_alignTop="@+id/restaurant_category"
-            android:layout_toEndOf="@+id/restaurant_city_divider"
-            android:textColor="@android:color/white"
-            tools:text="Place" />
-
-        <TextView
-            style="@style/AppTheme.Body1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/restaurant_name"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            tools:text="" />
-
-    </RelativeLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/edit_event_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/restaurant_top_card"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="-28dp"
-        android:visibility="invisible"
-        app:srcCompat="@drawable/ic_edit_white_24dp" />
-
-    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/restaurant_top_card"
-        android:layout_margin="32dp">
+        android:background="#E0E0E0">
 
-        <ScrollView
+
+        <RelativeLayout
+            android:id="@+id/restaurant_top_card"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:elevation="4dp">
+
+            <ImageView
+                android:id="@+id/restaurant_image"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:alpha="1.0"
+                android:contentDescription="@string/eventdetailimage"
+                tools:src="@drawable/climb" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:background="@drawable/gradient_up" />
+
+            <!-- Back button -->
+            <ImageView
+                android:id="@+id/restaurant_button_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/restaurant_name"
+                android:layout_marginTop="16dp"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/back_button"
+                app:srcCompat="@drawable/ic_close_white_24px" />
+
+            <TextView
+                android:id="@+id/restaurant_name"
+                style="@style/AppTheme.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/restaurant_rating"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                tools:text="Some Event" />
+
+            <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                android:id="@+id/restaurant_rating"
+                style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/restaurant_category"
+                android:layout_alignStart="@+id/restaurant_name"
+                app:mrb_progressTint="@android:color/white"
+                app:mrb_secondaryProgressTint="@android:color/white" />
+
+            <TextView
+                style="@style/AppTheme.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/restaurant_rating"
+                android:layout_alignBottom="@+id/restaurant_rating"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@+id/restaurant_rating"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                tools:text="(10)" />
+
+            <TextView
+                android:id="@+id/restaurant_category"
+                style="@style/AppTheme.Subheader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/restaurant_name"
+                android:layout_alignBottom="@+id/restaurant_image"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:textColor="@android:color/white"
+                tools:text="Category" />
+
+            <TextView
+                android:id="@+id/restaurant_city_divider"
+                style="@style/AppTheme.TextDivider"
+                android:layout_alignTop="@+id/restaurant_category"
+                android:layout_toEndOf="@+id/restaurant_category"
+                android:text="@string/divider_bullet"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/restaurant_city"
+                style="@style/AppTheme.Subheader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/restaurant_category"
+                android:layout_alignTop="@+id/restaurant_category"
+                android:layout_toEndOf="@+id/restaurant_city_divider"
+                android:textColor="@android:color/white"
+                tools:text="Place" />
+
+            <TextView
+                style="@style/AppTheme.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/restaurant_name"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                tools:text="" />
+
+        </RelativeLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/edit_event_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/restaurant_top_card"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="-28dp"
+            android:visibility="invisible"
+            app:srcCompat="@drawable/ic_edit_white_24dp" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/restaurant_top_card"
+            android:layout_margin="32dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/rsvp_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RSVP" />
 
                 <TextView
                     android:id="@+id/event_number_attend"
@@ -181,8 +189,9 @@
 
             </LinearLayout>
 
-        </ScrollView>
-    </androidx.cardview.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
 
-</RelativeLayout>
+    </RelativeLayout>
+
+</ScrollView>
