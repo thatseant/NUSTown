@@ -10,15 +10,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.prototype1.R
-import com.example.prototype1.model.NEvent
-import com.google.firebase.storage.FirebaseStorage
+import com.example.prototype1.model.NClub
 
-class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, EventListAdapter.ViewHolder>(NEventDiffCallback()) {
+class ClubListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, ClubListAdapter.ViewHolder>(NClubDiffCallback()) {
     private val newListener: OnItemSelectedListener = mListener
 
 
     interface OnItemSelectedListener {
-        fun onItemSelected(mEvent: NEvent, view: View)
+        fun onItemSelected(mClub: NClub, view: View)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {//Called for every item in RecyclerView when it becomes visible
@@ -32,26 +31,20 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
     }
 
     class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val eventCCA: TextView = itemView.findViewById(R.id.titleCell)
-        private val eventDate: TextView = itemView.findViewById(R.id.statusCell)
-        private val eventImage: ImageView = itemView.findViewById(R.id.imageCell)
+        private val clubName: TextView = itemView.findViewById(R.id.titleCell)
+        private val clubCat: TextView = itemView.findViewById(R.id.statusCell)
+        private val clubImage: ImageView = itemView.findViewById(R.id.imageCell)
 
-        fun bind(item: NEvent, holder: ViewHolder, listener: OnItemSelectedListener) {
-            eventCCA.text = item.name
-            val regex = "^[^,]*,[^,]*".toRegex()
-            val matchResult = regex.find(item.time)
-            if (matchResult != null) {
-                eventDate.text = matchResult.value
-            }
+        fun bind(item: NClub, holder: ViewHolder, listener: OnItemSelectedListener) {
+            clubName.text = item.name
+            clubCat.text = item.catName
 
             //Sets ImageView
-            val storageReference = FirebaseStorage.getInstance().reference
-            val imageRef = storageReference.child("events/" + item.image)
-
-            imageRef.downloadUrl.addOnSuccessListener {
-                Glide.with(holder.eventImage.context).load(it).thumbnail(0.05f).into(eventImage)
-
+            if (item.imgUrl != "") {
+                Glide.with(holder.clubImage.context).load(item.imgUrl).thumbnail(0.02f).into(clubImage)
+                //TODO: Placeholder?
             }
+
             itemView.setOnClickListener { view ->
                 listener.onItemSelected(item, view)
             }
@@ -70,13 +63,13 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
 }
 
 //Only refreshes items that changed in RecyclerView
-class NEventDiffCallback : DiffUtil.ItemCallback<NEvent>() {
+class NClubDiffCallback : DiffUtil.ItemCallback<NClub>() {
 
-    override fun areItemsTheSame(oldItem: NEvent, newItem: NEvent): Boolean {
-        return oldItem.ID == newItem.ID
+    override fun areItemsTheSame(oldItem: NClub, newItem: NClub): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: NEvent, newItem: NEvent): Boolean {
+    override fun areContentsTheSame(oldItem: NClub, newItem: NClub): Boolean {
         return oldItem == newItem
     }
 

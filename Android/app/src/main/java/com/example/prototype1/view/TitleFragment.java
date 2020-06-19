@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -77,6 +78,13 @@ public class TitleFragment extends Fragment implements EventListAdapter.OnItemSe
             mModel.mSearchCat.setValue("<b> All Events <b>");
             mModel.mSearchSort.setValue("sorted by Rating");
             mModel.getData();
+        });
+
+        //Change View to ClubFragment
+        Button displayClubsButton = rootView.findViewById(R.id.displayClubsButton);
+        displayClubsButton.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(rootView);
+            navController.navigate(TitleFragmentDirections.actionTitleFragmentToClubFragment());
         });
 
 
