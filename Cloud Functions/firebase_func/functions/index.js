@@ -21,18 +21,18 @@ exports.createEvent = functions.https.onRequest(async (req, res) => {
 
     try {
         let numberOfPosts = "15"
-        await createProfileEvents("3585406095", numberOfPosts)
-        await createProfileEvents("2280311232", numberOfPosts)
-        await createProfileEvents("1921006487", numberOfPosts)
-        await createProfileEvents("6809880112", numberOfPosts)
-        await createProfileEvents("1529240926", numberOfPosts)
-        await createProfileEvents("5896733377", numberOfPosts)
-        await createProfileEvents("2166697202", numberOfPosts)
-        await createProfileEvents("1509888327", numberOfPosts)
-        await createProfileEvents("7190465670", numberOfPosts)
-        await createProfileEvents("2048683536", numberOfPosts)
-        await createProfileEvents("8241519518", numberOfPosts)
-        await createProfileEvents("623560288", numberOfPosts)
+        await createInstaEvents("3585406095", numberOfPosts)
+        await createInstaEvents("2280311232", numberOfPosts)
+        await createInstaEvents("1921006487", numberOfPosts)
+        await createInstaEvents("6809880112", numberOfPosts)
+        await createInstaEvents("1529240926", numberOfPosts)
+        await createInstaEvents("5896733377", numberOfPosts)
+        await createInstaEvents("2166697202", numberOfPosts)
+        await createInstaEvents("1509888327", numberOfPosts)
+        await createInstaEvents("7190465670", numberOfPosts)
+        await createInstaEvents("2048683536", numberOfPosts)
+        await createInstaEvents("8241519518", numberOfPosts)
+        await createInstaEvents("623560288", numberOfPosts)
         res.status(200).json({ result: `Success` });
     } catch (err) {
         console.log(err);
@@ -41,19 +41,173 @@ exports.createEvent = functions.https.onRequest(async (req, res) => {
 
 });
 
-async function createProfileEvents (userID, numberOfPosts) {
+exports.nusSync = functions.https.onRequest(async (req, res) => {
+    try {
+        let todayDate = "2020-06-01"
+        let apiURL = "https://nus.campuslabs.com/engage/api/discovery/event/search?endsAfter="+ todayDate +"T12%3A17%3A23%2B08%3A00&orderByField=endsOn&orderByDirection=ascending&status=&take=1000&query="
+        await createNSync(apiURL, "event")
+        res.status(200).json({ result: `Success` });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+})
+
+exports.nusClubs = functions.https.onRequest(async (req, res) => {
+    try {
+        let apiURL = "https://nus.campuslabs.com/engage/api/discovery/search/organizations?orderBy%5B0%5D=UpperName%20asc&top=500&filter=&query=&skip=0"
+        await createNSync(apiURL, "club")
+        res.status(200).json({ result: `Success` });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+})
+
+async function createNSync(URL, type) {
+    let promises = []
+    const JSONData = await axios.get(URL)
+    const numberResults = JSONData.data.value
+    for (i=0; i<numberResults.length; i++) {
+        if (type==="event") {
+            promises.push(NSyncEventToDatabase(numberResults, i))
+        }
+        else if (type==="club") {
+            promises.push(NSyncClubToDatabase(numberResults, i))
+        }
+    }
+    await Promise.all(promises)
+}
+
+async function NSyncClubToDatabase(allClubs, i) {
+    let club = allClubs[i]
+    let imageURL = ""
+    let catID = ""
+    if (club.CategoryIds[0]) {
+        catID = club.CategoryIds[0]
+    }
+    let catName = ""
+    if (club.CategoryNames[0]) {
+        catName = club.CategoryNames[0]
+    }
+    let websiteKey = ""
+    if (club.WebsiteKey) {
+        websiteKey = club.WebsiteKey
+    }
+    let shortName = club.ShortName
+    if (!shortName) {
+        shortName = club.Name.replace(/\s/g, "")
+    }
+    let name = ""
+    if (club.Name) {
+        name = club.Name
+    }
+    let id = ""
+    if (club.Id) {
+        id = club.Id
+    }
+    let branchId = ""
+    if (club.BranchId) {
+        branchId = club.BranchId
+    }
+    let clubInfoHttp = ""
+    let clubInfoText = ""
+    if (club.Description) {
+        clubInfoHttp = club.Description
+        clubInfoText = clubInfoHttp.replace(/(<([^>]+)>)/ig, '', "")
+    }
+    if (club.ProfilePicture) {
+        imageURL = "https://se-infra-imageserver2.azureedge.net/clink/images/"+ club.ProfilePicture
+    }
+    let newDoc = {
+        name: name,
+        id: id,
+        branchId: branchId,
+        catID: catID,
+        catName: catName,
+        websiteKey: websiteKey,
+        info: clubInfoText,
+        url: "https://nus.campuslabs.com/engage/organization/"+ club.WebsiteKey,
+        imgUrl: imageURL
+    }
+
+    await admin.firestore().collection('clubs').doc(shortName).get().then(
+        async (doc) => {
+            if (!doc.exists) {
+                await admin.firestore().collection('clubs').doc(shortName).set(newDoc)
+            }
+            return null;
+        }
+    )
+
+}
+
+async function NSyncEventToDatabase(allEvents, i) {
+    let event = allEvents[i]
+    let eventStartDateTime = event.startsOn
+    let eventStartDate = eventStartDateTime.split("T")[0];
+    let id = event.organizationName.replace(/\s/g, "") + "_" + eventStartDate.replace(/-/g, "") //ID consists of CCA and Event Date (without whitespace)
+    let imageURL;
+    if (event.imagePath) {
+        imageURL = "https://se-infra-imageserver2.azureedge.net/clink/images/"+ event.imagePath
+    } else {
+        imageURL = "https://se-infra-imageserver2.azureedge.net/clink/images/"+ event.organizationProfilePicture
+
+    }
+    let description = event.description
+    let description_text = description.replace(/(<([^>]+)>)/ig, '', "")
+    const JSONAttendees = await axios.get("https://nus.campuslabs.com/engage/api/discovery/event/"+ event.id +"/rsvpstatistics?")
+    let newDoc = {
+        org: event.organizationName,
+        syncEventID: event.id,
+        syncOrgID: event.organizationId,
+        image: id + ".png",
+        info: description_text,
+        time: moment(eventStartDateTime).format("dddd, MMMM Do YYYY, h:mm:ss a"),
+        category: "",
+        numberAttending: JSONAttendees.data.yesUserCount,
+        name: event.name,
+        place: event.location,
+        rating: 3,
+        url: "https://nus.campuslabs.com/engage/event/" + event.id,
+        id: id
+    }
+
+    await admin.firestore().collection('events').doc(id).get().then(
+        async (doc) => {
+            if (!doc.exists) {
+                await admin.firestore().collection('events').doc(id).set(newDoc)
+                const picName = id + ".png";
+                const tempFilePath = path.join(os.tmpdir(), picName);
+                if (imageURL!=="https://se-infra-imageserver2.azureedge.net/clink/images/null") {
+                    await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
+                        {
+                            destination: "events/" + picName, metadata: {
+                                metadata: {
+                                    firebaseStorageDownloadTokens: uuidv4(),
+                                }
+                            },
+                        }))
+                }
+            }
+            return null;
+        }
+    )
+}
+
+async function createInstaEvents (userID, numberOfPosts) {
     let promises = []
     let apiURL = "https://www.instagram.com/graphql/query/?query_hash=f2405b236d85e8296cf30347c9f08c2a&variables=%7B%22id%22%3A%22" + userID + "%22%2C%22first%22%3A" + numberOfPosts + "%2C%22after%22%3A%22%22%7D"
     const JSONData = await axios.get(apiURL)
     const allMedia = JSONData.data.data.user.edge_owner_to_timeline_media //get field in JSON object containing all posts
     for (i=0; i<numberOfPosts; i++) {
-        promises.push(tasks(allMedia, i, userID)); //Creates document and store image for each post
+        promises.push(InstaToDatabase(allMedia, i, userID)); //Creates document and store image for each post
     }
 
     await Promise.all(promises)
 }
 
-async function tasks(allMedia, i, userID) {
+async function InstaToDatabase(allMedia, i, userID) {
     var id, cat, name, place, url;
     var firstDate, firstText;
     let imageURL = allMedia.edges[i].node.display_resources[2].src //get url for ith image
@@ -211,6 +365,7 @@ async function tasks(allMedia, i, userID) {
 // }).catch(err => {
 //     console.log('Transaction failure:', err);
 // });
+
 
 async function download (newURL, downloadPath) {
     const url = newURL
