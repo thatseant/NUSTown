@@ -45,6 +45,8 @@ class ClubListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, Cl
                 Glide.with(holder.clubImage.context).load(item.imgUrl).apply(RequestOptions()
                         .placeholder(R.drawable.nus)
                 ).thumbnail(0.02f).into(clubImage)
+            } else {
+                clubImage.setImageResource(R.drawable.nus)
             }
 
             itemView.setOnClickListener { view ->

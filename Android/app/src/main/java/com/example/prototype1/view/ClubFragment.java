@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,7 +53,7 @@ public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSele
 
     @Override
     public void onItemSelected(@NotNull NClub mClub, @NotNull View view) {
-//        NavController navController = Navigation.findNavController(view);
-//        navController.navigate(TitleFragmentDirections.actionTitleFragmentToEventDetailFragment(mClub));
+        NavController navController = Navigation.findNavController(view);
+        navController.navigate(ClubFragmentDirections.actionClubFragmentToClubDetailFragment(mClub));
     }
 }

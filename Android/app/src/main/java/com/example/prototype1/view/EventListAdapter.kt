@@ -51,7 +51,7 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
 
             imageRef.downloadUrl.addOnSuccessListener {
                 Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
-                        .placeholder(R.drawable.nus)).thumbnail(0.05f).into(eventImage)
+                        .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
 
             }
             itemView.setOnClickListener { view ->

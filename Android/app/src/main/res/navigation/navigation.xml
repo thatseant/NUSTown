@@ -50,6 +50,22 @@
     <fragment
         android:id="@+id/clubFragment"
         android:name="com.example.prototype1.view.ClubFragment"
-        android:label="ClubFragment" />
+        android:label="ClubFragment">
+        <action
+            android:id="@+id/action_clubFragment_to_clubDetailFragment"
+            app:destination="@id/clubDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/clubDetailFragment"
+        android:name="com.example.prototype1.view.ClubDetailFragment"
+        android:label="fragment_club_detail"
+        tools:layout="@layout/fragment_club_detail">
+        <argument
+            android:name="mClub"
+            app:argType="com.example.prototype1.model.NClub" />
+        <action
+            android:id="@+id/action_clubDetailFragment_to_clubFragment"
+            app:destination="@id/clubFragment" />
+    </fragment>
 
 </navigation>

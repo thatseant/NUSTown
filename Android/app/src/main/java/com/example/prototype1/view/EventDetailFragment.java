@@ -50,18 +50,18 @@ public class EventDetailFragment extends Fragment {
 
 
         //Get image reference from cloud storage
-        mImage = rootView.findViewById(R.id.restaurant_image);
+        mImage = rootView.findViewById(R.id.event_image);
         StorageReference storageReference = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef = storageReference.child("events/" + mEvent.getImage());
 
         imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).into(mImage)); //TODO: Figure out how to load image without needing URL
 
         //Sets text in TextView
-        TextView mCat = rootView.findViewById(R.id.restaurant_category);
+        TextView mCat = rootView.findViewById(R.id.event_category);
         mCat.setText(mEvent.getCategory());
-        TextView mPlace = rootView.findViewById(R.id.restaurant_city);
+        TextView mPlace = rootView.findViewById(R.id.event_city);
         mPlace.setText(mEvent.getPlace());
-        TextView mName = rootView.findViewById(R.id.restaurant_name);
+        TextView mName = rootView.findViewById(R.id.event_name);
         mName.setText(mEvent.getName());
         TextView mNum = rootView.findViewById(R.id.event_number_attend);
         mNum.setText("Number Attending: " + mEvent.getNumberAttending());
@@ -72,7 +72,7 @@ public class EventDetailFragment extends Fragment {
         Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
 
         //Close EventDetailFragment on buttonClose clicked
-        ImageView buttonClose = rootView.findViewById(R.id.restaurant_button_back);
+        ImageView buttonClose = rootView.findViewById(R.id.event_button_back);
         buttonClose.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
             navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToTitleFragment());
