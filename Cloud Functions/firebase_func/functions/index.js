@@ -170,25 +170,26 @@ async function NSyncEventToDatabase(allEvents, i) {
         place: event.location,
         rating: 3,
         url: "https://nus.campuslabs.com/engage/event/" + event.id,
-        id: id
+        id: id,
+        imgUrl: imageURL
     }
 
     await admin.firestore().collection('events').doc(id).get().then(
         async (doc) => {
             if (!doc.exists) {
                 await admin.firestore().collection('events').doc(id).set(newDoc)
-                const picName = id + ".png";
-                const tempFilePath = path.join(os.tmpdir(), picName);
-                if (imageURL!=="https://se-infra-imageserver2.azureedge.net/clink/images/null") {
-                    await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
-                        {
-                            destination: "events/" + picName, metadata: {
-                                metadata: {
-                                    firebaseStorageDownloadTokens: uuidv4(),
-                                }
-                            },
-                        }))
-                }
+                // const picName = id + ".png";
+                // const tempFilePath = path.join(os.tmpdir(), picName);
+                // if (imageURL!=="https://se-infra-imageserver2.azureedge.net/clink/images/null") {
+                //     await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
+                //         {
+                //             destination: "events/" + picName, metadata: {
+                //                 metadata: {
+                //                     firebaseStorageDownloadTokens: uuidv4(),
+                //                 }
+                //             },
+                //         }))
+                // }
             }
             return null;
         }
@@ -321,6 +322,7 @@ async function InstaToDatabase(allMedia, i, userID) {
             name: name,
             place: place,
             rating: 3,
+            imgUrl: imageURL,
             url: url,
             id: id
         }
@@ -330,13 +332,13 @@ async function InstaToDatabase(allMedia, i, userID) {
             async (doc) => {
                 if (!doc.exists) {
                     await admin.firestore().collection('events').doc(id).set(newDoc)
-                    const picName = id + ".png";
-                    const tempFilePath = path.join(os.tmpdir(), picName);
-                    await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
-                        {destination: "events/"+ picName,  metadata: {metadata :{
-                                    firebaseStorageDownloadTokens: uuidv4(),
-                                }
-                            },}))
+                    // const picName = id + ".png";
+                    // const tempFilePath = path.join(os.tmpdir(), picName);
+                    // await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
+                    //     {destination: "events/"+ picName,  metadata: {metadata :{
+                    //                 firebaseStorageDownloadTokens: uuidv4(),
+                    //             }
+                    //         },}))
                 }
                 return null;
             }

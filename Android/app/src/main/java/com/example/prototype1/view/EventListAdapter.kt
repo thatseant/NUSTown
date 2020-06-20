@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -46,14 +47,25 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
             }
 
             //Sets ImageView
-            val storageReference = FirebaseStorage.getInstance().reference
-            val imageRef = storageReference.child("events/" + item.image)
+//            val storageReference = FirebaseStorage.getInstance().reference
+//            val imageRef = storageReference.child("events/" + item.image)
+//
+//            imageRef.downloadUrl.addOnSuccessListener {
+//                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
+//                        .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
+//
+//            }
 
-            imageRef.downloadUrl.addOnSuccessListener {
-                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
-                        .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
-
+            //Sets ImageView
+            if (item.imgUrl != "") {
+                Glide.with(holder.eventImage.context).load(item.imgUrl).apply(RequestOptions()
+                        .placeholder(R.drawable.nus)
+                ).thumbnail(0.02f).into(eventImage)
+            } else {
+                eventImage.setImageResource(R.drawable.nus)
             }
+
+
             itemView.setOnClickListener { view ->
                 listener.onItemSelected(item, view)
             }

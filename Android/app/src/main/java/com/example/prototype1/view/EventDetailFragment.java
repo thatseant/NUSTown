@@ -14,6 +14,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
 import com.google.android.gms.tasks.Task;
@@ -51,10 +52,18 @@ public class EventDetailFragment extends Fragment {
 
         //Get image reference from cloud storage
         mImage = rootView.findViewById(R.id.event_image);
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        StorageReference imageRef = storageReference.child("events/" + mEvent.getImage());
+//        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+//        StorageReference imageRef = storageReference.child("events/" + mEvent.getImage());
+//
+//        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).into(mImage)); //TODO: Figure out how to load image without needing URL
 
-        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).into(mImage)); //TODO: Figure out how to load image without needing URL
+        if (mEvent.getImgUrl() != "") {
+            Glide.with(requireContext()).load(mEvent.getImgUrl()).apply(new RequestOptions()
+                    .placeholder(R.drawable.nus)
+            ).thumbnail(0.02f).into(mImage);
+        } else {
+            mImage.setImageResource(R.drawable.nus);
+        }
 
         //Sets text in TextView
         TextView mCat = rootView.findViewById(R.id.event_category);
