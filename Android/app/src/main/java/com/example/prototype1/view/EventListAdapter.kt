@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.prototype1.R
 import com.example.prototype1.model.NEvent
 import com.google.firebase.storage.FirebaseStorage
@@ -49,7 +50,8 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
             val imageRef = storageReference.child("events/" + item.image)
 
             imageRef.downloadUrl.addOnSuccessListener {
-                Glide.with(holder.eventImage.context).load(it).thumbnail(0.05f).into(eventImage)
+                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
+                        .placeholder(R.drawable.nus)).thumbnail(0.05f).into(eventImage)
 
             }
             itemView.setOnClickListener { view ->

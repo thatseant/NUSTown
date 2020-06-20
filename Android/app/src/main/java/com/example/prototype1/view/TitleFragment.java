@@ -50,7 +50,7 @@ public class TitleFragment extends Fragment implements EventListAdapter.OnItemSe
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
         //Link Adapter to getData() in ViewModel; getData() returns eventList
-        mModel.getData().observe(getViewLifecycleOwner(), mAdapter::submitList);
+        mModel.getEventsData().observe(getViewLifecycleOwner(), mAdapter::submitList);
 
         //Automatically changes text to in search box to reflect current filter
         TextView mSearchCat = rootView.findViewById(R.id.text_current_search);
@@ -77,7 +77,7 @@ public class TitleFragment extends Fragment implements EventListAdapter.OnItemSe
             mModel.changeFilter(new Filters()); //Reset mFilter in ViewModel as mFilter is parameter of getData()
             mModel.mSearchCat.setValue("<b> All Events <b>");
             mModel.mSearchSort.setValue("sorted by Rating");
-            mModel.getData();
+            mModel.getEventsData();
         });
 
         //Change View to ClubFragment

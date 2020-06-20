@@ -69,7 +69,7 @@ public class EditEventFragment extends Fragment {
                     eventToEdit.getNumberAttending(), newURLString, eventToEdit.getImage(), newInfoString); //Changes name, place, category
 
             mModel.updateEvent(updatedEvent); //Updates Repository via ViewModel
-            mModel.getData();
+            mModel.getEventsData();
             NavController navController = Navigation.findNavController(EditEventView);
             navController.navigate(EditEventFragmentDirections.actionEditEventToEventDetailFragment(updatedEvent));
         });

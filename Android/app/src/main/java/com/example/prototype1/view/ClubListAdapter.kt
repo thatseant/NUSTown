@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.prototype1.R
 import com.example.prototype1.model.NClub
 
@@ -41,8 +42,9 @@ class ClubListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, Cl
 
             //Sets ImageView
             if (item.imgUrl != "") {
-                Glide.with(holder.clubImage.context).load(item.imgUrl).thumbnail(0.02f).into(clubImage)
-                //TODO: Placeholder?
+                Glide.with(holder.clubImage.context).load(item.imgUrl).apply(RequestOptions()
+                        .placeholder(R.drawable.nus)
+                ).thumbnail(0.02f).into(clubImage)
             }
 
             itemView.setOnClickListener { view ->

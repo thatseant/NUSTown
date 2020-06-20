@@ -12,12 +12,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 
-public class EventRepository {
+public class EventClubRepository {
 
-    public EventRepository() {
+    public EventClubRepository() {
     }
 
-    public void search(final MyCallback myCallback, Filters filters) {
+    public void searchEvents(final MyEventsCallback myEventsCallback, Filters filters) {
         ArrayList<NEvent> mResults = new ArrayList<>();
 
         Query query = FirebaseFirestore.getInstance().collection("events");
@@ -40,7 +40,7 @@ public class EventRepository {
                     newEvent.setID(document.getId());
                     mResults.add(newEvent); //Adds to list of NEvent objects that matches query
                 }
-                myCallback.onCallback(mResults); //Callback required as Firebase query performed asynchronously; code after onCompleteListener will execute before it finishes
+                myEventsCallback.onCallback(mResults); //Callback required as Firebase query performed asynchronously; code after onCompleteListener will execute before it finishes
             }
         });
     }
@@ -59,8 +59,8 @@ public class EventRepository {
         });
     }
 
-    public void getAll(final MyCallback myCallback) { //Returns all documents in Events collection
-        search(myCallback, new Filters());
+    public void getAllEvents(final MyEventsCallback myEventsCallback) { //Returns all documents in Events collection
+        searchEvents(myEventsCallback, new Filters());
     }
 
     public void getAllClubs(final MyClubsCallback myClubsCallback) { //Returns all documents in Events collection
@@ -71,7 +71,7 @@ public class EventRepository {
         FirebaseFirestore.getInstance().collection("events").document(updatedEvent.getID()).set(updatedEvent);
     }
 
-    public interface MyCallback {
+    public interface MyEventsCallback {
         void onCallback(ArrayList<NEvent> eventList);
     }
 
