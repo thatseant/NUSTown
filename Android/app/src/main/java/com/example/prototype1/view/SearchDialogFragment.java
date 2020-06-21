@@ -87,7 +87,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-        mModel.getData();
+        mModel.getEventsData();
     }
 
     private Filters getFilters() { //Used to update EventList in ViewModel

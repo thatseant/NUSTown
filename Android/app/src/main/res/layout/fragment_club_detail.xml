@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.prototype1.view.EventDetailFragment">
+    tools:context="com.example.prototype1.view.ClubDetailFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -14,13 +14,13 @@
 
 
         <RelativeLayout
-            android:id="@+id/event_top_card"
+            android:id="@+id/club_top_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="4dp">
 
             <ImageView
-                android:id="@+id/event_image"
+                android:id="@+id/club_image"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
                 android:alpha="1.0"
@@ -34,34 +34,34 @@
 
             <!-- Back button -->
             <ImageView
-                android:id="@+id/event_button_back"
+                android:id="@+id/club_button_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/event_name"
+                android:layout_alignStart="@+id/club_name"
                 android:layout_marginTop="16dp"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/back_button"
                 app:srcCompat="@drawable/ic_close_white_24px" />
 
             <TextView
-                android:id="@+id/event_name"
+                android:id="@+id/club_name"
                 style="@style/AppTheme.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/event_rating"
+                android:layout_above="@+id/club_rating"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
-                tools:text="Some Event" />
+                tools:text="Some Club" />
 
             <me.zhanghai.android.materialratingbar.MaterialRatingBar
-                android:id="@+id/event_rating"
+                android:id="@+id/club_rating"
                 style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/event_category"
-                android:layout_alignStart="@+id/event_name"
+                android:layout_above="@+id/club_category"
+                android:layout_alignStart="@+id/club_name"
                 app:mrb_progressTint="@android:color/white"
                 app:mrb_secondaryProgressTint="@android:color/white" />
 
@@ -69,50 +69,31 @@
                 style="@style/AppTheme.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/event_rating"
-                android:layout_alignBottom="@+id/event_rating"
+                android:layout_alignTop="@+id/club_rating"
+                android:layout_alignBottom="@+id/club_rating"
                 android:layout_marginStart="4dp"
-                android:layout_toEndOf="@+id/event_rating"
+                android:layout_toEndOf="@+id/club_rating"
                 android:gravity="center"
                 android:textColor="@android:color/white"
                 tools:text="(10)" />
 
             <TextView
-                android:id="@+id/event_category"
+                android:id="@+id/club_category"
                 style="@style/AppTheme.Subheader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/event_name"
-                android:layout_alignBottom="@+id/event_image"
+                android:layout_alignStart="@+id/club_name"
+                android:layout_alignBottom="@+id/club_image"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:textColor="@android:color/white"
                 tools:text="Category" />
 
             <TextView
-                android:id="@+id/event_city_divider"
-                style="@style/AppTheme.TextDivider"
-                android:layout_alignTop="@+id/event_category"
-                android:layout_toEndOf="@+id/event_category"
-                android:text="@string/divider_bullet"
-                android:textColor="@android:color/white" />
-
-            <TextView
-                android:id="@+id/event_city"
-                style="@style/AppTheme.Subheader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/event_category"
-                android:layout_alignTop="@+id/event_category"
-                android:layout_toEndOf="@+id/event_city_divider"
-                android:textColor="@android:color/white"
-                tools:text="Place" />
-
-            <TextView
                 style="@style/AppTheme.Body1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/event_name"
+                android:layout_alignTop="@+id/club_name"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
@@ -122,21 +103,10 @@
 
         </RelativeLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/edit_event_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/event_top_card"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="-28dp"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/ic_edit_white_24dp" />
-
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/event_top_card"
+            android:layout_below="@id/club_top_card"
             android:layout_margin="32dp">
 
             <LinearLayout
@@ -144,28 +114,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/rsvp_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="RSVP" />
 
                 <TextView
-                    android:id="@+id/event_number_attend"
-                    style="@style/AppTheme.Headline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:textColor="@android:color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    tools:text="Number Attending: 0" />
-
-
-                <TextView
-                    android:id="@+id/event_url_text"
+                    android:id="@+id/club_url_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -176,7 +127,7 @@
                     tools:text="" />
 
                 <TextView
-                    android:id="@+id/event_info_text"
+                    android:id="@+id/club_info_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
