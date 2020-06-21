@@ -202,10 +202,13 @@ async function createInstaEvents (userID, numberOfPosts) {
     const JSONData = await axios.get(apiURL)
     const allMedia = JSONData.data.data.user.edge_owner_to_timeline_media //get field in JSON object containing all posts
     for (i=0; i<numberOfPosts; i++) {
-        promises.push(InstaToDatabase(allMedia, i, userID)); //Creates document and store image for each post
+        // promises.push(InstaToDatabase(allMedia, i, userID)); //Creates document and store image for each post
+        /* eslint-disable no-await-in-loop */
+        await InstaToDatabase(allMedia, i, userID)
+        /* eslint-enable no-await-in-loop */
     }
 
-    await Promise.all(promises)
+    // await Promise.all(promises)
 }
 
 async function InstaToDatabase(allMedia, i, userID) {
@@ -313,6 +316,11 @@ async function InstaToDatabase(allMedia, i, userID) {
             place = "Some Place"
             id = "other_" + stringDate
         }
+
+        var allUpdates = {};
+        let postDateString = moment(post_date).format("DD MMM")
+        allUpdates[postDateString] = caption;
+
         let newDoc = {
             image: id + ".png",
             info: caption,
@@ -324,13 +332,15 @@ async function InstaToDatabase(allMedia, i, userID) {
             rating: 3,
             imgUrl: imageURL,
             url: url,
-            id: id
+            id: id,
+            updates: allUpdates
         }
 
 
         await admin.firestore().collection('events').doc(id).get().then(
             async (doc) => {
                 if (!doc.exists) {
+                    console.log(id)
                     await admin.firestore().collection('events').doc(id).set(newDoc)
                     // const picName = id + ".png";
                     // const tempFilePath = path.join(os.tmpdir(), picName);
@@ -339,6 +349,9 @@ async function InstaToDatabase(allMedia, i, userID) {
                     //                 firebaseStorageDownloadTokens: uuidv4(),
                     //             }
                     //         },}))
+                } else if (doc.exists) {
+                    console.log(id)
+                    await admin.firestore().collection('events').doc(id).update({["updates." + postDateString]: caption})
                 }
                 return null;
             }
@@ -386,4 +399,8 @@ async function download (newURL, downloadPath) {
         writer.on('finish', resolve)
         writer.on('error', reject)
     })
+}
+
+function hashID (id, source) {
+    // let new Map()
 }

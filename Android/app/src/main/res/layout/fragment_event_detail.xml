@@ -165,17 +165,16 @@
                     android:textSize="14sp"
                     tools:text="" />
 
-                <TextView
-                    android:id="@+id/event_info_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:textColor="@android:color/black"
-                    android:textSize="14sp"
-                    tools:text="" />
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/posts_tab_layout"
+                    app:tabMode="scrollable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/updatesViewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
             </LinearLayout>
 

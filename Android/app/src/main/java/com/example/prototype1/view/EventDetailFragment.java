@@ -12,21 +12,31 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.prototype1.R;
+import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class EventDetailFragment extends Fragment {
+public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter.OnItemSelectedListener {
     private ImageView mImage;
     private FirebaseFunctions mFunctions;
 
@@ -47,6 +57,18 @@ public class EventDetailFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_event_detail, container, false);
 
+        //ViewPager Tabs for posts updates
+        ViewPager2 updatesViewPager = rootView.findViewById(R.id.updatesViewPager);
+        if (mEvent.getUpdates()!=null) {
+            ArrayList<Map.Entry<? extends String, ? extends String>> allUpdates = new ArrayList<>(mEvent.getUpdates().entrySet());
+            final UpdatesPagerAdapter mAdapter = new UpdatesPagerAdapter(this);
+            mAdapter.submitList(allUpdates);
+            updatesViewPager.setAdapter(mAdapter);
+            TabLayout tabLayout = rootView.findViewById(R.id.posts_tab_layout);
+            new TabLayoutMediator(tabLayout, updatesViewPager,
+                    (tab, position) -> tab.setText(allUpdates.get(position).getKey())
+            ).attach();
+        }
 
         //Get image reference from cloud storage
         mImage = rootView.findViewById(R.id.event_image);
@@ -74,8 +96,6 @@ public class EventDetailFragment extends Fragment {
         mName.setText(mEvent.getName());
         TextView mNum = rootView.findViewById(R.id.event_number_attend);
         mNum.setText("Number Attending: " + mEvent.getNumberAttending());
-        TextView mInfo = rootView.findViewById(R.id.event_info_text);
-        mInfo.setText(mEvent.getInfo());
         TextView mURL = rootView.findViewById(R.id.event_url_text);
         mURL.setText(mEvent.getUrl());
         Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
@@ -123,5 +143,11 @@ public class EventDetailFragment extends Fragment {
                 .getHttpsCallable("rsvpFunction")
                 .call(data)
                 .continueWith(task -> null);
+    }
+
+    @Override
+    public void onItemSelected(@NotNull Map.Entry<String, String> mClub, @NotNull View view) {
+//        NavController navController = Navigation.findNavController(view);
+//        navController.navigate(ClubFragmentDirections.actionClubFragmentToClubDetailFragment(mClub));
     }
 }
