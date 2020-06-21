@@ -21,8 +21,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,8 +64,10 @@ public class EventDetailFragment extends Fragment {
         }
 
         //Sets text in TextView
-        TextView mCat = rootView.findViewById(R.id.event_category);
-        mCat.setText(mEvent.getCategory());
+        TextView mClub = rootView.findViewById(R.id.event_club);
+        mClub.setText(mEvent.getOrg());
+        TextView mTime = rootView.findViewById(R.id.event_time);
+        mTime.setText(mEvent.getTime());
         TextView mPlace = rootView.findViewById(R.id.event_city);
         mPlace.setText(mEvent.getPlace());
         TextView mName = rootView.findViewById(R.id.event_name);
@@ -84,7 +84,8 @@ public class EventDetailFragment extends Fragment {
         ImageView buttonClose = rootView.findViewById(R.id.event_button_back);
         buttonClose.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
-            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToTitleFragment());
+//            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToTitleFragment());
+            navController.popBackStack();
         });
 
         //RSVP Button invokes cloud function

@@ -48,37 +48,27 @@
                 style="@style/AppTheme.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/event_rating"
+                android:layout_above="@+id/event_time"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
                 tools:text="Some Event" />
 
-            <me.zhanghai.android.materialratingbar.MaterialRatingBar
-                android:id="@+id/event_rating"
-                style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/event_category"
-                android:layout_alignStart="@+id/event_name"
-                app:mrb_progressTint="@android:color/white"
-                app:mrb_secondaryProgressTint="@android:color/white" />
-
             <TextView
-                style="@style/AppTheme.Body1"
+                android:id="@+id/event_time"
+                style="@style/AppTheme.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/event_rating"
-                android:layout_alignBottom="@+id/event_rating"
-                android:layout_marginStart="4dp"
-                android:layout_toEndOf="@+id/event_rating"
-                android:gravity="center"
+                android:layout_above="@+id/event_club"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:textColor="@android:color/white"
-                tools:text="(10)" />
+                tools:text="" />
+
 
             <TextView
-                android:id="@+id/event_category"
+                android:id="@+id/event_club"
                 style="@style/AppTheme.Subheader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -87,13 +77,13 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:textColor="@android:color/white"
-                tools:text="Category" />
+                tools:text="Club" />
 
             <TextView
                 android:id="@+id/event_city_divider"
                 style="@style/AppTheme.TextDivider"
-                android:layout_alignTop="@+id/event_category"
-                android:layout_toEndOf="@+id/event_category"
+                android:layout_alignTop="@+id/event_club"
+                android:layout_toEndOf="@+id/event_club"
                 android:text="@string/divider_bullet"
                 android:textColor="@android:color/white" />
 
@@ -102,8 +92,8 @@
                 style="@style/AppTheme.Subheader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/event_category"
-                android:layout_alignTop="@+id/event_category"
+                android:layout_below="@+id/event_club"
+                android:layout_alignTop="@+id/event_club"
                 android:layout_toEndOf="@+id/event_city_divider"
                 android:textColor="@android:color/white"
                 tools:text="Place" />

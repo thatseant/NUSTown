@@ -69,7 +69,8 @@ public class ClubDetailFragment extends Fragment {
         ImageView buttonClose = rootView.findViewById(R.id.club_button_back);
         buttonClose.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
-            navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToClubFragment());
+//            navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToClubFragment());
+            navController.popBackStack();
         });
 
 

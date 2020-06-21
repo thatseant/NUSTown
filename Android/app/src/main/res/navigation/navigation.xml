@@ -11,9 +11,6 @@
         <action
             android:id="@+id/action_titleFragment_to_eventDetailFragment"
             app:destination="@id/eventDetailFragment" />
-        <action
-            android:id="@+id/action_titleFragment_to_clubFragment"
-            app:destination="@id/clubFragment" />
     </fragment>
 
     <fragment
@@ -26,7 +23,6 @@
             app:argType="com.example.prototype1.model.NEvent" />
         <action
             android:id="@+id/action_eventDetailFragment_to_titleFragment"
-            app:destination="@id/titleFragment"
             app:popUpTo="@id/titleFragment"
             app:popUpToInclusive="true" />
         <action
@@ -65,7 +61,9 @@
             app:argType="com.example.prototype1.model.NClub" />
         <action
             android:id="@+id/action_clubDetailFragment_to_clubFragment"
-            app:destination="@id/clubFragment" />
+            app:popUpTo="@id/clubFragment"
+            app:popUpToInclusive="true" />
     </fragment>
+
 
 </navigation>
