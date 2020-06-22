@@ -20,6 +20,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private final EventClubRepository mRepository;
     private final MutableLiveData<ArrayList<NEvent>> mEventLiveData = new MutableLiveData<>(); //TODO: change name to mEventLiveData
     private final MutableLiveData<ArrayList<NClub>> mClubLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<NEvent>> mClubEventLiveData = new MutableLiveData<>();
     private boolean mIsSigningIn;
     private Filters mFilters = new Filters();
 
@@ -56,6 +57,11 @@ public class TitleFragmentViewModel extends AndroidViewModel {
 
     public void updateEvent(NEvent updatedEvent) {
         mRepository.updateEvent(updatedEvent);
+    }
+
+    public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub) {
+        mRepository.getClubEvents(mClub, clubEvents -> mClubEventLiveData.setValue(clubEvents));
+        return mClubEventLiveData;
     }
 
 }
