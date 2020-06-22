@@ -21,18 +21,21 @@ exports.createEvent = functions.https.onRequest(async (req, res) => {
 
     try {
         let numberOfPosts = "15"
-        await createInstaEvents("3585406095", numberOfPosts)
-        await createInstaEvents("2280311232", numberOfPosts)
-        await createInstaEvents("1921006487", numberOfPosts)
-        await createInstaEvents("6809880112", numberOfPosts)
-        await createInstaEvents("1529240926", numberOfPosts)
-        await createInstaEvents("5896733377", numberOfPosts)
-        await createInstaEvents("2166697202", numberOfPosts)
-        await createInstaEvents("1509888327", numberOfPosts)
-        await createInstaEvents("7190465670", numberOfPosts)
-        await createInstaEvents("2048683536", numberOfPosts)
-        await createInstaEvents("8241519518", numberOfPosts)
-        await createInstaEvents("623560288", numberOfPosts)
+        let promises = []
+        promises.push(createInstaEvents("3585406095", numberOfPosts))
+        promises.push(createInstaEvents("2280311232", numberOfPosts))
+        promises.push(createInstaEvents("1921006487", numberOfPosts))
+        promises.push(createInstaEvents("6809880112", numberOfPosts))
+        promises.push(createInstaEvents("1529240926", numberOfPosts))
+        promises.push(createInstaEvents("5896733377", numberOfPosts))
+        promises.push(createInstaEvents("2166697202", numberOfPosts))
+        promises.push(createInstaEvents("1509888327", numberOfPosts))
+        promises.push(createInstaEvents("7190465670", numberOfPosts))
+        promises.push(createInstaEvents("2048683536", numberOfPosts))
+        promises.push(createInstaEvents("8241519518", numberOfPosts))
+        promises.push(createInstaEvents("623560288", numberOfPosts))
+
+        await Promise.all(promises)
         res.status(200).json({ result: `Success` });
     } catch (err) {
         console.log(err);
@@ -178,18 +181,6 @@ async function NSyncEventToDatabase(allEvents, i) {
         async (doc) => {
             if (!doc.exists) {
                 await admin.firestore().collection('events').doc(id).set(newDoc)
-                // const picName = id + ".png";
-                // const tempFilePath = path.join(os.tmpdir(), picName);
-                // if (imageURL!=="https://se-infra-imageserver2.azureedge.net/clink/images/null") {
-                //     await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
-                //         {
-                //             destination: "events/" + picName, metadata: {
-                //                 metadata: {
-                //                     firebaseStorageDownloadTokens: uuidv4(),
-                //                 }
-                //             },
-                //         }))
-                // }
             }
             return null;
         }
@@ -198,27 +189,43 @@ async function NSyncEventToDatabase(allEvents, i) {
 
 async function createInstaEvents (userID, numberOfPosts) {
     let promises = []
+    let allPosts = {}
     let apiURL = "https://www.instagram.com/graphql/query/?query_hash=f2405b236d85e8296cf30347c9f08c2a&variables=%7B%22id%22%3A%22" + userID + "%22%2C%22first%22%3A" + numberOfPosts + "%2C%22after%22%3A%22%22%7D"
+    const used = process.memoryUsage().heapUsed / 1024 / 1024;
+    console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
     const JSONData = await axios.get(apiURL)
+    console.log('Axios Received: ' + userID);
+    const used2 = process.memoryUsage().heapUsed / 1024 / 1024;
+    console.log(`The script uses approximately ${Math.round(used2 * 100) / 100} MB`);
     const allMedia = JSONData.data.data.user.edge_owner_to_timeline_media //get field in JSON object containing all posts
     for (i=0; i<numberOfPosts; i++) {
-        // promises.push(InstaToDatabase(allMedia, i, userID)); //Creates document and store image for each post
-        /* eslint-disable no-await-in-loop */
-        await InstaToDatabase(allMedia, i, userID)
-        /* eslint-enable no-await-in-loop */
+        let newPost = InstaToDatabase(allMedia, i, userID); //Creates document and store image for each post
+            if (newPost) {
+                if (allPosts[newPost.id]) {
+                    var postToUpdate = allPosts[newPost.id]
+                    postToUpdate.updates[newPost.postDate] = newPost.info
+                } else {
+                    allPosts[newPost.id] = newPost
+                }
+            }
     }
 
-    // await Promise.all(promises)
+    Object.keys(allPosts).forEach(function(key) {
+        console.log(key)
+        promises.push(uploadEventFirestore(key, allPosts[key]))
+    });
+
+    await Promise.all(promises)
 }
 
-async function InstaToDatabase(allMedia, i, userID) {
+function InstaToDatabase(allMedia, i, userID) {
     var id, cat, name, place, url;
     var firstDate, firstText;
     let imageURL = allMedia.edges[i].node.display_resources[2].src //get url for ith image
     let caption = allMedia.edges[i].node.edge_media_to_caption.edges[0].node.text
     let post_date = moment.unix(allMedia.edges[i].node.taken_at_timestamp).toDate()
-    let results = await chrono.strict.parse(caption, post_date)
-    let casualResults = await chrono.parse(caption, post_date)
+    let results = chrono.strict.parse(caption, post_date)
+    let casualResults = chrono.parse(caption, post_date)
 
     if (results.length!==0) {
         for (j=0;j<results.length;j++) {
@@ -317,9 +324,10 @@ async function InstaToDatabase(allMedia, i, userID) {
             id = "other_" + stringDate
         }
 
-        var allUpdates = {};
+        var updates = {}
+
         let postDateString = moment(post_date).format("DD MMM")
-        allUpdates[postDateString] = caption;
+        updates[postDateString] = caption
 
         let newDoc = {
             image: id + ".png",
@@ -333,74 +341,28 @@ async function InstaToDatabase(allMedia, i, userID) {
             imgUrl: imageURL,
             url: url,
             id: id,
-            updates: allUpdates
+            postDate: postDateString,
+            updates: updates
         }
 
+        return newDoc
 
-        await admin.firestore().collection('events').doc(id).get().then(
-            async (doc) => {
-                if (!doc.exists) {
-                    console.log(id)
-                    await admin.firestore().collection('events').doc(id).set(newDoc)
-                    // const picName = id + ".png";
-                    // const tempFilePath = path.join(os.tmpdir(), picName);
-                    // await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
-                    //     {destination: "events/"+ picName,  metadata: {metadata :{
-                    //                 firebaseStorageDownloadTokens: uuidv4(),
-                    //             }
-                    //         },}))
-                } else if (doc.exists) {
-                    console.log(id)
-                    await admin.firestore().collection('events').doc(id).update({["updates." + postDateString]: caption})
-                }
-                return null;
-            }
-        )
+
     }
 
 }
 
-// await db.runTransaction(t => { //transaction method
-//     return t.get(docRef)
-//         .then(doc => {
-//             if (!doc.exists) {
-//                 t.set(docRef, newDoc)
-//             } else {
-//
-//             }
-//         });
-// }).then(async result => {
-//     const picName = id + ".png";
-//     const tempFilePath = path.join(os.tmpdir(), picName);
-//     await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
-//         {destination: "events/"+ picName,  metadata: {metadata :{
-//                     firebaseStorageDownloadTokens: uuidv4(),
-//                 }
-//             },}))
-// }).catch(err => {
-//     console.log('Transaction failure:', err);
-// });
-
-
-async function download (newURL, downloadPath) {
-    const url = newURL
-    const path = downloadPath
-    const writer = fs.createWriteStream(path)
-
-    const response = await axios({
-        url,
-        method: 'GET',
-        responseType: 'stream'
-    })
-
-    response.data.pipe(writer)
-
-    return new Promise((resolve, reject) => {
-        writer.on('finish', resolve)
-        writer.on('error', reject)
-    })
-}
-
-function hashID (id, source) {
-    // let new Map()
+async function uploadEventFirestore(id, newDoc) {
+    console.time(id)
+    await admin.firestore().collection('events').doc(id).get().then(
+        async (doc) => {
+            if (!doc.exists) {
+                await admin.firestore().collection('events').doc(id).set(newDoc)
+            } else if (doc.exists) {
+                await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: caption})
+            }
+            return null;
+        }
+)
+    console.timeEnd(id)
 }
