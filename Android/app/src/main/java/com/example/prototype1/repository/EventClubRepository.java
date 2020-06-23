@@ -71,6 +71,10 @@ public class EventClubRepository {
         FirebaseFirestore.getInstance().collection("events").document(updatedEvent.getID()).set(updatedEvent);
     }
 
+    public void deleteEvent(NEvent eventToDelete) {
+        FirebaseFirestore.getInstance().collection("events").document(eventToDelete.getID()).delete();
+    }
+
     public void getClubEvents(NClub mClub, final MyEventsCallback myEventsCallback) {
         ArrayList<NEvent> mResults = new ArrayList<>();
 
