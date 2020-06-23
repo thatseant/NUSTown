@@ -6,7 +6,10 @@ const admin = require('firebase-admin');
 const path = require('path');
 const os = require('os');
 const fs = require("fs");
+
+
 const serviceAccount = require("./NUSTown-ffc8c62cae11");
+
 const { v4: uuidv4 } = require('uuid');
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -15,7 +18,11 @@ admin.initializeApp({
 const axios = require('axios').default;
 const bucket = admin.storage().bucket();
 const moment = require('moment');
+
+const { userRecordConstructor } = require('firebase-functions/lib/providers/auth');
+
 var chrono = require('chrono-node');
+
 
 exports.createEvent = functions.https.onRequest(async (req, res) => {
 
@@ -438,4 +445,70 @@ async function uploadEventFirestore(id, newDoc) {
 )
 }
 
-allInsta()
+
+//allInsta()
+
+
+
+//trigger when a new use signed up
+exports.newUserSignUp = functions.auth.user().onCreate(user => {
+    // for background triggers you must return a value/promise
+    return admin.firestore().collection('users').doc(user.uid).set({
+      email: user.email,
+      displayname : user.email,
+      eventAttending: [],
+    });
+  });
+
+//trigger when a user is deleted
+exports.userDeleted = functions.auth.user().onDelete(user => {
+    const doc = admin.firestore().collection('users').doc(user.uid);
+    return doc.delete();
+  });
+
+  //test function
+  exports.testFunction = functions.https.onCall((data,context) => {
+    return admin.firestore().collection('users').doc("string45").set(
+      {user_id : data.email, //this is actually the Uid
+      event_id : data.event_id} 
+    )
+  }
+  )
+
+exports.rsvpFunction = functions.https.onCall(async (data, context) => {
+
+  const userdoc = admin.firestore().collection('users').doc(data.email); 
+  const eventdoc = admin.firestore().collection('events').doc(data.event_id);
+  const event = await eventdoc.get();
+  const user = await userdoc.get();
+
+  //checking if the user is already attending
+  if(user.data().eventAttending.includes(data.event_id)){ //if this is true, the user is attending
+  await userdoc.update({
+    eventAttending: admin.firestore.FieldValue.arrayRemove(data.event_id)
+  });
+
+  await eventdoc.update({
+    userAttending: admin.firestore.FieldValue.arrayRemove(data.email)
+  });
+  
+  return eventdoc.update({
+    numberAttending: admin.firestore.FieldValue.increment(-1)
+  });
+  }
+  else {
+  await userdoc.update({
+    eventAttending: admin.firestore.FieldValue.arrayUnion(data.event_id)
+  });
+
+  await eventdoc.update({
+    userAttending: admin.firestore.FieldValue.arrayUnion(data.email)
+  });
+
+  return eventdoc.update({
+    numberAttending: admin.firestore.FieldValue.increment(1)
+  });
+  }
+})
+
+
