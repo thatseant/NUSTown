@@ -115,7 +115,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         //RSVP Button invokes cloud function
         Button rsvpButton = rootView.findViewById(R.id.rsvp_button);
         rsvpButton.setOnClickListener(v -> {
-            rsvpFunction(user.getEmail(), mEvent.getID());
+            rsvpFunction(user.getUid(), mEvent.getID());
         });
 
         //Delete Button deletes event
