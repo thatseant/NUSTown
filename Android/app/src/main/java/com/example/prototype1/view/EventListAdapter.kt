@@ -5,10 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.prototype1.R
 import com.example.prototype1.model.NEvent
 import com.google.firebase.storage.FirebaseStorage
@@ -32,22 +34,38 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
     }
 
     class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val eventName: TextView = itemView.findViewById(R.id.titleCell)
-        private val eventInfo: TextView = itemView.findViewById(R.id.statusCell)
+        private val eventCCA: TextView = itemView.findViewById(R.id.titleCell)
+        private val eventDate: TextView = itemView.findViewById(R.id.statusCell)
         private val eventImage: ImageView = itemView.findViewById(R.id.imageCell)
 
         fun bind(item: NEvent, holder: ViewHolder, listener: OnItemSelectedListener) {
-            eventName.text = item.name
-            eventInfo.text = item.category
+            eventCCA.text = item.name
+            val regex = "^[^,]*,[^,]*".toRegex()
+            val matchResult = regex.find(item.time)
+            if (matchResult != null) {
+                eventDate.text = matchResult.value
+            }
 
             //Sets ImageView
-            val storageReference = FirebaseStorage.getInstance().reference
-            val imageRef = storageReference.child("events/" + item.image)
+//            val storageReference = FirebaseStorage.getInstance().reference
+//            val imageRef = storageReference.child("events/" + item.image)
+//
+//            imageRef.downloadUrl.addOnSuccessListener {
+//                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
+//                        .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
+//
+//            }
 
-            imageRef.downloadUrl.addOnSuccessListener {
-                Glide.with(holder.eventImage.context).load(it).into(eventImage)
-
+            //Sets ImageView
+            if (item.imgUrl != "") {
+                Glide.with(holder.eventImage.context).load(item.imgUrl).apply(RequestOptions()
+                        .placeholder(R.drawable.nus)
+                ).thumbnail(0.02f).into(eventImage)
+            } else {
+                eventImage.setImageResource(R.drawable.nus)
             }
+
+
             itemView.setOnClickListener { view ->
                 listener.onItemSelected(item, view)
             }

@@ -81,4 +81,6 @@
     <string name="edit_description">Change Description:</string>
     <string name="back_button">back_button</string>
     <string name="eventdetailimage">eventDetailImage</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

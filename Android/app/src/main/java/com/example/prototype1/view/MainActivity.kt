@@ -6,12 +6,13 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
 import com.example.prototype1.R
-import com.example.prototype1.databinding.ActivityMainBinding
 import com.example.prototype1.viewmodel.TitleFragmentViewModel
 import com.firebase.ui.auth.AuthUI
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -25,9 +26,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mViewModel = ViewModelProvider(this).get(TitleFragmentViewModel::class.java)
-        @Suppress("UNUSED_VARIABLE")
-        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+//        @Suppress("UNUSED_VARIABLE")
+//        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+
+        setContentView(R.layout.activity_main)
+
+        val navController = findNavController(R.id.myNavHostFragment)
+        findViewById<BottomNavigationView>(R.id.bottom_nav)
+                .setupWithNavController(navController)
+//        NavigationUI.setupWithNavController(bottom_nav, navController)
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -45,6 +54,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.menu_main, menu)
+        inflater.inflate(R.menu.bottom_nav_menu, menu)
         return true
     }
 
