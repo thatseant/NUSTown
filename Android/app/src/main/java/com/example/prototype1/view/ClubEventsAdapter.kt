@@ -40,11 +40,7 @@ class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent,
 
         fun bind(item: NEvent, holder: ViewHolder, listener: OnItemSelectedListener) {
             eventCCA.text = item.name
-            val regex = "^[^,]*,[^,]*".toRegex()
-            val matchResult = regex.find(item.time)
-            if (matchResult != null) {
-                eventDate.text = matchResult.value
-            }
+                eventDate.text = item.time.toString()
 
             //Sets ImageView
 //            val storageReference = FirebaseStorage.getInstance().reference

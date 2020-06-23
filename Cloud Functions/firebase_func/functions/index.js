@@ -22,18 +22,17 @@ exports.createEvent = functions.https.onRequest(async (req, res) => {
     try {
         let numberOfPosts = "15"
         let promises = []
-        promises.push(createInstaEvents("3585406095", numberOfPosts))
-        promises.push(createInstaEvents("2280311232", numberOfPosts))
-        promises.push(createInstaEvents("1921006487", numberOfPosts))
-        promises.push(createInstaEvents("6809880112", numberOfPosts))
-        promises.push(createInstaEvents("1529240926", numberOfPosts))
-        promises.push(createInstaEvents("5896733377", numberOfPosts))
-        promises.push(createInstaEvents("2166697202", numberOfPosts))
-        promises.push(createInstaEvents("1509888327", numberOfPosts))
-        promises.push(createInstaEvents("7190465670", numberOfPosts))
-        promises.push(createInstaEvents("2048683536", numberOfPosts))
-        promises.push(createInstaEvents("8241519518", numberOfPosts))
-        promises.push(createInstaEvents("623560288", numberOfPosts))
+        promises.push(createInstaEvents("NUS Kayaking", "3585406095", numberOfPosts))
+        promises.push(createInstaEvents("NUS Climbing", "2280311232", numberOfPosts))
+        promises.push(createInstaEvents("NUS Students' Cultural Activities Club", "1921006487", numberOfPosts))
+        promises.push(createInstaEvents("NUS Life Saving","6809880112", numberOfPosts))
+        promises.push(createInstaEvents("NUS Boxing","1529240926", numberOfPosts))
+        promises.push(createInstaEvents("NUS Volleyball","5896733377", numberOfPosts))
+        promises.push(createInstaEvents("NUS Mountaineering","2166697202", numberOfPosts))
+        promises.push(createInstaEvents("NUS Rovers","1509888327", numberOfPosts))
+        promises.push(createInstaEvents("NUS Powerlifting","7190465670", numberOfPosts))
+        promises.push(createInstaEvents("Red Cross Youth - NUS Chapter","8241519518", numberOfPosts))
+        promises.push(createInstaEvents("NUS ODAC","623560288", numberOfPosts))
 
         await Promise.all(promises)
         res.status(200).json({ result: `Success` });
@@ -66,6 +65,81 @@ exports.nusClubs = functions.https.onRequest(async (req, res) => {
         res.status(500).send(err);
     }
 })
+
+exports.allInsta = functions.https.onRequest(async (req, res) => {
+    try {
+        let apiURL = "https://nus.campuslabs.com/engage/api/discovery/organization?take=500"
+        const JSONData = await axios.get(apiURL)
+        let numberOfClubs = JSONData.data.items
+        let numberOfPosts = "5"
+        let promises = []
+        for (let i=0; i<numberOfClubs.length; i++) {
+            let clubData = JSONData.data.items[i]
+            /* eslint-disable no-await-in-loop */
+            await(getInstaFromUsername(clubData, numberOfPosts))
+            /* eslint-enable no-await-in-loop */
+        }
+        // await Promise.all(promises)
+        res.status(200).json({ result: `Success` });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+})
+
+async function allInsta() { //Run Locally
+    try {
+        let apiURL = "https://nus.campuslabs.com/engage/api/discovery/organization?take=500"
+        const JSONData = await axios.get(apiURL)
+        let numberOfClubs = JSONData.data.items
+        let numberOfPosts = "5"
+        let promises = []
+        for (let i=0; i<numberOfClubs.length; i++) {
+            let clubData = JSONData.data.items[i]
+            /* eslint-disable no-await-in-loop */
+            await(getInstaFromUsername(clubData, numberOfPosts))
+            /* eslint-enable no-await-in-loop */
+        }
+        // await Promise.all(promises)
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+async function getInstaFromUsername(clubData, numberOfPosts) {
+
+    let instaUrl = clubData.socialMedia.InstagramUrl
+    let orgName = clubData.name
+    if (instaUrl) {
+        let instaUsernamePre = instaUrl.split(".com/")[1]
+        let instaUsername = instaUsernamePre.split("/")[0]
+
+
+        var options = {
+            url: 'https://www.instagram.com/web/search/topsearch/?query=' + instaUsername,
+            method: 'GET',
+            headers: {
+                'x-requested-with' : 'XMLHttpRequest',
+                'accept-language'  : 'en-US,en;q=0.8,pt;q=0.6,hi;q=0.4',
+                'User-Agent'       : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
+                'referer'          : 'https://www.instagram.com/dress_blouse_designer/',
+                'Cookie'           : '',
+                'Accept'           : '*/*',
+                'Connection'       : 'keep-alive',
+                'authority'        : 'www.instagram.com'
+            }
+        };
+
+
+
+        let instaJSON = await axios.get('https://www.instagram.com/web/search/topsearch/?query=' + instaUsername)
+        if (instaJSON.data.users[0]) {
+            instaID = instaJSON.data.users[0].user.pk
+            await createInstaEvents(orgName, instaID, numberOfPosts)
+        }
+
+    }
+}
 
 async function createNSync(URL, type) {
     let promises = []
@@ -166,7 +240,7 @@ async function NSyncEventToDatabase(allEvents, i) {
         syncOrgID: event.organizationId,
         image: id + ".png",
         info: description_text,
-        time: moment(eventStartDateTime).format("dddd, MMMM Do YYYY, h:mm:ss a"),
+        time: admin.firestore.Timestamp.fromDate(new Date(event.startsOn)),
         category: "",
         numberAttending: JSONAttendees.data.yesUserCount,
         name: event.name,
@@ -187,7 +261,7 @@ async function NSyncEventToDatabase(allEvents, i) {
     )
 }
 
-async function createInstaEvents (userID, numberOfPosts) {
+async function createInstaEvents (orgName, userID, numberOfPosts) {
     let promises = []
     let allPosts = {}
     let apiURL = "https://www.instagram.com/graphql/query/?query_hash=f2405b236d85e8296cf30347c9f08c2a&variables=%7B%22id%22%3A%22" + userID + "%22%2C%22first%22%3A" + numberOfPosts + "%2C%22after%22%3A%22%22%7D"
@@ -199,7 +273,7 @@ async function createInstaEvents (userID, numberOfPosts) {
     console.log(`The script uses approximately ${Math.round(used2 * 100) / 100} MB`);
     const allMedia = JSONData.data.data.user.edge_owner_to_timeline_media //get field in JSON object containing all posts
     for (i=0; i<numberOfPosts; i++) {
-        let newPost = InstaToDatabase(allMedia, i, userID); //Creates document and store image for each post
+        let newPost = InstaToDatabase(orgName, allMedia, i, userID); //Creates document and store image for each post
             if (newPost) {
                 if (allPosts[newPost.id]) {
                     var postToUpdate = allPosts[newPost.id]
@@ -218,151 +292,150 @@ async function createInstaEvents (userID, numberOfPosts) {
     await Promise.all(promises)
 }
 
-function InstaToDatabase(allMedia, i, userID) {
+function InstaToDatabase(orgName, allMedia, i, userID) {
     var id, cat, name, place, url;
     var firstDate, firstText;
-    let imageURL = allMedia.edges[i].node.display_resources[2].src //get url for ith image
-    let caption = allMedia.edges[i].node.edge_media_to_caption.edges[0].node.text
-    let post_date = moment.unix(allMedia.edges[i].node.taken_at_timestamp).toDate()
-    let results = chrono.strict.parse(caption, post_date)
-    let casualResults = chrono.parse(caption, post_date)
+    if (allMedia.edges[i]) {
+        let imageURL = allMedia.edges[i].node.display_resources[2].src //get url for ith image
 
-    if (results.length!==0) {
-        for (j=0;j<results.length;j++) {
-            if (results[j].text !== "9/20") {
-                if (results[j].tags) {
-                    if (results[j].tags.ENMonthNameParser) {
-                        continue
-                    }
-                }
-                if (!firstDate | (firstDate<post_date)) {
-                    firstDate = results[j].start.date()
-                    firstText = results[j].text
-                    if (!results[j].start.knownValues.day) {
-                        if (casualResults.length !== 0) {
-                            if ((casualResults[0].start.knownValues.weekday!==null) | casualResults[0].start.knownValues.day) {
-                                firstDate = casualResults[0].start.date()
-                                firstText = casualResults[0].text
+        if (allMedia.edges[i].node.edge_media_to_caption.edges[0]) {
+            let caption = allMedia.edges[i].node.edge_media_to_caption.edges[0].node.text
+            let post_date = moment.unix(allMedia.edges[i].node.taken_at_timestamp).toDate()
+            let results = chrono.strict.parse(caption, post_date)
+            let casualResults = chrono.parse(caption, post_date)
+
+            if (results.length !== 0) {
+                for (j = 0; j < results.length; j++) {
+                    if (results[j].text !== "9/20") {
+                        if (results[j].tags) {
+                            if (results[j].tags.ENMonthNameParser) {
+                                continue
                             }
                         }
-                        if (results[1]) {
-                            if (results[1].start.knownValues.day) {
-                                firstDate = results[1].start.date()
-                                firstText = results[1].text
+                        if (!firstDate | (firstDate < post_date)) {
+                            firstDate = results[j].start.date()
+                            firstText = results[j].text
+                            if (!results[j].start.knownValues.day) {
+                                if (casualResults.length !== 0) {
+                                    if ((casualResults[0].start.knownValues.weekday !== null) | casualResults[0].start.knownValues.day) {
+                                        firstDate = casualResults[0].start.date()
+                                        firstText = casualResults[0].text
+                                    }
+                                }
+                                if (results[1]) {
+                                    if (results[1].start.knownValues.day) {
+                                        firstDate = results[1].start.date()
+                                        firstText = results[1].text
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-                if (results[j].start.knownValues.hour) {
-                    if (!results[j].start.knownValues.day) {
-                        firstDate.setHours(results[j].start.knownValues.hour)
-                        if (results[j].start.knownValues.minute) {
-                            firstDate.setMinutes(results[j].start.knownValues.minute)
+                        if (results[j].start.knownValues.hour) {
+                            if (!results[j].start.knownValues.day) {
+                                firstDate.setHours(results[j].start.knownValues.hour)
+                                if (results[j].start.knownValues.minute) {
+                                    firstDate.setMinutes(results[j].start.knownValues.minute)
+                                }
+                            } else {
+                                firstDate = results[j].start.date()
+                                firstText = results[j].text
+                            }
+                            break;
                         }
                     }
-                    else {
-                        firstDate = results[j].start.date()
-                        firstText = results[j].text
+                }
+            } else if (casualResults.length !== 0) {
+                for (j = 0; j < casualResults.length; j++) {
+                    if (casualResults[j].text !== "9/20" && casualResults[j].text !== "now" && casualResults[j].text !== "Now") {
+                        firstDate = casualResults[j].start.date()
+                        firstText = casualResults[j].text
+                        break;
                     }
-                    break;
                 }
             }
-        }
-    }
-    else if (casualResults.length!==0) {
-        for (j=0;j<casualResults.length;j++) {
-            if (casualResults[j].text !== "9/20" && casualResults[j].text !== "now" && casualResults[j].text !== "Now") {
-                firstDate = casualResults[j].start.date()
-                firstText = casualResults[j].text
-                break;
+
+            if (firstDate >= post_date) {//Only runs below if post is a valid event
+                stringDate = moment(firstDate).format("YYMMDD");
+                // if (userID === "3585406095") {
+                //     cat = "Sports Events"
+                //     name = "NUS Kayaking"
+                //     place = "UTown"
+                //     url = "https://www.instagram.com/nuskayaking/"
+                //     id = "kayak_" + stringDate
+                // } else if (userID === "2280311232") {
+                //     cat = "NUS CCAs"
+                //     name = "NUS Climbing"
+                //     place = "USC"
+                //     url = "https://www.instagram.com/nus_climbing/"
+                //     id = "climb_" + stringDate
+                // } else if (userID === "1921006487") {
+                //     cat = "Open Classes"
+                //     name = "NUS Dance"
+                //     place = "NUS-Wide"
+                //     url = "https://www.instagram.com/breakinus/"
+                //     id = "dance_" + stringDate
+                // } else if (userID === "1529240926") {
+                //     cat = "NUS CCAs"
+                //     name = "NUS Boxing"
+                //     place = "NUS-Wide"
+                //     url = "https://www.instagram.com/nusboxing/"
+                //     id = "boxing_" + stringDate
+                // } else if (userID === "5896733377") {
+                //     cat = "Sports Events"
+                //     name = "NUS Volleyball"
+                //     place = "NUS-Wide"
+                //     url = "https://www.instagram.com/nus.volleyball/"
+                //     id = "volleyball_" + stringDate
+                // } else {
+                //     name = "An Event"
+                //     cat = "Other Events"
+                //     url = ""
+                //     place = "Some Place"
+                //     id = "other_" + stringDate
+                // }
+
+                var updates = {}
+
+                let postDateString = moment(post_date).format("DD MMM")
+                updates[postDateString] = caption
+
+                let newDoc = {
+                    image: orgName + "_" + stringDate + ".png",
+                    info: caption,
+                    time: admin.firestore.Timestamp.fromDate(firstDate),
+                    category: "Other Events",
+                    numberAttending: 0,
+                    name: orgName,
+                    org: orgName,
+                    place: "A Place",
+                    rating: 3,
+                    imgUrl: imageURL,
+                    url: "",
+                    id: orgName + "_" + stringDate,
+                    postDate: postDateString,
+                    updates: updates
+                }
+
+                return newDoc
+
+
             }
         }
-    }
-
-    if (firstDate >= post_date) {//Only runs below if post is a valid event
-        stringDate = moment(firstDate).format("YYMMDD");
-        if (userID === "3585406095") {
-            cat = "Sports Events"
-            name = "NUS Kayaking"
-            place = "UTown"
-            url = "https://www.instagram.com/nuskayaking/"
-            id = "kayak_" + stringDate
-        }
-        else if (userID === "2280311232") {
-            cat = "NUS CCAs"
-            name = "NUS Climbing"
-            place = "USC"
-            url = "https://www.instagram.com/nus_climbing/"
-            id = "climb_" + stringDate
-        }
-        else if (userID === "1921006487") {
-            cat = "Open Classes"
-            name = "NUS Dance"
-            place = "NUS-Wide"
-            url = "https://www.instagram.com/breakinus/"
-            id = "dance_" + stringDate
-        }
-        else if (userID === "1529240926") {
-            cat = "NUS CCAs"
-            name = "NUS Boxing"
-            place = "NUS-Wide"
-            url = "https://www.instagram.com/nusboxing/"
-            id = "boxing_" + stringDate
-        }
-        else if (userID === "5896733377") {
-            cat = "Sports Events"
-            name = "NUS Volleyball"
-            place = "NUS-Wide"
-            url = "https://www.instagram.com/nus.volleyball/"
-            id = "volleyball_" + stringDate
-        }
-        else {
-            name = "An Event"
-            cat = "Other Events"
-            url = ""
-            place = "Some Place"
-            id = "other_" + stringDate
-        }
-
-        var updates = {}
-
-        let postDateString = moment(post_date).format("DD MMM")
-        updates[postDateString] = caption
-
-        let newDoc = {
-            image: id + ".png",
-            info: caption,
-            time: moment(firstDate).format("dddd, MMMM Do YYYY, h:mm:ss a"),
-            category: cat,
-            numberAttending: 0,
-            name: name,
-            place: place,
-            rating: 3,
-            imgUrl: imageURL,
-            url: url,
-            id: id,
-            postDate: postDateString,
-            updates: updates
-        }
-
-        return newDoc
-
-
     }
 
 }
 
 async function uploadEventFirestore(id, newDoc) {
-    console.time(id)
     await admin.firestore().collection('events').doc(id).get().then(
         async (doc) => {
             if (!doc.exists) {
                 await admin.firestore().collection('events').doc(id).set(newDoc)
             } else if (doc.exists) {
-                await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: caption})
+                await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: newDoc.info, "time": newDoc.time, "org": newDoc.org})
             }
             return null;
         }
 )
-    console.timeEnd(id)
 }
+
+allInsta()

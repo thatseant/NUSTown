@@ -59,6 +59,10 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mRepository.updateEvent(updatedEvent);
     }
 
+    public void deleteEvent(NEvent eventToDelete) {
+        mRepository.deleteEvent(eventToDelete);
+    }
+
     public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub) {
         mRepository.getClubEvents(mClub, clubEvents -> mClubEventLiveData.setValue(clubEvents));
         return mClubEventLiveData;

@@ -17,6 +17,8 @@ import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 
+import java.util.Date;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -50,7 +52,7 @@ public class EditEventFragment extends Fragment {
         EditText newEventCat = EditEventView.findViewById(R.id.newEventCat);
         newEventCat.setText(eventToEdit.getCategory());
         EditText newEventTime = EditEventView.findViewById(R.id.newEventTime);
-        newEventTime.setText(eventToEdit.getTime());
+        newEventTime.setText(eventToEdit.getTime().toString());
         EditText newEventURL = EditEventView.findViewById(R.id.newEventUrl);
         newEventURL.setText(eventToEdit.getUrl());
         EditText newEventInfo = EditEventView.findViewById(R.id.newEventDescription);
@@ -65,7 +67,7 @@ public class EditEventFragment extends Fragment {
             String newURLString = newEventURL.getText().toString();
             String newInfoString = newEventInfo.getText().toString();
 
-            updatedEvent = new NEvent(eventToEdit.getID(), newNameString, newTimeString, newCatString, newPlaceString, eventToEdit.getRating(),
+            updatedEvent = new NEvent(eventToEdit.getID(), newNameString, new Date(), newCatString, newPlaceString, eventToEdit.getRating(),
                     eventToEdit.getNumberAttending(), newURLString, eventToEdit.getImage(), newInfoString, eventToEdit.getImgUrl(), eventToEdit.getOrg(), eventToEdit.getUpdates()); //Changes name, place, category
 
             mModel.updateEvent(updatedEvent); //Updates Repository via ViewModel

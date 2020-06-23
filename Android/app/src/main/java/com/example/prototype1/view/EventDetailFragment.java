@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +23,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
+import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -39,6 +41,7 @@ import java.util.Objects;
 public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter.OnItemSelectedListener {
     private ImageView mImage;
     private FirebaseFunctions mFunctions;
+    private TitleFragmentViewModel mModel;
 
 
     @Override
@@ -49,6 +52,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
         mFunctions = FirebaseFunctions.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         // Retrieve NEvent object clicked on in RecyclerView
@@ -89,7 +93,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         TextView mClub = rootView.findViewById(R.id.event_club);
         mClub.setText(mEvent.getOrg());
         TextView mTime = rootView.findViewById(R.id.event_time);
-        mTime.setText(mEvent.getTime());
+        mTime.setText(mEvent.getTime().toString());
         TextView mPlace = rootView.findViewById(R.id.event_city);
         mPlace.setText(mEvent.getPlace());
         TextView mName = rootView.findViewById(R.id.event_name);
@@ -113,6 +117,15 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         rsvpButton.setOnClickListener(v -> {
             rsvpFunction(user.getEmail(), mEvent.getID());
         });
+
+        //Delete Button deletes event
+        if (Objects.equals(user.getEmail(), "sean@tan.com")) {
+        Button deleteButton = rootView.findViewById(R.id.delete_button);
+            deleteButton.setVisibility(View.VISIBLE);
+        deleteButton.setOnClickListener(v -> {
+            mModel.deleteEvent(mEvent);
+        });
+        }
 
 
         //Allows organisers to edit events

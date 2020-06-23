@@ -17,7 +17,7 @@ public class Filters {
     private Query.Direction sortDirection;
 
     public Filters() {
-        sortBy = "rating";
+        sortBy = "time";
         sortDirection = Query.Direction.DESCENDING;
     }
 
