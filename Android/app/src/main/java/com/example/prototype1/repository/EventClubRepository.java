@@ -71,6 +71,20 @@ public class EventClubRepository {
         FirebaseFirestore.getInstance().collection("events").document(updatedEvent.getID()).set(updatedEvent);
     }
 
+    public void getClubEvents(NClub mClub, final MyEventsCallback myEventsCallback) {
+        ArrayList<NEvent> mResults = new ArrayList<>();
+
+        FirebaseFirestore.getInstance().collection("events").whereEqualTo("org", mClub.getName()).get().addOnCompleteListener(task -> { //Performs query
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                    NEvent newEvent = document.toObject(NEvent.class); //Converts document to NClub object
+                    mResults.add(newEvent); //Adds to list of NClub objects that matches query
+                }
+                myEventsCallback.onCallback(mResults); //Callback required as Firebase query performed asynchronously; code after onCompleteListener will execute before it finishes
+            }
+        });
+    }
+
     public interface MyEventsCallback {
         void onCallback(ArrayList<NEvent> eventList);
     }

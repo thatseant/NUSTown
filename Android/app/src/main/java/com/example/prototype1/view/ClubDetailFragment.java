@@ -9,18 +9,29 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NClub;
+import com.example.prototype1.model.NEvent;
+import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import com.google.firebase.functions.FirebaseFunctions;
 
-public class ClubDetailFragment extends Fragment {
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Map;
+
+public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener{
     private ImageView mImage;
     private FirebaseFunctions mFunctions;
+    private TitleFragmentViewModel mModel; //Events ViewModel
 
 
     @Override
@@ -65,6 +76,14 @@ public class ClubDetailFragment extends Fragment {
         mURL.setText(mClub.getUrl());
         Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
 
+        //Link Events Recycler View to Adapter
+        RecyclerView recyclerView = rootView.findViewById(R.id.recycler_club_events);
+        final ClubEventsAdapter mAdapter = new ClubEventsAdapter(this);
+        recyclerView.setAdapter(mAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
+        mModel.getClubEvents(mClub).observe(getViewLifecycleOwner(), mAdapter::submitList);
+
         //Close EventDetailFragment on buttonClose clicked
         ImageView buttonClose = rootView.findViewById(R.id.club_button_back);
         buttonClose.setOnClickListener(v -> {
@@ -78,4 +97,12 @@ public class ClubDetailFragment extends Fragment {
 
 
     }
+
+    @Override
+    public void onItemSelected(@NotNull NEvent mEvent, @NotNull View view) {
+        NavController navController = Navigation.findNavController(view);
+        navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToEventDetailFragment(mEvent));
+    }
+
 }
+
