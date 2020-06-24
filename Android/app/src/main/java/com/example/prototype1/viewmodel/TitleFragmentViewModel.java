@@ -21,6 +21,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<NEvent>> mEventLiveData = new MutableLiveData<>(); //TODO: change name to mEventLiveData
     private final MutableLiveData<ArrayList<NClub>> mClubLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mClubEventLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<NEvent>> mJioLiveData = new MutableLiveData<>();
     private boolean mIsSigningIn;
     private Filters mFilters = new Filters();
 
@@ -30,6 +31,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mRepository = new EventClubRepository();
         mRepository.getAllEvents(mEventLiveData::setValue); //TODO: change repository function name to getAllEvents
         mRepository.getAllClubs(mClubLiveData::setValue);
+        mRepository.getAllJios(mJioLiveData::setValue);
 //        mState = savedStateHandle; //Planned to be used to save scroll position, still resolving
     }
 
@@ -46,9 +48,14 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mFilters = filters;
     }
 
-    public MutableLiveData<ArrayList<NEvent>> getEventsData() {//Called when TitleFragment first launches and whenever a query is performed
-        mRepository.searchEvents(mEventLiveData::setValue, mFilters); //First parameter is a callback; mLiveData value is set AFTER asynchronous completion of Firebase Query
+    public MutableLiveData<ArrayList<NEvent>> getEventsData() {//Called when EventListFragment first launches and whenever a query is performed
+        mRepository.searchEvents(mEventLiveData::setValue, mFilters, "events"); //First parameter is a callback; mLiveData value is set AFTER asynchronous completion of Firebase Query
         return mEventLiveData;
+    }
+
+    public MutableLiveData<ArrayList<NEvent>> getJiosData() {//Called when JioListFragment first launches and whenever a query is performed
+        mRepository.searchEvents(mJioLiveData::setValue, mFilters, "jios"); //First parameter is a callback; mLiveData value is set AFTER asynchronous completion of Firebase Query
+        return mJioLiveData;
     }
 
     public MutableLiveData<ArrayList<NClub>> getClubsData() {//Called when TitleFragment first launches and whenever a query is performed
@@ -61,6 +68,10 @@ public class TitleFragmentViewModel extends AndroidViewModel {
 
     public void deleteEvent(NEvent eventToDelete) {
         mRepository.deleteEvent(eventToDelete);
+    }
+
+    public void addEvent(NEvent newEvent, String type) {
+        mRepository.addEvent(newEvent, type);
     }
 
     public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub) {

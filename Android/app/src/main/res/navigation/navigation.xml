@@ -67,6 +67,11 @@
             android:id="@+id/action_clubDetailFragment_to_eventDetailFragment"
             app:destination="@id/eventDetailFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/jioListFragment"
+        android:name="com.example.prototype1.view.JioListFragment"
+        android:label="JioListFragment"
+        tools:layout="@layout/fragment_jio_list"/>
 
 
 </navigation>

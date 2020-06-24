@@ -17,7 +17,11 @@ import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,7 +56,8 @@ public class EditEventFragment extends Fragment {
         EditText newEventCat = EditEventView.findViewById(R.id.newEventCat);
         newEventCat.setText(eventToEdit.getCategory());
         EditText newEventTime = EditEventView.findViewById(R.id.newEventTime);
-        newEventTime.setText(eventToEdit.getTime().toString());
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
+        newEventTime.setText(dateFormat.format(eventToEdit.getTime()));
         EditText newEventURL = EditEventView.findViewById(R.id.newEventUrl);
         newEventURL.setText(eventToEdit.getUrl());
         EditText newEventInfo = EditEventView.findViewById(R.id.newEventDescription);
@@ -64,10 +69,16 @@ public class EditEventFragment extends Fragment {
             String newPlaceString = newEventPlace.getText().toString();
             String newCatString = newEventCat.getText().toString();
             String newTimeString = newEventTime.getText().toString();
+            Date formattedTimeString = new Date();
+            try {
+                formattedTimeString = dateFormat.parse(newTimeString);//TODO: Fix Time
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             String newURLString = newEventURL.getText().toString();
             String newInfoString = newEventInfo.getText().toString();
 
-            updatedEvent = new NEvent(eventToEdit.getID(), newNameString, new Date(), newCatString, newPlaceString, eventToEdit.getRating(),
+            updatedEvent = new NEvent(eventToEdit.getID(), newNameString, formattedTimeString, newCatString, newPlaceString, eventToEdit.getRating(),
                     eventToEdit.getNumberAttending(), newURLString, eventToEdit.getImage(), newInfoString, eventToEdit.getImgUrl(), eventToEdit.getOrg(), eventToEdit.getUpdates()); //Changes name, place, category
 
             mModel.updateEvent(updatedEvent); //Updates Repository via ViewModel

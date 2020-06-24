@@ -17,10 +17,10 @@ public class EventClubRepository {
     public EventClubRepository() {
     }
 
-    public void searchEvents(final MyEventsCallback myEventsCallback, Filters filters) {
+    public void searchEvents(final MyEventsCallback myEventsCallback, Filters filters, String category) {
         ArrayList<NEvent> mResults = new ArrayList<>();
 
-        Query query = FirebaseFirestore.getInstance().collection("events");
+        Query query = FirebaseFirestore.getInstance().collection(category);
 
         if (filters.hasCategory()) {
             query = query.whereEqualTo("category", filters.getCategory());
@@ -45,6 +45,7 @@ public class EventClubRepository {
         });
     }
 
+
     public void searchClubs(final MyClubsCallback myClubsCallback) {
         ArrayList<NClub> mResults = new ArrayList<>();
 
@@ -60,7 +61,11 @@ public class EventClubRepository {
     }
 
     public void getAllEvents(final MyEventsCallback myEventsCallback) { //Returns all documents in Events collection
-        searchEvents(myEventsCallback, new Filters());
+        searchEvents(myEventsCallback, new Filters(), "events");
+    }
+
+    public void getAllJios(final MyEventsCallback myEventsCallback) { //Returns all documents in Events collection
+        searchEvents(myEventsCallback, new Filters(), "jios");
     }
 
     public void getAllClubs(final MyClubsCallback myClubsCallback) { //Returns all documents in Events collection
@@ -73,6 +78,10 @@ public class EventClubRepository {
 
     public void deleteEvent(NEvent eventToDelete) {
         FirebaseFirestore.getInstance().collection("events").document(eventToDelete.getID()).delete();
+    }
+
+    public void addEvent(NEvent newEvent, String type) {
+        FirebaseFirestore.getInstance().collection(type).add(newEvent);
     }
 
     public void getClubEvents(NClub mClub, final MyEventsCallback myEventsCallback) {
