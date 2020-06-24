@@ -1,18 +1,13 @@
-package com.example.prototype1.view
+package com.example.prototype1.view.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.example.prototype1.R
-import com.example.prototype1.model.NClub
-import com.example.prototype1.model.NEvent
 
 class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.Entry<String, String>, UpdatesPagerAdapter.ViewHolder>(UpdatesDiffCallback()) {
     private val newListener: OnItemSelectedListener = mListener

@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.prototype1.R;
 import com.example.prototype1.model.Filters;
 import com.example.prototype1.model.NEvent;
+import com.example.prototype1.view.adapters.EventListAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 
 import org.jetbrains.annotations.NotNull;
