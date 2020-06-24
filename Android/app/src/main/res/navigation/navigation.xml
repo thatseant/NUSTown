@@ -2,14 +2,14 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/titleFragment">
+    app:startDestination="@id/eventListFragment">
     <fragment
-        android:id="@+id/titleFragment"
-        android:name="com.example.prototype1.view.TitleFragment"
-        android:label="TitleFragment"
-        tools:layout="@layout/fragment_title">
+        android:id="@+id/eventListFragment"
+        android:name="com.example.prototype1.view.EventListFragment"
+        android:label="EventListFragment"
+        tools:layout="@layout/fragment_event_list">
         <action
-            android:id="@+id/action_titleFragment_to_eventDetailFragment"
+            android:id="@+id/action_eventListFragment_to_eventDetailFragment"
             app:destination="@id/eventDetailFragment" />
     </fragment>
 
@@ -23,7 +23,7 @@
             app:argType="com.example.prototype1.model.NEvent" />
         <action
             android:id="@+id/action_eventDetailFragment_to_titleFragment"
-            app:popUpTo="@id/titleFragment"
+            app:popUpTo="@id/eventListFragment"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_eventDetailFragment_to_editEvent"

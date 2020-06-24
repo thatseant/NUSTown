@@ -29,7 +29,7 @@ import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import org.jetbrains.annotations.NotNull;
 
 
-public class TitleFragment extends Fragment implements EventListAdapter.OnItemSelectedListener {
+public class EventListFragment extends Fragment implements EventListAdapter.OnItemSelectedListener {
     private TitleFragmentViewModel mModel; //Events ViewModel
     private SearchDialogFragment mSearchDialog;
 
@@ -37,7 +37,7 @@ public class TitleFragment extends Fragment implements EventListAdapter.OnItemSe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_title, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_event_list, container, false);
         Toolbar mToolbar = rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbar);
 
@@ -92,7 +92,7 @@ public class TitleFragment extends Fragment implements EventListAdapter.OnItemSe
     @Override
     public void onItemSelected(@NotNull NEvent mEvent, @NotNull View view) {
         NavController navController = Navigation.findNavController(view);
-        navController.navigate(TitleFragmentDirections.actionTitleFragmentToEventDetailFragment(mEvent));
+        navController.navigate(EventListFragmentDirections.actionEventListFragmentToEventDetailFragment(mEvent));
     }
 }
 
