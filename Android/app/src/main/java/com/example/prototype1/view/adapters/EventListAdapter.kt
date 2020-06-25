@@ -12,6 +12,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.prototype1.R
 import com.example.prototype1.model.NEvent
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, EventListAdapter.ViewHolder>(NEventDiffCallback()) {
     private val newListener: OnItemSelectedListener = mListener
@@ -38,7 +40,8 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
 
         fun bind(item: NEvent, holder: ViewHolder, listener: OnItemSelectedListener) {
             eventCCA.text = item.name
-            eventDate.text = item.time.toString()
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH)
+            eventDate.text = dateFormat.format(item.time)
 
             //Sets ImageView
 //            val storageReference = FirebaseStorage.getInstance().reference

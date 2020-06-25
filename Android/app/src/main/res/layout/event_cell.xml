@@ -2,11 +2,12 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="32dp">
+    android:layout_margin="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="12dp"
         android:orientation="vertical">
 
 
@@ -14,16 +15,16 @@
             android:id="@+id/titleCell"
             style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:layout_height="match_parent"
+            android:breakStrategy="balanced"
+            android:gravity="center"
             android:text="@string/titleCellPlaceholder"
-            android:textSize="24sp" />
+            android:textSize="12sp" />
 
         <ImageView
             android:id="@+id/imageCell"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:adjustViewBounds="true"
             android:transitionName="imageTrans">
 
@@ -33,11 +34,10 @@
             android:id="@+id/statusCell"
             style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
             android:text="@string/statusCellPlaceholder"
-            android:textSize="24sp" />
+            android:textSize="12sp" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
