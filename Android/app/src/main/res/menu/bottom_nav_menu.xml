@@ -7,9 +7,14 @@
         android:title="NUS Clubs" />
 
     <item
-        android:id="@+id/titleFragment"
+        android:id="@+id/eventListFragment"
         android:icon="@drawable/ic_event_24"
         android:title="NUS Events" />
+
+    <item
+        android:id="@+id/jioListFragment"
+        android:icon="@drawable/ic_deck_24"
+        android:title="Casual Jios" />
 
 
 </menu>
