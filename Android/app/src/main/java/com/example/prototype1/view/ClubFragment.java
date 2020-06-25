@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prototype1.R;
@@ -39,7 +39,7 @@ public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSele
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_restaurants);
         final ClubListAdapter mAdapter = new ClubListAdapter(this);
         recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
         //Link Adapter to getData() in ViewModel; getData() returns clubList
         mModel.getClubsData().observe(getViewLifecycleOwner(), mAdapter::submitList);
