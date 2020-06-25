@@ -88,7 +88,7 @@
                             style="@style/AppTheme.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/sorted_by_rating"
+                            android:text="@string/sorted_by_date"
                             android:textColor="@color/greyDisabled" />
 
 

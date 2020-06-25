@@ -42,6 +42,9 @@ public class EventListFragment extends Fragment implements EventListAdapter.OnIt
         ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbar);
 
         mSearchDialog = new SearchDialogFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("eventType", "events");
+        mSearchDialog.setArguments(bundle);
 
         //Link Recycler View to Adapter
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_restaurants);
@@ -60,11 +63,11 @@ public class EventListFragment extends Fragment implements EventListAdapter.OnIt
             // Update the UI, in this case, a TextView.
             mSearchCat.setText(HtmlCompat.fromHtml(searchCat, HtmlCompat.FROM_HTML_MODE_LEGACY));
         };
-        mModel.mSearchCat.observe(getViewLifecycleOwner(), searchCatObserver);
+        mModel.mEventSearchCat.observe(getViewLifecycleOwner(), searchCatObserver);
 
         // Update the UI, in this case, a TextView.
         final Observer<String> searchSortObserver = mSearchSort::setText;
-        mModel.mSearchSort.observe(getViewLifecycleOwner(), searchSortObserver);
+        mModel.mEventSearchSort.observe(getViewLifecycleOwner(), searchSortObserver);
 
         //Shows search dialog when searchBox clicked
         RelativeLayout searchBox = rootView.findViewById(R.id.searchBox);
@@ -74,9 +77,9 @@ public class EventListFragment extends Fragment implements EventListAdapter.OnIt
         ImageView clearFilter = rootView.findViewById(R.id.button_clear_filter);
         clearFilter.setOnClickListener(v -> {
             mSearchDialog.resetFlag = 1; //Flag needed due to bug where resetting spinner setSelection is not saved; reset later onResume
-            mModel.changeFilter(new Filters()); //Reset mFilter in ViewModel as mFilter is parameter of getData()
-            mModel.mSearchCat.setValue("<b> All Events <b>");
-            mModel.mSearchSort.setValue("sorted by Rating");
+            mModel.changeEventFilter(new Filters()); //Reset mFilter in ViewModel as mFilter is parameter of getData()
+            mModel.mEventSearchCat.setValue("<b> All Events <b>");
+            mModel.mEventSearchSort.setValue("sorted by date");
             mModel.getEventsData();
         });
 
@@ -92,7 +95,7 @@ public class EventListFragment extends Fragment implements EventListAdapter.OnIt
     @Override
     public void onItemSelected(@NotNull NEvent mEvent, @NotNull View view) {
         NavController navController = Navigation.findNavController(view);
-        navController.navigate(EventListFragmentDirections.actionEventListFragmentToEventDetailFragment(mEvent));
+        navController.navigate(EventListFragmentDirections.actionEventListFragmentToEventDetailFragment(mEvent, "events")); //type "events" provided in case we use EventDetailFragment for "jios" too
     }
 }
 

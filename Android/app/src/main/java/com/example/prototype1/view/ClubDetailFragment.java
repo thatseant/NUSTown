@@ -99,7 +99,7 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
     @Override
     public void onItemSelected(@NotNull NEvent mEvent, @NotNull View view) {
         NavController navController = Navigation.findNavController(view);
-        navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToEventDetailFragment(mEvent));
+        navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToEventDetailFragment(mEvent, "events"));
     }
 
 }

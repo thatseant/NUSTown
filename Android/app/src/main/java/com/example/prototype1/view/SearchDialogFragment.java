@@ -30,6 +30,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
     private Spinner mCategorySpinner;
     private Spinner mPlaceSpinner;
     private Spinner mSortSpinner;
+    String eventType;
 
     private TitleFragmentViewModel mModel;
 
@@ -46,6 +47,10 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
 
         mRootView.findViewById(R.id.button_search).setOnClickListener(this);
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
+
+        if (getArguments() != null) {
+            eventType = getArguments().getString("eventType");
+        }
 
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class); //returns same instance of ViewModel in TitleFragment
         return mRootView;
@@ -77,17 +82,26 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
     }
 
     private void onSearchClicked() {
-
-        mModel.changeFilter(getFilters());
-        mModel.mSearchCat.setValue(getFilters().getSearchDescription(requireContext())); //Updates search box text (stored in ViewModel)
-        mModel.mSearchSort.setValue(getFilters().getOrderDescription(requireContext()));
+        if (eventType == "jios") {
+            mModel.changeJioFilter(getFilters());
+            mModel.mJioSearchCat.setValue(getFilters().getSearchDescription(requireContext())); //Updates search box text (stored in ViewModel)
+            mModel.mJioSearchSort.setValue(getFilters().getOrderDescription(requireContext()));
+        } else {
+            mModel.changeEventFilter(getFilters());
+            mModel.mEventSearchCat.setValue(getFilters().getSearchDescription(requireContext())); //Updates search box text (stored in ViewModel)
+            mModel.mEventSearchSort.setValue(getFilters().getOrderDescription(requireContext()));
+        }
         dismiss();
     }
 
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-        mModel.getEventsData();
+        if (eventType == "jios") {
+            mModel.getJiosData();
+        } else {
+            mModel.getEventsData();
+        }
     }
 
     private Filters getFilters() { //Used to update EventList in ViewModel
@@ -133,6 +147,9 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         if (getString(R.string.sort_by_name).equals(selected)) {
             return "name";
         }
+        if (getString(R.string.sort_by_date).equals(selected)) {
+            return "time";
+        }
 
         return null;
     }
@@ -146,6 +163,9 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         if (getString(R.string.sort_by_name).equals(selected)) {
             return Query.Direction.ASCENDING;
         }
+        if (getString(R.string.sort_by_date).equals(selected)) {
+            return Query.Direction.ASCENDING;
+        }
         return null;
     }
 
@@ -155,9 +175,17 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
             mPlaceSpinner.setSelection(0, true);
             mSortSpinner.setSelection(0, true);
         }
-        mModel.changeFilter(new Filters());
-        mModel.mSearchCat.setValue("<b> All Events <b>");
-        mModel.mSearchSort.setValue("sorted by Rating");
+
+        if (eventType == "jios") {
+            mModel.changeJioFilter(new Filters());
+            mModel.mJioSearchCat.setValue("<b> All Events <b>");
+            mModel.mJioSearchSort.setValue("sorted by date");
+            ;
+        } else {
+            mModel.changeEventFilter(new Filters());
+            mModel.mEventSearchCat.setValue("<b> All Events <b>");
+            mModel.mEventSearchSort.setValue("sorted by date");
+        }
     }
 
 

@@ -39,6 +39,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
     private ImageView mImage;
     private FirebaseFunctions mFunctions;
     private TitleFragmentViewModel mModel;
+    private String eventType;
 
 
     @Override
@@ -55,6 +56,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         // Retrieve NEvent object clicked on in RecyclerView
         assert getArguments() != null;
         NEvent mEvent = EventDetailFragmentArgs.fromBundle(getArguments()).getMEvent();
+        eventType = EventDetailFragmentArgs.fromBundle(getArguments()).getType();
 
         View rootView = inflater.inflate(R.layout.fragment_event_detail, container, false);
 
@@ -133,7 +135,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
             //Displays dialog for organisers to edit event
             editButton.setOnClickListener(v -> {
                 NavController navController = Navigation.findNavController(rootView);
-                navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditEvent(mEvent));
+                navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditEvent(mEvent, eventType));
             });
         }
 

@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,16 +19,15 @@ import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
 /**
  * Dialog Fragment containing filter form.
  */
-public class AddEventDialogFragment extends DialogFragment implements View.OnClickListener {
+public class InfoDialogFragment extends DialogFragment implements View.OnClickListener {
 
-    static final String TAG = "AddDialog";
+    static final String TAG = "InfoDialog";
 
     private View mRootView;
 
@@ -39,10 +38,22 @@ public class AddEventDialogFragment extends DialogFragment implements View.OnCli
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_add_event_dialog, container, false);
+        mRootView = inflater.inflate(R.layout.fragment_info_dialog, container, false);
+
+        NEvent mEvent = getArguments().getParcelable("mEvent");
+        TextView jioName = mRootView.findViewById(R.id.jioDialogName);
+        jioName.setText(mEvent.getName());
+        TextView jioInfo = mRootView.findViewById(R.id.jioDialogInfo);
+        jioInfo.setText(mEvent.getInfo());
+
+        TextView jioTime = mRootView.findViewById(R.id.jioDialogTime);
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
+        jioTime.setText(dateFormat.format(mEvent.getTime()));
 
 
-        mRootView.findViewById(R.id.button_add).setOnClickListener(this);
+        TextView jioAttendees = mRootView.findViewById(R.id.jioDialogAttendees);
+        jioAttendees.setText(mEvent.getNumberAttending() + " Attending");
+        mRootView.findViewById(R.id.button_jio_rsvp).setOnClickListener(this);
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
 
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class); //returns same instance of ViewModel in TitleFragment
@@ -61,9 +72,9 @@ public class AddEventDialogFragment extends DialogFragment implements View.OnCli
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button_add:
+            case R.id.button_jio_rsvp:
                 try {
-                    onApplyClicked();
+                    onRSVPClicked();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -74,18 +85,8 @@ public class AddEventDialogFragment extends DialogFragment implements View.OnCli
         }
     }
 
-    private void onApplyClicked() throws ParseException {
-        EditText newEventName = mRootView.findViewById(R.id.newJioName);
-        EditText newEventTime = mRootView.findViewById(R.id.newJioTime);
-        String newNameString = newEventName.getText().toString();
-        String newTimeString = newEventTime.getText().toString();
-        DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
-        Date time = format.parse(newTimeString);
-        NEvent newJio = new NEvent();
-        newJio.setName(newNameString);
-        assert time != null;
-        newJio.setTime(time);
-        mModel.addEvent(newJio, "jios");
+    private void onRSVPClicked() throws ParseException {
+
         dismiss();
     }
 
@@ -94,6 +95,4 @@ public class AddEventDialogFragment extends DialogFragment implements View.OnCli
         super.onDismiss(dialog);
         mModel.getJiosData();
     }
-
-
 }

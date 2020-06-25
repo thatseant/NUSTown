@@ -72,8 +72,8 @@ public class EventClubRepository {
         searchClubs(myClubsCallback);
     }
 
-    public void updateEvent(NEvent updatedEvent) {
-        FirebaseFirestore.getInstance().collection("events").document(updatedEvent.getID()).set(updatedEvent);
+    public void updateEvent(NEvent updatedEvent, String type) {
+        FirebaseFirestore.getInstance().collection(type).document(updatedEvent.getID()).set(updatedEvent);
     }
 
     public void deleteEvent(NEvent eventToDelete) {

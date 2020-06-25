@@ -18,7 +18,7 @@ public class Filters {
 
     public Filters() {
         sortBy = "time";
-        sortDirection = Query.Direction.DESCENDING;
+        sortDirection = Query.Direction.ASCENDING;
     }
 
     public boolean hasCategory() {
@@ -98,8 +98,10 @@ public class Filters {
     public String getOrderDescription(Context context) {
         if (sortBy.equals("name")) {
             return context.getString(R.string.sorted_by_name);
+        } else if (sortBy.equals("rating")) {
+            return "sorted by rating";
         } else {
-            return context.getString(R.string.sorted_by_rating);
+            return context.getString(R.string.sorted_by_date);
         }
     }
 }

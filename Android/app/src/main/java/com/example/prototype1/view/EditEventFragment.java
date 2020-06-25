@@ -30,6 +30,7 @@ public class EditEventFragment extends Fragment {
     private TitleFragmentViewModel mModel;
     private NEvent eventToEdit;
     private NEvent updatedEvent;
+    private String eventType;
 
     public EditEventFragment() {
         // Required empty public constructor
@@ -45,6 +46,8 @@ public class EditEventFragment extends Fragment {
         // Retrieve NEvent object to be edited
         assert getArguments() != null;
         eventToEdit = EditEventFragmentArgs.fromBundle(getArguments()).getEventToEdit();
+        eventType = EditEventFragmentArgs.fromBundle(getArguments()).getType();
+
 
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
 
@@ -79,19 +82,19 @@ public class EditEventFragment extends Fragment {
             String newInfoString = newEventInfo.getText().toString();
 
             updatedEvent = new NEvent(eventToEdit.getID(), newNameString, formattedTimeString, newCatString, newPlaceString, eventToEdit.getRating(),
-                    eventToEdit.getNumberAttending(), newURLString, eventToEdit.getImage(), newInfoString, eventToEdit.getImgUrl(), eventToEdit.getOrg(), eventToEdit.getUpdates()); //Changes name, place, category
+                    eventToEdit.getNumberAttending(), newURLString, eventToEdit.getImage(), newInfoString, eventToEdit.getImgUrl(), eventToEdit.getOrg(), eventToEdit.getUpdates(), eventToEdit.getMaxAttending()); //Changes name, place, category
 
-            mModel.updateEvent(updatedEvent); //Updates Repository via ViewModel
+            mModel.updateEvent(updatedEvent, eventType); //Updates Repository via ViewModel
             mModel.getEventsData();
             NavController navController = Navigation.findNavController(EditEventView);
-            navController.navigate(EditEventFragmentDirections.actionEditEventToEventDetailFragment(updatedEvent));
+            navController.navigate(EditEventFragmentDirections.actionEditEventToEventDetailFragment(updatedEvent, eventType));
         });
 
         //Close EventDetailFragment on buttonClose clicked
         ImageView buttonClose = EditEventView.findViewById(R.id.edit_button_back);
         buttonClose.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(EditEventView);
-            navController.navigate(EditEventFragmentDirections.actionEditEventToEventDetailFragment(eventToEdit));
+            navController.navigate(EditEventFragmentDirections.actionEditEventToEventDetailFragment(eventToEdit, eventType));
         });
 
         return EditEventView;

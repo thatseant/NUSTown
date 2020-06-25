@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_eventDetailFragment_to_editEvent"
             app:destination="@id/editEvent" />
+        <argument
+            android:name="type"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/editEvent"
@@ -42,11 +45,15 @@
             app:destination="@id/eventDetailFragment"
             app:popUpTo="@id/eventDetailFragment"
             app:popUpToInclusive="true" />
+        <argument
+            android:name="type"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/clubFragment"
         android:name="com.example.prototype1.view.ClubFragment"
-        android:label="ClubFragment">
+        android:label="ClubFragment"
+        tools:layout="@layout/fragment_club">
         <action
             android:id="@+id/action_clubFragment_to_clubDetailFragment"
             app:destination="@id/clubDetailFragment" />
@@ -71,7 +78,11 @@
         android:id="@+id/jioListFragment"
         android:name="com.example.prototype1.view.JioListFragment"
         android:label="JioListFragment"
-        tools:layout="@layout/fragment_jio_list"/>
+        tools:layout="@layout/fragment_jio_list">
+        <action
+            android:id="@+id/action_jioListFragment_to_eventDetailFragment"
+            app:destination="@id/eventDetailFragment" />
+    </fragment>
 
 
 </navigation>

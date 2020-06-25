@@ -4,31 +4,48 @@
     android:layout_height="wrap_content"
     android:layout_margin="12dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-
-        <TextView
-            android:id="@+id/jioTitleCell"
-            style="@style/TextAppearance.AppCompat.Headline"
+        <LinearLayout
+            android:id="@+id/jioInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="@string/titleCellPlaceholder"
-            android:textSize="16sp" />
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/jioTitleCell"
+                style="@style/TextAppearance.AppCompat.Headline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/titleCellPlaceholder"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/jioStatusCell"
+                style="@style/TextAppearance.AppCompat.Headline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/statusCellPlaceholder"
+                android:textSize="16sp" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/jioStatusCell"
-            style="@style/TextAppearance.AppCompat.Headline"
+            android:id="@+id/jioNumberAttending"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingStart="16dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:paddingEnd="16dp"
-            android:text="@string/statusCellPlaceholder"
-            android:textSize="16sp" />
-    </LinearLayout>
+            android:text="0/0 Attending" />
+
+    </RelativeLayout>
+
 
 </androidx.cardview.widget.CardView>
