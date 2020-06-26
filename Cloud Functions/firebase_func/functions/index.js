@@ -332,6 +332,9 @@ async function createInstaEvents (orgName, userID, numberOfPosts) {
                 if (allPosts[newPost.id]) {
                     var postToUpdate = allPosts[newPost.id]
                     postToUpdate.updates[newPost.postDate] = newPost.info
+                    if (newPost.lastUpdate > postToUpdate.lastUpdate) {
+                        postToUpdate.lastUpdate = newPost.lastUpdate
+                    }
                 } else {
                     allPosts[newPost.id] = newPost
                 }
@@ -486,6 +489,12 @@ async function uploadEventFirestore(id, newDoc) {
             if (!doc.exists) {
                 await admin.firestore().collection('events').doc(id).set(newDoc)
             } else if (doc.exists) {
+                if (doc.data().lastUpdate) {
+                    if (newDoc.lastUpdate < doc.data().lastUpdate.toDate()) {
+                        console.log(doc.data().lastUpdate.toDate())
+                        newDoc.lastUpdate = doc.data().lastUpdate.toDate()
+                    }
+                }
                 await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: newDoc.info, "org": newDoc.org, "lastUpdate": newDoc.lastUpdate})
             }
             return null;

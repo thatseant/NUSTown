@@ -107,8 +107,8 @@ public class Filters {
     public String getOrderDescription(Context context) {
         if (sortBy.equals("name")) {
             return context.getString(R.string.sorted_by_name);
-        } else if (sortBy.equals("rating")) {
-            return "sorted by rating";
+        } else if (sortBy.equals("lastUpdate")) {
+            return "sorted by post date";
         } else {
             return context.getString(R.string.sorted_by_date);
         }

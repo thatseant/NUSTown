@@ -145,8 +145,8 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
     @Nullable
     private String getSelectedSortBy() {
         String selected = (String) mSortSpinner.getSelectedItem();
-        if (getString(R.string.sort_by_rating).equals(selected)) {
-            return "rating";
+        if (getString(R.string.sort_by_post_date).equals(selected)) {
+            return "lastUpdate";
         }
         if (getString(R.string.sort_by_name).equals(selected)) {
             return "name";
@@ -171,7 +171,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
     @Nullable
     private Query.Direction getSortDirection() {
         String selected = (String) mSortSpinner.getSelectedItem();
-        if (getString(R.string.sort_by_rating).equals(selected)) {
+        if (getString(R.string.sort_by_post_date).equals(selected)) {
             return Query.Direction.DESCENDING;
         }
         if (getString(R.string.sort_by_name).equals(selected)) {
