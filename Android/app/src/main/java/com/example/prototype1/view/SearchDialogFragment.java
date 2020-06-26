@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Spinner;
+import android.widget.Switch;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +31,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
     private Spinner mCategorySpinner;
     private Spinner mPlaceSpinner;
     private Spinner mSortSpinner;
+    private Switch mPastSwitch;
     String eventType;
 
     private TitleFragmentViewModel mModel;
@@ -44,6 +46,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         mCategorySpinner = mRootView.findViewById(R.id.spinner_category);
         mPlaceSpinner = mRootView.findViewById(R.id.spinner_place);
         mSortSpinner = mRootView.findViewById(R.id.spinner_sort);
+        mPastSwitch = mRootView.findViewById(R.id.showPastEventsSwitch);
 
         mRootView.findViewById(R.id.button_search).setOnClickListener(this);
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
@@ -112,6 +115,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
             filters.setPlace(getSelectedPlace());
             filters.setSortBy(getSelectedSortBy());
             filters.setSortDirection(getSortDirection());
+            filters.setDisplayPast(getDisplayPast());
         }
 
         return filters;
@@ -152,6 +156,16 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         }
 
         return null;
+    }
+
+    @Nullable
+    private Boolean getDisplayPast() {
+        Boolean selected = mPastSwitch.isChecked();
+        if (selected) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Nullable
