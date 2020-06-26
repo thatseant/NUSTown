@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.prototype1.view.HomeFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/AppTheme"
+            app:logo="@drawable/ic_school_white_24dp"
+            app:popupTheme="@style/Theme.AppCompat.Light.DarkActionBar"
+            app:title="@string/app_name"
+            app:titleMarginStart="24dp"
+            app:titleTextColor="@android:color/white" />
+
+
+        <TextView
+            android:id="@+id/rsvp_event_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/toolbar"
+            android:paddingLeft="8dp"
+            android:paddingTop="16dp"
+            android:text="Events I'm Attending"
+            android:textSize="32dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_rsvp_events"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rsvp_event_info"
+            android:background="@android:color/white"
+            android:paddingLeft="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    </RelativeLayout>
+</ScrollView>

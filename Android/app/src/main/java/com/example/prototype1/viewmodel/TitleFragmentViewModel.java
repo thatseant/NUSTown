@@ -9,6 +9,7 @@ import androidx.lifecycle.SavedStateHandle;
 import com.example.prototype1.model.Filters;
 import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
+import com.example.prototype1.model.NUser;
 import com.example.prototype1.repository.EventClubRepository;
 
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<NClub>> mClubLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mClubEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mJioLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<NEvent>> mUserEventLiveData = new MutableLiveData<>();
+    private final MutableLiveData<NUser> mUserLiveData = new MutableLiveData<>();
     private boolean mIsSigningIn;
     private Filters mEventFilters = new Filters();
     private Filters mJioFilters = new Filters();
@@ -81,9 +84,20 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mRepository.addEvent(newEvent, type);
     }
 
+
     public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub) {
         mRepository.getClubEvents(mClub, clubEvents -> mClubEventLiveData.setValue(clubEvents));
         return mClubEventLiveData;
+    }
+
+//    public MutableLiveData<NUser> getUser(String userID) {
+//        mRepository.getUser(userID, mUser -> mUserLiveData.setValue(mUser));
+//        return mUserLiveData;
+//    }
+
+    public MutableLiveData<ArrayList<NEvent>> getUserEvents(String userID) {
+        mRepository.getUserEvents(userID, userEvents -> mUserEventLiveData.setValue(userEvents));
+        return mUserEventLiveData;
     }
 
 }

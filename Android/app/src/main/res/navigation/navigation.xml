@@ -83,6 +83,11 @@
             android:id="@+id/action_jioListFragment_to_eventDetailFragment"
             app:destination="@id/eventDetailFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.prototype1.view.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
 
 
 </navigation>
