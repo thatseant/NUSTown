@@ -14,11 +14,13 @@ public class Filters {
     private String category = null;
     private String place = null;
     private String sortBy;
+    private Boolean displayPast;
     private Query.Direction sortDirection;
 
     public Filters() {
         sortBy = "time";
         sortDirection = Query.Direction.ASCENDING;
+        displayPast = true;
     }
 
     public boolean hasCategory() {
@@ -49,6 +51,12 @@ public class Filters {
         this.place = place;
     }
 
+    public void setDisplayPast(Boolean displayPast) {
+        this.displayPast = displayPast;
+    }
+
+    public Boolean getDisplayPast() {return displayPast;}
+
 
     public String getSortBy() {
         return sortBy;
@@ -65,6 +73,7 @@ public class Filters {
     public void setSortDirection(Query.Direction sortDirection) {
         this.sortDirection = sortDirection;
     }
+
 
     public String getSearchDescription(Context context) {
         StringBuilder desc = new StringBuilder();
@@ -98,8 +107,8 @@ public class Filters {
     public String getOrderDescription(Context context) {
         if (sortBy.equals("name")) {
             return context.getString(R.string.sorted_by_name);
-        } else if (sortBy.equals("rating")) {
-            return "sorted by rating";
+        } else if (sortBy.equals("lastUpdate")) {
+            return "sorted by post date";
         } else {
             return context.getString(R.string.sorted_by_date);
         }

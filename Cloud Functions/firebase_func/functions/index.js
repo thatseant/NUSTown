@@ -23,6 +23,38 @@ const { userRecordConstructor } = require('firebase-functions/lib/providers/auth
 
 var chrono = require('chrono-node');
 
+exports.isPastEvent = functions.https.onRequest(async (req, res) => {
+
+    try {
+        promises = []
+        await admin.firestore().collection("events").get().then(async (querySnapshot) => {
+
+            for (const doc of querySnapshot.docs) {
+                var data = doc.data()
+                if (data.time.toDate()  < new Date()) {
+                    promises.push(doc.ref.update({
+                        "isPastEvent": true
+                    }))
+                } else {
+                    promises.push(doc.ref.update({
+                        "isPastEvent": false
+                    }))
+                }
+            }
+
+            await Promise.all(promises)
+
+        return null;
+
+    })
+        res.status(200).json({ result: `Success` });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+
+});
+
 
 exports.createEvent = functions.https.onRequest(async (req, res) => {
 
@@ -228,9 +260,9 @@ async function NSyncClubToDatabase(allClubs, i) {
 
 async function NSyncEventToDatabase(allEvents, i) {
     let event = allEvents[i]
-    let eventStartDateTime = event.startsOn
-    let eventStartDate = eventStartDateTime.split("T")[0];
-    let id = event.organizationName.replace(/\s/g, "") + "_" + eventStartDate.replace(/-/g, "") //ID consists of CCA and Event Date (without whitespace)
+    let eventStartDateTime = new Date(event.startsOn)
+    let eventStartDate = moment(eventStartDateTime).format("YYMMDD")
+    let id = event.organizationName + "_" + eventStartDate //ID consists of CCA and Event Date (without whitespace)
     let imageURL;
     if (event.imagePath) {
         imageURL = "https://se-infra-imageserver2.azureedge.net/clink/images/"+ event.imagePath
@@ -242,26 +274,41 @@ async function NSyncEventToDatabase(allEvents, i) {
     let description_text = description.replace(/(<([^>]+)>)/ig, '', "")
     const JSONAttendees = await axios.get("https://nus.campuslabs.com/engage/api/discovery/event/"+ event.id +"/rsvpstatistics?")
     let newDoc = {
-        org: event.organizationName,
-        syncEventID: event.id,
-        syncOrgID: event.organizationId,
-        image: id + ".png",
-        info: description_text,
-        time: admin.firestore.Timestamp.fromDate(new Date(event.startsOn)),
-        category: "",
-        numberAttending: JSONAttendees.data.yesUserCount,
-        name: event.name,
-        place: event.location,
-        rating: 3,
-        url: "https://nus.campuslabs.com/engage/event/" + event.id,
-        id: id,
-        imgUrl: imageURL
+        // org: event.organizationName,
+        // syncEventID: event.id,
+        // syncOrgID: event.organizationId,
+        // image: id + ".png",
+        // info: description_text,
+        // time: admin.firestore.Timestamp.fromDate(new Date(event.startsOn)),
+        // category: "",
+        // numberAttending: JSONAttendees.data.yesUserCount,
+        // name: event.name,
+        // place: event.location,
+        // rating: 3,
+        // url: "https://nus.campuslabs.com/engage/event/" + event.id,
+        // id: id,
+        // imgUrl: imageURL
+
+            org: event.organizationName,
+            syncEventID: event.id,
+            syncOrgID: event.organizationId,
+            info: description_text,
+            time: admin.firestore.Timestamp.fromDate(new Date(event.startsOn)),
+            numberAttending: JSONAttendees.data.yesUserCount,
+            name: event.name,
+            place: event.location,
+            rating: 3,
+            url: "https://nus.campuslabs.com/engage/event/" + event.id,
+            id: id,
+            imgUrl: imageURL
     }
 
     await admin.firestore().collection('events').doc(id).get().then(
         async (doc) => {
             if (!doc.exists) {
                 await admin.firestore().collection('events').doc(id).set(newDoc)
+            } else if (doc.exists) {
+                await admin.firestore().collection('events').doc(id).set(newDoc, {merge:true})
             }
             return null;
         }
@@ -285,6 +332,9 @@ async function createInstaEvents (orgName, userID, numberOfPosts) {
                 if (allPosts[newPost.id]) {
                     var postToUpdate = allPosts[newPost.id]
                     postToUpdate.updates[newPost.postDate] = newPost.info
+                    if (newPost.lastUpdate > postToUpdate.lastUpdate) {
+                        postToUpdate.lastUpdate = newPost.lastUpdate
+                    }
                 } else {
                     allPosts[newPost.id] = newPost
                 }
@@ -419,6 +469,7 @@ function InstaToDatabase(orgName, allMedia, i, userID) {
                     imgUrl: imageURL,
                     url: "",
                     id: orgName + "_" + stringDate,
+                    lastUpdate: post_date,
                     postDate: postDateString,
                     updates: updates
                 }
@@ -438,7 +489,13 @@ async function uploadEventFirestore(id, newDoc) {
             if (!doc.exists) {
                 await admin.firestore().collection('events').doc(id).set(newDoc)
             } else if (doc.exists) {
-                await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: newDoc.info, "time": newDoc.time, "org": newDoc.org})
+                if (doc.data().lastUpdate) {
+                    if (newDoc.lastUpdate < doc.data().lastUpdate.toDate()) {
+                        console.log(doc.data().lastUpdate.toDate())
+                        newDoc.lastUpdate = doc.data().lastUpdate.toDate()
+                    }
+                }
+                await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: newDoc.info, "org": newDoc.org, "lastUpdate": newDoc.lastUpdate})
             }
             return null;
         }
@@ -510,5 +567,7 @@ exports.rsvpFunction = functions.https.onCall(async (data, context) => {
   });
   }
 })
+
+// allInsta();
 
 

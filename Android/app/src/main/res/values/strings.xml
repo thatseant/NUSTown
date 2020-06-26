@@ -8,6 +8,7 @@
     <string name="header_filters">Filter</string>
 
     <string name="sort_by_rating">Sort by Rating</string>
+    <string name="sort_by_post_date">Sort by Post Date</string>
     <string name="sort_by_name">Sort by Name</string>
     <string name="sort_by_date">Sort by Date</string>
 
@@ -63,7 +64,7 @@
     <!-- Ways you can sort restaurants -->
     <string-array name="sort_by">
         <item>@string/sort_by_date</item>
-        <item>@string/sort_by_rating</item>
+        <item>@string/sort_by_post_date</item>
         <item>@string/sort_by_name</item>
     </string-array>
 

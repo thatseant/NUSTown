@@ -9,6 +9,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 
@@ -30,8 +31,13 @@ public class EventClubRepository {
         }
 
         if (filters.hasSortBy()) {
+            if (filters.getDisplayPast() == false) {
+                query = query.whereEqualTo("isPastEvent", false);
+            }
             query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
         }
+
+        //TODO: Add DisplayPast to query
 
         query.get().addOnCompleteListener(task -> { //Performs query
             if (task.isSuccessful()) {
