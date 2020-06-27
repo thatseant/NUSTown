@@ -11,6 +11,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,6 +122,33 @@ public class EventClubRepository {
 
                     for (String eventID : eventIDs) {
                         tasks.add(FirebaseFirestore.getInstance().collection("events").document(eventID).get());
+                    }
+
+                    Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
+                        for (Object eventDocument : documentList) {
+                            NEvent mEvent = ((DocumentSnapshot) eventDocument).toObject(NEvent.class);
+                            mResults.add(mEvent);
+                        }
+                        myEventsCallback.onCallback(mResults);
+                    });
+                }
+            }
+        });
+    }
+
+    public void getUserFeed(String userID, final MyEventsCallback myEventsCallback) {
+        ArrayList<NEvent> mResults = new ArrayList<>();
+
+        FirebaseFirestore.getInstance().collection("users").whereEqualTo("email", userID).get().addOnCompleteListener(task -> { //Performs query
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                    NUser mUser = document.toObject(NUser.class);
+                    List<Task<QuerySnapshot>> tasks = new ArrayList<>();
+
+                    List<String> clubNames = mUser.getClubFollowing();
+
+                    for (String clubName : clubNames) {
+                        tasks.add(FirebaseFirestore.getInstance().collection("events").whereEqualTo("org", clubName).get());
                     }
 
                     Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {

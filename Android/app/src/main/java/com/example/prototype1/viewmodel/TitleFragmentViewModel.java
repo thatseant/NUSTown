@@ -26,6 +26,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<NEvent>> mClubEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mJioLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserEventLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<NEvent>> mUserFeedLiveData = new MutableLiveData<>();
     private final MutableLiveData<NUser> mUserLiveData = new MutableLiveData<>();
     private boolean mIsSigningIn;
     private Filters mEventFilters = new Filters();
@@ -90,6 +91,8 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mClubEventLiveData;
     }
 
+
+
 //    public MutableLiveData<NUser> getUser(String userID) {
 //        mRepository.getUser(userID, mUser -> mUserLiveData.setValue(mUser));
 //        return mUserLiveData;
@@ -98,6 +101,11 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     public MutableLiveData<ArrayList<NEvent>> getUserEvents(String userID) {
         mRepository.getUserEvents(userID, userEvents -> mUserEventLiveData.setValue(userEvents));
         return mUserEventLiveData;
+    }
+
+    public MutableLiveData<ArrayList<NEvent>> getUserFeed(String userID) {
+        mRepository.getUserFeed(userID, userFeedEvents -> mUserFeedLiveData.setValue(userFeedEvents));
+        return mUserFeedLiveData;
     }
 
 }

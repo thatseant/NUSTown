@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.ClubEventsAdapter;
+import com.example.prototype1.view.adapters.EventListAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -20,7 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 import org.jetbrains.annotations.NotNull;
 
 
-public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener {
+public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener, EventListAdapter.OnItemSelectedListener {
     private TitleFragmentViewModel mModel; //Events ViewModel
 
     public HomeFragment() {
@@ -46,6 +47,14 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
         mModel.getUserEvents(user.getEmail()).observe(getViewLifecycleOwner(), mAdapter::submitList);
+
+        //Link Events Recycler View to Adapter
+        RecyclerView feedRecyclerView = rootView.findViewById(R.id.recycler_events_feed);
+        final EventListAdapter mFeedAdapter = new EventListAdapter(this);
+        feedRecyclerView.setAdapter(mFeedAdapter);
+        feedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
+        mModel.getUserFeed(user.getEmail()).observe(getViewLifecycleOwner(), mAdapter::submitList);
 
 
         return rootView;

@@ -33,6 +33,27 @@
             android:text="Events I'm Attending"
             android:textSize="32dp" />
 
+        <TextView
+            android:paddingTop="16dp"
+            android:paddingLeft="8dp"
+            android:id="@+id/rsvp_feed_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/recycler_rsvp_events"
+            android:text="My Events Feed"
+            android:textSize="32dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:paddingLeft="8dp"
+            android:marginTop="16dp"
+            android:id="@+id/recycler_events_feed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rsvp_feed_info"
+            android:background="@android:color/white"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_rsvp_events"
             android:layout_width="match_parent"
