@@ -100,7 +100,10 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         //Subscribe button
         Button subscribeButton = rootView.findViewById(R.id.subscribe);
         subscribeButton.setOnClickListener(v -> {
-            subscribeToClub(user.getUid(), mClub.getName());
+            subscribeButton.setText("I'm Following");
+            subscribeToClub(user.getUid(), mClub.getName()).addOnSuccessListener(result -> {
+                mModel.setUser(user.getEmail());
+            });
         });
 
         return rootView;

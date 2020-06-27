@@ -39,12 +39,12 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         // Inflate the layout for this fragment
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
-        mModel.getUser().observe(getViewLifecycleOwner(), user -> {
-//            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("profile/" + user.getProfilePic());
-//            storageReference.getDownloadUrl().addOnSuccessListener(url ->
-//                Glide.with(getContext()).load(url).into(profilePic));
-
-        });
+//        mModel.getUser().observe(getViewLifecycleOwner(), user -> {
+////            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("profile/" + user.getProfilePic());
+////            storageReference.getDownloadUrl().addOnSuccessListener(url ->
+////                Glide.with(getContext()).load(url).into(profilePic));
+//
+//        });
 
         //Link Events Recycler View to Adapter
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_rsvp_events);
