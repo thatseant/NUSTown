@@ -97,6 +97,10 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mRepository.getUser(userID, mUser -> mUserLiveData.setValue(mUser));
     }
 
+    public LiveData<NUser> getUser() {
+        return mUserLiveData;
+    }
+
     public LiveData<ArrayList<NEvent>> getUserEvents() {
         mUserLiveData.observeForever(user -> mRepository.getUserEvents(user, userEvents -> mUserEventLiveData.setValue(userEvents)));
         return mUserEventLiveData;
