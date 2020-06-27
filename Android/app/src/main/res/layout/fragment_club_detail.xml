@@ -114,6 +114,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <Button
+                    android:id="@+id/subscribe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Join club" />
+
 
                 <TextView
                     android:id="@+id/club_url_text"

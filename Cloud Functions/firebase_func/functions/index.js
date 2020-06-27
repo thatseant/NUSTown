@@ -15,6 +15,7 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: "nustown.appspot.com"
 });
+
 const axios = require('axios').default;
 const bucket = admin.storage().bucket();
 const moment = require('moment');
@@ -506,7 +507,6 @@ async function uploadEventFirestore(id, newDoc) {
 //allInsta()
 
 
-
 //trigger when a new use signed up
 exports.newUserSignUp = functions.auth.user().onCreate(user => {
     // for background triggers you must return a value/promise
@@ -514,6 +514,8 @@ exports.newUserSignUp = functions.auth.user().onCreate(user => {
       email: user.email,
       displayname : user.email,
       eventAttending: [],
+      jioEventAttending: [],
+      clubsSubscribedTo : []
     });
   });
 
@@ -525,9 +527,10 @@ exports.userDeleted = functions.auth.user().onDelete(user => {
 
   //test function
   exports.testFunction = functions.https.onCall((data,context) => {
-    return admin.firestore().collection('users').doc("string45").set(
-      {user_id : data.email, //this is actually the Uid
-      event_id : data.event_id} 
+    return admin.firestore().collection('users').doc("testingforjioevent").set(
+      //{user_id : data.email, //this is actually the Uid
+      //event_id : data.event_id} 
+      data
     )
   }
   )
@@ -546,7 +549,7 @@ exports.rsvpFunction = functions.https.onCall(async (data, context) => {
   });
 
   await eventdoc.update({
-    userAttending: admin.firestore.FieldValue.arrayRemove(data.email)
+    usersAttending: admin.firestore.FieldValue.arrayRemove(data.email)
   });
   
   return eventdoc.update({
@@ -559,7 +562,7 @@ exports.rsvpFunction = functions.https.onCall(async (data, context) => {
   });
 
   await eventdoc.update({
-    userAttending: admin.firestore.FieldValue.arrayUnion(data.email)
+    usersAttending: admin.firestore.FieldValue.arrayUnion(data.email)
   });
 
   return eventdoc.update({
@@ -570,4 +573,67 @@ exports.rsvpFunction = functions.https.onCall(async (data, context) => {
 
 // allInsta();
 
+exports.rsvpJioFunction = functions.https.onCall(async (data, context) => {
 
+    const userdoc = admin.firestore().collection('users').doc(data.email); 
+    const eventdoc = admin.firestore().collection('jios').doc(data.event_id);
+    const event = await eventdoc.get();
+    const user = await userdoc.get();
+  
+    //checking if the user is already attending
+    if(user.data().jioEventAttending.includes(data.event_id)){ //if this is true, the user is attending
+    await userdoc.update({
+      jioEventAttending: admin.firestore.FieldValue.arrayRemove(data.event_id)
+    });
+  
+    await eventdoc.update({
+      usersAttending: admin.firestore.FieldValue.arrayRemove(data.email)
+    });
+    
+    return eventdoc.update({
+      numberAttending: admin.firestore.FieldValue.increment(-1)
+    });
+    }
+    else {
+    await userdoc.update({
+      jioEventAttending: admin.firestore.FieldValue.arrayUnion(data.event_id)
+    });
+  
+    await eventdoc.update({
+      usersAttending: admin.firestore.FieldValue.arrayUnion(data.email)
+    });
+  
+    return eventdoc.update({
+      numberAttending: admin.firestore.FieldValue.increment(1)
+    });
+    }
+  })
+
+  //clubSubscription
+  exports.subscribeToClub = functions.https.onCall(async (data, context) => {
+      const userdoc = admin.firestore().collection('users').doc(data.email);
+      const clubdoc = admin.firestore().collection('clubs').doc(data.club_name);
+      const user = await userdoc.get();
+      const club = await clubdoc.get();
+
+      //checking if the user is already part of the club
+      if(user.data().clubsSubscribedTo.includes(data.club_name)){
+      return userdoc.update({
+        clubsSubscribedTo: admin.firestore.FieldValue.arrayRemove(data.club_name)
+      });
+
+      //return clubdoc.update({
+      //  members: admin.firestore.FieldValue.arrayRemove(data.email)
+      //});
+      }
+      else {
+      return userdoc.update({
+        clubsSubscribedTo: admin.firestore.FieldValue.arrayUnion(data.club_name)
+      });
+
+      //return clubdoc.update({
+      //  members: admin.firestore.FieldValue.arrayUnion(data.email)
+      //});
+   
+      }
+  })
