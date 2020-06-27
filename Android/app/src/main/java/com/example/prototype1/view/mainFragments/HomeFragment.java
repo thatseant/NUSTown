@@ -4,24 +4,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.ClubEventsAdapter;
 import com.example.prototype1.view.adapters.EventListAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -63,8 +57,8 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         RecyclerView feedRecyclerView = rootView.findViewById(R.id.recycler_events_feed);
         final EventListAdapter mFeedAdapter = new EventListAdapter(this);
         feedRecyclerView.setAdapter(mFeedAdapter);
-        feedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        mModel.getUserFeed().observe(getViewLifecycleOwner(), mAdapter::submitList);
+        feedRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        mModel.getUserFeed().observe(getViewLifecycleOwner(), mFeedAdapter::submitList);
 
         return rootView;
     }

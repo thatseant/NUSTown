@@ -132,16 +132,18 @@ public class EventClubRepository {
         ArrayList<NEvent> mResults = new ArrayList<>();
         List<Task<QuerySnapshot>> tasks = new ArrayList<>();
 
-        List<String> clubNames = mUser.getClubFollowing();
+        List<String> clubNames = mUser.getClubsSubscribedTo();
 
         for (String clubName : clubNames) {
             tasks.add(FirebaseFirestore.getInstance().collection("events").whereEqualTo("org", clubName).get());
         }
 
-        Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
-            for (Object eventDocument : documentList) {
-                NEvent mEvent = ((DocumentSnapshot) eventDocument).toObject(NEvent.class);
-                mResults.add(mEvent);
+        Tasks.whenAllSuccess(tasks).addOnSuccessListener(queryList -> {
+            for (Object query : queryList) {
+                QuerySnapshot querySnapshot = ((QuerySnapshot) query);
+                for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                    mResults.add(document.toObject(NEvent.class));
+                }
             }
             myEventsCallback.onCallback(mResults);
         });
