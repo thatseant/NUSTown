@@ -1,4 +1,4 @@
-package com.example.prototype1.view;
+package com.example.prototype1.view.dialogs;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -28,7 +28,7 @@ import java.util.Objects;
  */
 public class AddEventDialogFragment extends DialogFragment implements View.OnClickListener {
 
-    static final String TAG = "AddDialog";
+    static public final String TAG = "AddDialog";
 
     private View mRootView;
 

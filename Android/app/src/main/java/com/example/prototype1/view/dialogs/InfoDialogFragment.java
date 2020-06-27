@@ -1,4 +1,4 @@
-package com.example.prototype1.view;
+package com.example.prototype1.view.dialogs;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -27,7 +27,7 @@ import java.util.Objects;
  */
 public class InfoDialogFragment extends DialogFragment implements View.OnClickListener {
 
-    static final String TAG = "InfoDialog";
+    static public final String TAG = "InfoDialog";
 
     private View mRootView;
 

@@ -247,10 +247,10 @@ async function NSyncClubToDatabase(allClubs, i) {
         imgUrl: imageURL
     }
 
-    await admin.firestore().collection('clubs').doc(shortName).get().then(
+    await admin.firestore().collection('clubs').doc(name).get().then(
         async (doc) => {
             if (!doc.exists) {
-                await admin.firestore().collection('clubs').doc(shortName).set(newDoc)
+                await admin.firestore().collection('clubs').doc(name).set(newDoc)
             }
             return null;
         }

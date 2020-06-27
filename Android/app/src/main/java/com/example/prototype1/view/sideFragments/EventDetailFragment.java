@@ -1,4 +1,4 @@
-package com.example.prototype1.view;
+package com.example.prototype1.view.sideFragments;
 
 import android.os.Bundle;
 import android.text.util.Linkify;

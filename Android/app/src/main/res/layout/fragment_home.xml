@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.prototype1.view.HomeFragment">
+    tools:context="com.example.prototype1.view.mainFragments.HomeFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -45,7 +45,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:paddingLeft="8dp"
-            android:marginTop="16dp"
+            android:layout_marginTop="16dp"
             android:id="@+id/recycler_events_feed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
