@@ -111,7 +111,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
             navController.popBackStack();
         });
 
-        //RSVP Button invokes cloud function
+        //RSVP Button invokes cloud function --- this
         Button rsvpButton = rootView.findViewById(R.id.rsvp_button);
         rsvpButton.setOnClickListener(v -> {
             rsvpFunction(user.getUid(), mEvent.getID());
@@ -145,7 +145,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
 
     }
 
-    private Task<String> rsvpFunction(String email, String ID) {
+    private Task<String> rsvpFunction(String email, String ID) { //----this
         // Create the arguments to the callable function.
         Map<String, Object> data = new HashMap<>();
         data.put("email", email);

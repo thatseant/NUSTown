@@ -5,6 +5,7 @@ import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,9 +23,15 @@ import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.ClubEventsAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener{
     private ImageView mImage;
@@ -40,8 +47,8 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        mFunctions = FirebaseFunctions.getInstance();
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mFunctions = FirebaseFunctions.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         // Retrieve NClub object clicked on in RecyclerView
         assert getArguments() != null;
         NClub mClub = ClubDetailFragmentArgs.fromBundle(getArguments()).getMClub();
@@ -90,10 +97,27 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
             navController.popBackStack();
         });
 
+        //Subscribe button
+        Button subscribeButton = rootView.findViewById(R.id.subscribe);
+        subscribeButton.setOnClickListener(v -> {
+            subscribeToClub(user.getUid(), mClub.getName());
+        });
 
         return rootView;
 
 
+    }
+
+    private Task<String> subscribeToClub(String email, String Id) {
+        //create the arguments to the callable function.
+        Map<String, Object> data = new HashMap<>();
+        data.put("email",email);
+        data.put("club_name", Id);
+
+        return mFunctions
+                .getHttpsCallable("subscribeToClub")
+                .call(data)
+                .continueWith(task -> null);
     }
 
     @Override
