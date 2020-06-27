@@ -109,70 +109,54 @@ public class EventClubRepository {
         });
     }
 
-    public void getUserEvents(String userID, final MyEventsCallback myEventsCallback) {
+    public void getUserEvents(NUser mUser, final MyEventsCallback myEventsCallback) {
         ArrayList<NEvent> mResults = new ArrayList<>();
+        List<Task<DocumentSnapshot>> tasks = new ArrayList<Task<DocumentSnapshot>>();
+        List<String> eventIDs = mUser.getEventAttending();
 
+        for (String eventID : eventIDs) {
+            tasks.add(FirebaseFirestore.getInstance().collection("events").document(eventID).get());
+        }
+
+        Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
+            for (Object eventDocument : documentList) {
+                NEvent mEvent = ((DocumentSnapshot) eventDocument).toObject(NEvent.class);
+                mResults.add(mEvent);
+            }
+            myEventsCallback.onCallback(mResults);
+        });
+    }
+
+
+    public void getUserFeed(NUser mUser, final MyEventsCallback myEventsCallback) {
+        ArrayList<NEvent> mResults = new ArrayList<>();
+        List<Task<QuerySnapshot>> tasks = new ArrayList<>();
+
+        List<String> clubNames = mUser.getClubFollowing();
+
+        for (String clubName : clubNames) {
+            tasks.add(FirebaseFirestore.getInstance().collection("events").whereEqualTo("org", clubName).get());
+        }
+
+        Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
+            for (Object eventDocument : documentList) {
+                NEvent mEvent = ((DocumentSnapshot) eventDocument).toObject(NEvent.class);
+                mResults.add(mEvent);
+            }
+            myEventsCallback.onCallback(mResults);
+        });
+    }
+
+    public void getUser(String userID, final MyUserCallback myUserCallback) {
         FirebaseFirestore.getInstance().collection("users").whereEqualTo("email", userID).get().addOnCompleteListener(task -> { //Performs query
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                     NUser mUser = document.toObject(NUser.class);
-                    List<Task<DocumentSnapshot>> tasks = new ArrayList<Task<DocumentSnapshot>>();
-
-                    List<String> eventIDs = mUser.getEventAttending();
-
-                    for (String eventID : eventIDs) {
-                        tasks.add(FirebaseFirestore.getInstance().collection("events").document(eventID).get());
-                    }
-
-                    Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
-                        for (Object eventDocument : documentList) {
-                            NEvent mEvent = ((DocumentSnapshot) eventDocument).toObject(NEvent.class);
-                            mResults.add(mEvent);
-                        }
-                        myEventsCallback.onCallback(mResults);
-                    });
+                    myUserCallback.onCallback(mUser);
                 }
             }
         });
     }
-
-    public void getUserFeed(String userID, final MyEventsCallback myEventsCallback) {
-        ArrayList<NEvent> mResults = new ArrayList<>();
-
-        FirebaseFirestore.getInstance().collection("users").whereEqualTo("email", userID).get().addOnCompleteListener(task -> { //Performs query
-            if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                    NUser mUser = document.toObject(NUser.class);
-                    List<Task<QuerySnapshot>> tasks = new ArrayList<>();
-
-                    List<String> clubNames = mUser.getClubFollowing();
-
-                    for (String clubName : clubNames) {
-                        tasks.add(FirebaseFirestore.getInstance().collection("events").whereEqualTo("org", clubName).get());
-                    }
-
-                    Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
-                        for (Object eventDocument : documentList) {
-                            NEvent mEvent = ((DocumentSnapshot) eventDocument).toObject(NEvent.class);
-                            mResults.add(mEvent);
-                        }
-                        myEventsCallback.onCallback(mResults);
-                    });
-                }
-            }
-        });
-    }
-
-//    public void getUser(String userID, final MyUserCallback myUserCallback) {
-//        FirebaseFirestore.getInstance().collection("users").document(userID).get().addOnCompleteListener(task -> { //Performs query
-//            if (task.isSuccessful()) {
-//                DocumentSnapshot document = task.getResult();
-//                NUser mUser = document.toObject(NUser.class);
-//                myUserCallback.onCallback(mUser);
-//            }
-//        });
-//    }
-
 
     public interface MyEventsCallback {
         void onCallback(ArrayList<NEvent> eventList);

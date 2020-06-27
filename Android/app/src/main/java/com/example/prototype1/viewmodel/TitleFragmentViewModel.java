@@ -3,6 +3,7 @@ package com.example.prototype1.viewmodel;
 import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 
@@ -92,19 +93,17 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     }
 
 
+    public void setUser(String userID) {
+        mRepository.getUser(userID, mUser -> mUserLiveData.setValue(mUser));
+    }
 
-//    public MutableLiveData<NUser> getUser(String userID) {
-//        mRepository.getUser(userID, mUser -> mUserLiveData.setValue(mUser));
-//        return mUserLiveData;
-//    }
-
-    public MutableLiveData<ArrayList<NEvent>> getUserEvents(String userID) {
-        mRepository.getUserEvents(userID, userEvents -> mUserEventLiveData.setValue(userEvents));
+    public LiveData<ArrayList<NEvent>> getUserEvents() {
+        mUserLiveData.observeForever(user -> mRepository.getUserEvents(user, userEvents -> mUserEventLiveData.setValue(userEvents)));
         return mUserEventLiveData;
     }
 
-    public MutableLiveData<ArrayList<NEvent>> getUserFeed(String userID) {
-        mRepository.getUserFeed(userID, userFeedEvents -> mUserFeedLiveData.setValue(userFeedEvents));
+    public LiveData<ArrayList<NEvent>> getUserFeed() {
+        mUserLiveData.observeForever(user -> mRepository.getUserFeed(user, userEvents -> mUserFeedLiveData.setValue(userEvents)));
         return mUserFeedLiveData;
     }
 

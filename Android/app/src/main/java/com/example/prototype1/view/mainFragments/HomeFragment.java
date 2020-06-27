@@ -46,7 +46,7 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
-        mModel.getUserEvents(user.getEmail()).observe(getViewLifecycleOwner(), mAdapter::submitList);
+        mModel.getUserEvents().observe(getViewLifecycleOwner(), mAdapter::submitList);
 
         //Link Events Recycler View to Adapter
         RecyclerView feedRecyclerView = rootView.findViewById(R.id.recycler_events_feed);
@@ -54,8 +54,7 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         feedRecyclerView.setAdapter(mFeedAdapter);
         feedRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
-        mModel.getUserFeed(user.getEmail()).observe(getViewLifecycleOwner(), mAdapter::submitList);
-
+        mModel.getUserFeed().observe(getViewLifecycleOwner(), mAdapter::submitList);
 
         return rootView;
     }

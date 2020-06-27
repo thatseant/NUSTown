@@ -44,6 +44,14 @@ class MainActivity : AppCompatActivity() {
         if (shouldStartSignIn()) {
             startSignIn()
             return
+        } else {
+            val mModel = ViewModelProvider(this).get(TitleFragmentViewModel::class.java)
+
+            val user = FirebaseAuth.getInstance().currentUser
+
+            if (user != null) {
+                mModel.setUser(user.email)
+            }
         }
     }
 
