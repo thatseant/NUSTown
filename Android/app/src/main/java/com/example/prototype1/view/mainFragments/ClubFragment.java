@@ -1,4 +1,4 @@
-package com.example.prototype1.view;
+package com.example.prototype1.view.mainFragments;
 
 
 import android.os.Bundle;
@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NClub;
 import com.example.prototype1.view.adapters.ClubListAdapter;
+import com.example.prototype1.view.dialogs.SearchDialogFragment;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 
 import org.jetbrains.annotations.NotNull;

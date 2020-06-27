@@ -1,4 +1,4 @@
-package com.example.prototype1.view;
+package com.example.prototype1.view.dialogs;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -25,8 +25,8 @@ import java.util.Objects;
  */
 public class SearchDialogFragment extends DialogFragment implements View.OnClickListener {
 
-    static final String TAG = "FilterDialog";
-    int resetFlag = 0; //resetFlag due to bug where Spinner setSelection does not save
+    static public final String TAG = "FilterDialog";
+    public int resetFlag = 0; //resetFlag due to bug where Spinner setSelection does not save
     private View mRootView;
     private Spinner mCategorySpinner;
     private Spinner mPlaceSpinner;

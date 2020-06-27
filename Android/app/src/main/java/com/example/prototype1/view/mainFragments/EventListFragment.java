@@ -1,4 +1,4 @@
-package com.example.prototype1.view;
+package com.example.prototype1.view.mainFragments;
 
 
 import android.os.Bundle;
@@ -15,51 +15,47 @@ import androidx.core.text.HtmlCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prototype1.R;
 import com.example.prototype1.model.Filters;
 import com.example.prototype1.model.NEvent;
-import com.example.prototype1.view.adapters.JioListAdapter;
+import com.example.prototype1.view.adapters.EventListAdapter;
+import com.example.prototype1.view.dialogs.SearchDialogFragment;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
 
-public class JioListFragment extends Fragment implements JioListAdapter.OnItemSelectedListener {
+public class EventListFragment extends Fragment implements EventListAdapter.OnItemSelectedListener {
     private TitleFragmentViewModel mModel; //Events ViewModel
     private SearchDialogFragment mSearchDialog;
-    private AddEventDialogFragment mAddDialog;
-    private InfoDialogFragment mInfoDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_jio_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_event_list, container, false);
         Toolbar mToolbar = rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbar);
 
         mSearchDialog = new SearchDialogFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("eventType", "jios");
+        bundle.putString("eventType", "events");
         mSearchDialog.setArguments(bundle);
-
-
-        mAddDialog = new AddEventDialogFragment();
-
-        mInfoDialog = new InfoDialogFragment();
-
 
         //Link Recycler View to Adapter
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_restaurants);
-        final JioListAdapter mAdapter = new JioListAdapter(this);
+        final EventListAdapter mAdapter = new EventListAdapter(this);
         recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+//        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
-        //Link Adapter to getData() in ViewModel; getData() returns jioList
-        mModel.getJiosData().observe(getViewLifecycleOwner(), mAdapter::submitList);
+        //Link Adapter to getData() in ViewModel; getData() returns eventList
+        mModel.getEventsData().observe(getViewLifecycleOwner(), mAdapter::submitList);
 
         //Automatically changes text to in search box to reflect current filter
         TextView mSearchCat = rootView.findViewById(R.id.text_current_search);
@@ -69,11 +65,11 @@ public class JioListFragment extends Fragment implements JioListAdapter.OnItemSe
             // Update the UI, in this case, a TextView.
             mSearchCat.setText(HtmlCompat.fromHtml(searchCat, HtmlCompat.FROM_HTML_MODE_LEGACY));
         };
-        mModel.mJioSearchCat.observe(getViewLifecycleOwner(), searchCatObserver);
+        mModel.mEventSearchCat.observe(getViewLifecycleOwner(), searchCatObserver);
 
         // Update the UI, in this case, a TextView.
         final Observer<String> searchSortObserver = mSearchSort::setText;
-        mModel.mJioSearchSort.observe(getViewLifecycleOwner(), searchSortObserver);
+        mModel.mEventSearchSort.observe(getViewLifecycleOwner(), searchSortObserver);
 
         //Shows search dialog when searchBox clicked
         RelativeLayout searchBox = rootView.findViewById(R.id.searchBox);
@@ -83,17 +79,10 @@ public class JioListFragment extends Fragment implements JioListAdapter.OnItemSe
         ImageView clearFilter = rootView.findViewById(R.id.button_clear_filter);
         clearFilter.setOnClickListener(v -> {
             mSearchDialog.resetFlag = 1; //Flag needed due to bug where resetting spinner setSelection is not saved; reset later onResume
-            mModel.changeJioFilter(new Filters()); //Reset mFilter in ViewModel as mFilter is parameter of getData()
-            mModel.mJioSearchCat.setValue("<b> All Events <b>");
-            mModel.mJioSearchSort.setValue("sorted by date");
-            mModel.getJiosData();
-        });
-
-        View addButton = rootView.findViewById(R.id.add_event_button);
-
-        //Displays dialog for organisers to edit event
-        addButton.setOnClickListener(v -> {
-            mAddDialog.show(requireActivity().getSupportFragmentManager(), AddEventDialogFragment.TAG);
+            mModel.changeEventFilter(new Filters()); //Reset mFilter in ViewModel as mFilter is parameter of getData()
+            mModel.mEventSearchCat.setValue("<b> All Events <b>");
+            mModel.mEventSearchSort.setValue("sorted by date");
+            mModel.getEventsData();
         });
 
 
@@ -107,9 +96,8 @@ public class JioListFragment extends Fragment implements JioListAdapter.OnItemSe
 
     @Override
     public void onItemSelected(@NotNull NEvent mEvent, @NotNull View view) {
-        Bundle infoBundle = new Bundle();
-        infoBundle.putParcelable("mEvent", mEvent);
-        mInfoDialog.setArguments(infoBundle);
-        mInfoDialog.show(requireActivity().getSupportFragmentManager(), InfoDialogFragment.TAG);
+        NavController navController = Navigation.findNavController(view);
+        navController.navigate(EventListFragmentDirections.actionEventListFragmentToEventDetailFragment(mEvent, "events")); //type "events" provided in case we use EventDetailFragment for "jios" too
     }
 }
+

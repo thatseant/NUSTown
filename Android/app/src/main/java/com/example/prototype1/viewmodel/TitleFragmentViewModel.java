@@ -3,12 +3,14 @@ package com.example.prototype1.viewmodel;
 import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 
 import com.example.prototype1.model.Filters;
 import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
+import com.example.prototype1.model.NUser;
 import com.example.prototype1.repository.EventClubRepository;
 
 import java.util.ArrayList;
@@ -24,6 +26,9 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<NClub>> mClubLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mClubEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mJioLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<NEvent>> mUserEventLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<NEvent>> mUserFeedLiveData = new MutableLiveData<>();
+    private final MutableLiveData<NUser> mUserLiveData = new MutableLiveData<>();
     private boolean mIsSigningIn;
     private Filters mEventFilters = new Filters();
     private Filters mJioFilters = new Filters();
@@ -81,9 +86,29 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mRepository.addEvent(newEvent, type);
     }
 
+
     public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub) {
         mRepository.getClubEvents(mClub, clubEvents -> mClubEventLiveData.setValue(clubEvents));
         return mClubEventLiveData;
+    }
+
+
+    public void setUser(String userID) {
+        mRepository.getUser(userID, mUser -> mUserLiveData.setValue(mUser));
+    }
+
+    public LiveData<NUser> getUser() {
+        return mUserLiveData;
+    }
+
+    public LiveData<ArrayList<NEvent>> getUserEvents() {
+        mUserLiveData.observeForever(user -> mRepository.getUserEvents(user, userEvents -> mUserEventLiveData.setValue(userEvents)));
+        return mUserEventLiveData;
+    }
+
+    public LiveData<ArrayList<NEvent>> getUserFeed() {
+        mUserLiveData.observeForever(user -> mRepository.getUserFeed(user, userEvents -> mUserFeedLiveData.setValue(userEvents)));
+        return mUserFeedLiveData;
     }
 
 }

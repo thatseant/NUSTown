@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context="com.example.prototype1.view.EditEventFragment">
+        tools:context="com.example.prototype1.view.sideFragments.EditEventFragment">
 
         <ImageView
             android:id="@+id/edit_button_back"

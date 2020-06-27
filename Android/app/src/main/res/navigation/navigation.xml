@@ -5,7 +5,7 @@
     app:startDestination="@id/eventListFragment">
     <fragment
         android:id="@+id/eventListFragment"
-        android:name="com.example.prototype1.view.EventListFragment"
+        android:name="com.example.prototype1.view.mainFragments.EventListFragment"
         android:label="EventListFragment"
         tools:layout="@layout/fragment_event_list">
         <action
@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/eventDetailFragment"
-        android:name="com.example.prototype1.view.EventDetailFragment"
+        android:name="com.example.prototype1.view.sideFragments.EventDetailFragment"
         android:label="fragment_event_detail"
         tools:layout="@layout/fragment_event_detail">
         <argument
@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/editEvent"
-        android:name="com.example.prototype1.view.EditEventFragment"
+        android:name="com.example.prototype1.view.sideFragments.EditEventFragment"
         android:label="fragment_edit_event"
         tools:layout="@layout/fragment_edit_event">
         <argument
@@ -51,7 +51,7 @@
     </fragment>
     <fragment
         android:id="@+id/clubFragment"
-        android:name="com.example.prototype1.view.ClubFragment"
+        android:name="com.example.prototype1.view.mainFragments.ClubFragment"
         android:label="ClubFragment"
         tools:layout="@layout/fragment_club">
         <action
@@ -60,7 +60,7 @@
     </fragment>
     <fragment
         android:id="@+id/clubDetailFragment"
-        android:name="com.example.prototype1.view.ClubDetailFragment"
+        android:name="com.example.prototype1.view.sideFragments.ClubDetailFragment"
         android:label="fragment_club_detail"
         tools:layout="@layout/fragment_club_detail">
         <argument
@@ -76,13 +76,18 @@
     </fragment>
     <fragment
         android:id="@+id/jioListFragment"
-        android:name="com.example.prototype1.view.JioListFragment"
+        android:name="com.example.prototype1.view.mainFragments.JioListFragment"
         android:label="JioListFragment"
         tools:layout="@layout/fragment_jio_list">
         <action
             android:id="@+id/action_jioListFragment_to_eventDetailFragment"
             app:destination="@id/eventDetailFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.prototype1.view.mainFragments.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
 
 
 </navigation>
