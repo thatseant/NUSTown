@@ -149,6 +149,25 @@ public class EventClubRepository {
         });
     }
 
+    public void getAttendees(NEvent mEvent, final MyAttendeesCallback myAttendeesCallback) {
+        ArrayList<NUser> mResults = new ArrayList<>();
+        List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+
+        List<String> attendeesID = mEvent.getUsersAttending();
+
+        for (String attendeeID : attendeesID) {
+            tasks.add(FirebaseFirestore.getInstance().collection("users").document(attendeeID).get());
+        }
+
+        Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
+            for (Object eventDocument : documentList) {
+                NUser mUser = ((DocumentSnapshot) eventDocument).toObject(NUser.class);
+                mResults.add(mUser);
+            }
+            myAttendeesCallback.onCallback(mResults);
+        });
+    }
+
     public void getUser(String userID, final MyUserCallback myUserCallback) {
         FirebaseFirestore.getInstance().collection("users").whereEqualTo("email", userID).get().addOnCompleteListener(task -> { //Performs query
             if (task.isSuccessful()) {
@@ -166,6 +185,10 @@ public class EventClubRepository {
 
     public interface MyClubsCallback {
         void onCallback(ArrayList<NClub> clubList);
+    }
+
+    public interface MyAttendeesCallback {
+        void onCallback(ArrayList<NUser> attendeesList);
     }
 
     public interface MyUserCallback {

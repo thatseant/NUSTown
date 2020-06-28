@@ -140,6 +140,15 @@
                     android:layout_height="wrap_content"
                     android:text="RSVP" />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_users_attending"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/club_info_text"
+                    android:background="@android:color/white"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+
                 <TextView
                     android:id="@+id/event_number_attend"
                     style="@style/AppTheme.Headline"

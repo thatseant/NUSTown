@@ -13,13 +13,17 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
+import com.example.prototype1.model.NUser;
 import com.example.prototype1.view.adapters.UpdatesPagerAdapter;
+import com.example.prototype1.view.adapters.UsersAttendingAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
@@ -35,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter.OnItemSelectedListener {
+public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter.OnItemSelectedListener, UsersAttendingAdapter.OnItemSelectedListener {
     private ImageView mImage;
     private FirebaseFunctions mFunctions;
     private TitleFragmentViewModel mModel;
@@ -72,6 +76,14 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
                     (tab, position) -> tab.setText(allUpdates.get(position).getKey())
             ).attach();
         }
+
+        //Link Users Recycler View to Adapter
+        RecyclerView recyclerView = rootView.findViewById(R.id.recycler_users_attending);
+        final UsersAttendingAdapter mUserAdapter = new UsersAttendingAdapter(this);
+        recyclerView.setAdapter(mUserAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
+        mModel.getUsersAttending(mEvent).observe(getViewLifecycleOwner(), mUserAdapter::submitList);
 
         //Get image reference from cloud storage
         mImage = rootView.findViewById(R.id.event_image);
@@ -164,5 +176,11 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
     public void onItemSelected(@NotNull Map.Entry<String, String> mClub, @NotNull View view) {
 //        NavController navController = Navigation.findNavController(view);
 //        navController.navigate(ClubFragmentDirections.actionClubFragmentToClubDetailFragment(mClub));
+    }
+
+    @Override
+    public void onItemSelected(@NotNull NUser mUser, @NotNull View view) {
+//        NavController navController = Navigation.findNavController(view);
+//        navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToEventDetailFragment(mEvent, "events"));
     }
 }
