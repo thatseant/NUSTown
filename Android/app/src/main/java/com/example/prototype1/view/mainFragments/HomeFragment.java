@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -65,8 +67,8 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
 
     @Override
     public void onItemSelected(@NotNull NEvent mEvent, @NotNull View view) {
-//        NavController navController = Navigation.findNavController(view);
-//        navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToEventDetailFragment(mEvent, "events"));
+        NavController navController = Navigation.findNavController(view);
+        navController.navigate(HomeFragmentDirections.actionHomeFragmentToEventDetailFragment(mEvent, "events"));
     }
 
 }
