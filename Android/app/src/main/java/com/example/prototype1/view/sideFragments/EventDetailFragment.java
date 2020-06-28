@@ -30,6 +30,8 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -122,18 +124,20 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
 
         //Get image reference from cloud storage
         mImage = rootView.findViewById(R.id.event_image);
-//        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-//        StorageReference imageRef = storageReference.child("events/" + mEvent.getImage());
-//
-//        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).into(mImage)); //TODO: Figure out how to load image without needing URL
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef = storageReference.child("events/" + mEvent.getID() + ".png");
 
-        if (mEvent.getImgUrl() != "") {
-            Glide.with(requireContext()).load(mEvent.getImgUrl()).apply(new RequestOptions()
-                    .placeholder(R.drawable.nus)
-            ).thumbnail(0.02f).into(mImage);
-        } else {
-            mImage.setImageResource(R.drawable.nus);
-        }
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(mImage);
+        }).addOnFailureListener(url -> mImage.setImageResource(R.drawable.nus)); //TODO: Figure out how to load image without needing URL
+
+//        if (mEvent.getImgUrl() != "") {
+//            Glide.with(requireContext()).load(mEvent.getImgUrl()).apply(new RequestOptions()
+//                    .placeholder(R.drawable.nus)
+//            ).thumbnail(0.02f).into(mImage);
+//        } else {
+//            mImage.setImageResource(R.drawable.nus);
+//        }
 
         //Sets text in TextView
         TextView mClub = rootView.findViewById(R.id.event_club);

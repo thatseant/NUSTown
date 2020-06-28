@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.prototype1.R
 import com.example.prototype1.model.NEvent
+import com.google.firebase.storage.FirebaseStorage
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,23 +45,23 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
             eventDate.text = dateFormat.format(item.time)
 
             //Sets ImageView
-//            val storageReference = FirebaseStorage.getInstance().reference
-//            val imageRef = storageReference.child("events/" + item.image)
-//
-//            imageRef.downloadUrl.addOnSuccessListener {
-//                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
-//                        .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
-//
-//            }
+            val storageReference = FirebaseStorage.getInstance().reference
+            val imageRef = storageReference.child("events/" + item.ID + ".png")
 
-            //Sets ImageView
-            if (item.imgUrl != "") {
-                Glide.with(holder.eventImage.context).load(item.imgUrl).apply(RequestOptions()
-                        .placeholder(R.drawable.nus)
-                ).thumbnail(0.02f).into(eventImage)
-            } else {
-                eventImage.setImageResource(R.drawable.nus)
-            }
+            imageRef.downloadUrl.addOnSuccessListener {
+                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
+                        .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
+
+            }.addOnFailureListener { eventImage.setImageResource(R.drawable.nus); }
+
+//            //Sets ImageView
+//            if (item.imgUrl != "") {
+//                Glide.with(holder.eventImage.context).load(item.imgUrl).apply(RequestOptions()
+//                        .placeholder(R.drawable.nus)
+//                ).thumbnail(0.02f).into(eventImage)
+//            } else {
+//                eventImage.setImageResource(R.drawable.nus)
+//            }
 
 
             itemView.setOnClickListener { view ->
