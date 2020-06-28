@@ -95,6 +95,13 @@ public class EventClubRepository {
         FirebaseFirestore.getInstance().collection(type).add(newEvent);
     }
 
+    public void getEvent(String eventID, String type, final MyEventCallback myEventCallback) {
+        FirebaseFirestore.getInstance().collection(type).document(eventID).get().addOnSuccessListener(document -> {
+            NEvent updatedEvent = document.toObject(NEvent.class);
+            myEventCallback.onCallback(updatedEvent);
+        });
+    }
+
     public void getClubEvents(NClub mClub, final MyEventsCallback myEventsCallback) {
         ArrayList<NEvent> mResults = new ArrayList<>();
 
@@ -194,6 +201,11 @@ public class EventClubRepository {
     public interface MyUserCallback {
         void onCallback(NUser mUser);
     }
+
+    public interface MyEventCallback {
+        void onCallback(NEvent mEvent);
+    }
+
 }
 
 

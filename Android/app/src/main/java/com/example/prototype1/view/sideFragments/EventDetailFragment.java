@@ -21,7 +21,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
-import com.example.prototype1.model.NUser;
 import com.example.prototype1.view.adapters.UpdatesPagerAdapter;
 import com.example.prototype1.view.adapters.UsersAttendingAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
@@ -39,11 +38,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter.OnItemSelectedListener, UsersAttendingAdapter.OnItemSelectedListener {
+public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter.OnItemSelectedListener {
     private ImageView mImage;
     private FirebaseFunctions mFunctions;
     private TitleFragmentViewModel mModel;
     private String eventType;
+    Button rsvpButton;
 
 
     @Override
@@ -60,13 +60,26 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         // Retrieve NEvent object clicked on in RecyclerView
         assert getArguments() != null;
         NEvent mEvent = EventDetailFragmentArgs.fromBundle(getArguments()).getMEvent();
-        eventType = EventDetailFragmentArgs.fromBundle(getArguments()).getType();
+        mModel.setEvent(mEvent.getID(), "events");
 
         View rootView = inflater.inflate(R.layout.fragment_event_detail, container, false);
 
+        rsvpButton = rootView.findViewById(R.id.rsvp_button);
+        mModel.getUser().observe(getViewLifecycleOwner(), mUser -> {
+            if (mUser.getEventAttending().contains(mEvent.getID())) {
+                rsvpButton.setText("Attending");
+            } else {
+                rsvpButton.setText("RSVP");
+            }
+
+
+        });
+        eventType = EventDetailFragmentArgs.fromBundle(getArguments()).getType();
+
+
         //ViewPager Tabs for posts updates
         ViewPager2 updatesViewPager = rootView.findViewById(R.id.updatesViewPager);
-        if (mEvent.getUpdates()!=null) {
+        if (mEvent.getUpdates() != null) {
             ArrayList<Map.Entry<? extends String, ? extends String>> allUpdates = new ArrayList<>(mEvent.getUpdates().entrySet());
             final UpdatesPagerAdapter mAdapter = new UpdatesPagerAdapter(this);
             mAdapter.submitList(allUpdates);
@@ -77,13 +90,14 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
             ).attach();
         }
 
+
         //Link Users Recycler View to Adapter
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_users_attending);
-        final UsersAttendingAdapter mUserAdapter = new UsersAttendingAdapter(this);
+        final UsersAttendingAdapter mUserAdapter = new UsersAttendingAdapter();
         recyclerView.setAdapter(mUserAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
-        mModel.getUsersAttending(mEvent).observe(getViewLifecycleOwner(), mUserAdapter::submitList);
+        mUserAdapter.submitList(mEvent.getUsersAttending());
+
 
         //Get image reference from cloud storage
         mImage = rootView.findViewById(R.id.event_image);
@@ -119,16 +133,14 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         ImageView buttonClose = rootView.findViewById(R.id.event_button_back);
         buttonClose.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
-//            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToTitleFragment());
             navController.popBackStack();
         });
 
         //RSVP Button invokes cloud function --- this
-        Button rsvpButton = rootView.findViewById(R.id.rsvp_button);
         rsvpButton.setOnClickListener(v -> {
-            rsvpButton.setText("I'm Attending");
             rsvpFunction(user.getUid(), mEvent.getID()).addOnSuccessListener(result -> {
                 mModel.setUser(user.getEmail());
+                mModel.setEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
             });
         });
 
@@ -178,9 +190,4 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
 //        navController.navigate(ClubFragmentDirections.actionClubFragmentToClubDetailFragment(mClub));
     }
 
-    @Override
-    public void onItemSelected(@NotNull NUser mUser, @NotNull View view) {
-//        NavController navController = Navigation.findNavController(view);
-//        navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToEventDetailFragment(mEvent, "events"));
-    }
 }

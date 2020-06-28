@@ -30,6 +30,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<NEvent>> mUserFeedLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NUser>> mAttendeesLiveData = new MutableLiveData<>();
     private final MutableLiveData<NUser> mUserLiveData = new MutableLiveData<>();
+    private final MutableLiveData<NEvent> mSingleEventLiveData = new MutableLiveData<>();
     private boolean mIsSigningIn;
     private Filters mEventFilters = new Filters();
     private Filters mJioFilters = new Filters();
@@ -98,8 +99,14 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mRepository.getUser(userID, mUser -> mUserLiveData.setValue(mUser));
     }
 
+
     public LiveData<NUser> getUser() {
         return mUserLiveData;
+    }
+
+    public LiveData<NEvent> setEvent(String eventID, String type) {
+        mRepository.getEvent(eventID, type, mEvent -> mSingleEventLiveData.setValue(mEvent));
+        return mSingleEventLiveData;
     }
 
     public LiveData<ArrayList<NEvent>> getUserEvents() {
@@ -112,9 +119,11 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mUserFeedLiveData;
     }
 
-    public LiveData<ArrayList<NUser>> getUsersAttending(NEvent mEvent) {
-        mRepository.getAttendees(mEvent, usersAttending -> mAttendeesLiveData.setValue(usersAttending));
-        return mAttendeesLiveData;
-    }
+//    public LiveData<ArrayList<NUser>> getUsersAttending() {
+//        mSingleEventLiveData.observeForever(mEvent ->
+//                mRepository.getAttendees(mEvent, usersAttending -> mAttendeesLiveData.setValue(usersAttending))
+//        );
+//        return mAttendeesLiveData;
+//    }
 
 }
