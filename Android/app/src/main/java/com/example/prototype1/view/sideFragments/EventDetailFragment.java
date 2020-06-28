@@ -74,6 +74,27 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
 
 
         });
+
+        //Info and Navigate to event's organiser
+        mModel.getClubFromEvent(mEvent).observe(getViewLifecycleOwner(), mClub -> {
+            if (mClub != null) {
+                TextView clubTitle = rootView.findViewById(R.id.clubTitle);
+                clubTitle.setText(mClub.getName());
+                ImageView clubImage = rootView.findViewById(R.id.clubImage);
+                if (mClub.getImgUrl() != "") {
+                    Glide.with(requireContext()).load(mClub.getImgUrl()).apply(new RequestOptions()
+                            .placeholder(R.drawable.nus)
+                    ).thumbnail(0.02f).into(clubImage);
+                } else {
+                    clubImage.setImageResource(R.drawable.nus);
+                }
+                View clubCard = rootView.findViewById(R.id.clubCard);
+                clubCard.setOnClickListener(v -> {
+                    NavController navController = Navigation.findNavController(rootView);
+                    navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToClubDetailFragment(mClub));
+                });
+            }
+        });
         eventType = EventDetailFragmentArgs.fromBundle(getArguments()).getType();
 
 
@@ -124,7 +145,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         TextView mName = rootView.findViewById(R.id.event_name);
         mName.setText(mEvent.getName());
         TextView mNum = rootView.findViewById(R.id.event_number_attend);
-        mNum.setText("Number Attending: " + mEvent.getNumberAttending());
+        mNum.setText("NUSync Signups: " + mEvent.getNumberAttending());
         TextView mURL = rootView.findViewById(R.id.event_url_text);
         mURL.setText(mEvent.getUrl());
         Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable

@@ -14,12 +14,12 @@ import com.example.prototype1.model.NEvent
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, ClubEventsAdapter.ViewHolder>(NEventDiffCallback()) {
+class JioGridAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, JioGridAdapter.ViewHolder>(NEventDiffCallback()) {
     private val newListener: OnItemSelectedListener = mListener
 
 
     interface OnItemSelectedListener {
-        fun onItemSelected(mEvent: NEvent, view: View)
+        fun onJioSelected(mEvent: NEvent, view: View)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {//Called for every item in RecyclerView when it becomes visible
@@ -63,7 +63,7 @@ class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent,
 
 
             itemView.setOnClickListener { view ->
-                listener.onItemSelected(item, view)
+                listener.onJioSelected(item, view)
             }
         }
 

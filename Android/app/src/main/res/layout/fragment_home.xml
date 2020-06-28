@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -22,26 +22,37 @@
             app:titleMarginStart="24dp"
             app:titleTextColor="@android:color/white" />
 
+        <TextView
+            android:id="@+id/homepage_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/toolbar"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:text="My Events Feed"
+            android:textSize="32dp"
+            android:textStyle="bold" />
+
 
         <TextView
             android:id="@+id/rsvp_event_info"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/toolbar"
-            android:paddingLeft="8dp"
-            android:paddingTop="16dp"
+            android:layout_below="@id/homepage_title"
+            android:paddingLeft="16dp"
+            android:paddingTop="24dp"
             android:text="Events I'm Attending"
-            android:textSize="32dp" />
+            android:textSize="24dp" />
 
         <TextView
             android:paddingTop="16dp"
-            android:paddingLeft="8dp"
+            android:layout_below="@id/recycler_casual_jios"
             android:id="@+id/rsvp_feed_info"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/recycler_rsvp_events"
+            android:paddingLeft="16dp"
             android:text="From Clubs I've Followed"
-            android:textSize="32dp"/>
+            android:textSize="24dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:paddingLeft="8dp"
@@ -60,8 +71,28 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/rsvp_event_info"
             android:background="@android:color/white"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <TextView
+            android:id="@+id/jios_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/recycler_rsvp_events"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:text="Casual Jios"
+            android:textSize="24dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_casual_jios"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/jios_info"
+            android:layout_marginTop="16dp"
+            android:background="@android:color/white"
+            android:nestedScrollingEnabled="false"
             android:paddingLeft="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     </RelativeLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

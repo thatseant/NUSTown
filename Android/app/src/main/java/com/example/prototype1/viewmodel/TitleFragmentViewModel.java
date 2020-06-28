@@ -28,9 +28,11 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<NEvent>> mJioLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserFeedLiveData = new MutableLiveData<>();
-    private final MutableLiveData<ArrayList<NUser>> mAttendeesLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<NEvent>> mUserJioLiveData = new MutableLiveData<>();
+    //    private final MutableLiveData<ArrayList<NUser>> mAttendeesLiveData = new MutableLiveData<>();
     private final MutableLiveData<NUser> mUserLiveData = new MutableLiveData<>();
     private final MutableLiveData<NEvent> mSingleEventLiveData = new MutableLiveData<>();
+    private final MutableLiveData<NClub> mSingleClubLiveData = new MutableLiveData<>();
     private boolean mIsSigningIn;
     private Filters mEventFilters = new Filters();
     private Filters mJioFilters = new Filters();
@@ -109,9 +111,19 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mSingleEventLiveData;
     }
 
+    public LiveData<NClub> getClubFromEvent(NEvent mEvent) {
+        mRepository.getClubFromEvent(mEvent, mClub -> mSingleClubLiveData.setValue(mClub));
+        return mSingleClubLiveData;
+    }
+
     public LiveData<ArrayList<NEvent>> getUserEvents() {
         mUserLiveData.observeForever(user -> mRepository.getUserEvents(user, userEvents -> mUserEventLiveData.setValue(userEvents)));
         return mUserEventLiveData;
+    }
+
+    public LiveData<ArrayList<NEvent>> getUserJios() {
+        mUserLiveData.observeForever(user -> mRepository.getUserJios(user, userEvents -> mUserJioLiveData.setValue(userEvents)));
+        return mUserJioLiveData;
     }
 
     public LiveData<ArrayList<NEvent>> getUserFeed() {

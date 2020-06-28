@@ -102,6 +102,15 @@ public class EventClubRepository {
         });
     }
 
+    public void getClubFromEvent(NEvent mEvent, final MyClubCallback myClubCallback) {
+        String clubName = mEvent.getOrg();
+        FirebaseFirestore.getInstance().collection("clubs").document(clubName).get().addOnSuccessListener(document -> {
+            NClub mClub = document.toObject(NClub.class);
+            myClubCallback.onCallback(mClub);
+        });
+    }
+
+
     public void getClubEvents(NClub mClub, final MyEventsCallback myEventsCallback) {
         ArrayList<NEvent> mResults = new ArrayList<>();
 
@@ -128,6 +137,26 @@ public class EventClubRepository {
         Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
             for (Object eventDocument : documentList) {
                 NEvent mEvent = ((DocumentSnapshot) eventDocument).toObject(NEvent.class);
+                mResults.add(mEvent);
+            }
+            myEventsCallback.onCallback(mResults);
+        });
+    }
+
+    public void getUserJios(NUser mUser, final MyEventsCallback myEventsCallback) {
+        ArrayList<NEvent> mResults = new ArrayList<>();
+        List<Task<DocumentSnapshot>> tasks = new ArrayList<Task<DocumentSnapshot>>();
+        List<String> eventIDs = mUser.getJioEventAttending();
+
+        for (String eventID : eventIDs) {
+            tasks.add(FirebaseFirestore.getInstance().collection("jios").document(eventID).get());
+        }
+
+        Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
+            for (Object eventDocument : documentList) {
+                DocumentSnapshot eventDocumentSnapshot = ((DocumentSnapshot) eventDocument);
+                NEvent mEvent = eventDocumentSnapshot.toObject(NEvent.class);
+                mEvent.setID(eventDocumentSnapshot.getId());
                 mResults.add(mEvent);
             }
             myEventsCallback.onCallback(mResults);
@@ -204,6 +233,10 @@ public class EventClubRepository {
 
     public interface MyEventCallback {
         void onCallback(NEvent mEvent);
+    }
+
+    public interface MyClubCallback {
+        void onCallback(NClub mClub);
     }
 
 }
