@@ -89,6 +89,18 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
         mModel.getClubEvents(mClub).observe(getViewLifecycleOwner(), mAdapter::submitList);
 
+        //Subscribe button
+        Button subscribeButton = rootView.findViewById(R.id.subscribe);
+        mModel.getUser().observe(getViewLifecycleOwner(), mUser -> {
+            if (mUser.getClubsSubscribedTo().contains(mClub.getName())) {
+                subscribeButton.setText("I'm Following");
+            } else {
+                subscribeButton.setText("Follow Club");
+            }
+
+
+        });
+
         //Close EventDetailFragment on buttonClose clicked
         ImageView buttonClose = rootView.findViewById(R.id.club_button_back);
         buttonClose.setOnClickListener(v -> {
@@ -97,10 +109,8 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
             navController.popBackStack();
         });
 
-        //Subscribe button
-        Button subscribeButton = rootView.findViewById(R.id.subscribe);
+
         subscribeButton.setOnClickListener(v -> {
-            subscribeButton.setText("I'm Following");
             subscribeToClub(user.getUid(), mClub.getName()).addOnSuccessListener(result -> {
                 mModel.setUser(user.getEmail());
             });
