@@ -6,14 +6,14 @@
         android:title="Home" />
 
     <item
-        android:id="@+id/clubFragment"
-        android:icon="@drawable/ic_emoji_people_24"
-        android:title="NUS Clubs" />
-
-    <item
         android:id="@+id/eventListFragment"
         android:icon="@drawable/ic_event_24"
         android:title="NUS Events" />
+
+    <item
+        android:id="@+id/clubFragment"
+        android:icon="@drawable/ic_emoji_people_24"
+        android:title="NUS Clubs" />
 
     <item
         android:id="@+id/jioListFragment"
