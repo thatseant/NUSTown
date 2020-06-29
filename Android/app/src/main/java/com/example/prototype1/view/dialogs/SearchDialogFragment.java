@@ -44,7 +44,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         mRootView = inflater.inflate(R.layout.fragment_search_dialog, container, false);
 
         mCategorySpinner = mRootView.findViewById(R.id.spinner_category);
-        mPlaceSpinner = mRootView.findViewById(R.id.spinner_place);
+//        mPlaceSpinner = mRootView.findViewById(R.id.spinner_place);
         mSortSpinner = mRootView.findViewById(R.id.spinner_sort);
         mPastSwitch = mRootView.findViewById(R.id.showPastEventsSwitch);
 
@@ -112,7 +112,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
 
         if (mRootView != null) {
             filters.setCategory(getSelectedCategory());
-            filters.setPlace(getSelectedPlace());
+//            filters.setPlace(getSelectedPlace());
             filters.setSortBy(getSelectedSortBy());
             filters.setSortDirection(getSortDirection());
             filters.setDisplayPast(getDisplayPast());
@@ -132,15 +132,15 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         }
     }
 
-    @Nullable
-    private String getSelectedPlace() {
-        String selected = (String) mPlaceSpinner.getSelectedItem();
-        if (getString(R.string.value_any_place).equals(selected)) {
-            return null;
-        } else {
-            return selected;
-        }
-    }
+//    @Nullable
+//    private String getSelectedPlace() {
+//        String selected = (String) mPlaceSpinner.getSelectedItem();
+//        if (getString(R.string.value_any_place).equals(selected)) {
+//            return null;
+//        } else {
+//            return selected;
+//        }
+//    }
 
     @Nullable
     private String getSelectedSortBy() {
@@ -186,7 +186,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
     private void resetFilters() {
         if (mRootView != null) {
             mCategorySpinner.setSelection(0, true);
-            mPlaceSpinner.setSelection(0, true);
+//            mPlaceSpinner.setSelection(0, true);
             mSortSpinner.setSelection(0, true);
         }
 

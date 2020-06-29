@@ -25,18 +25,18 @@
 
     </RelativeLayout>
 
-    <!-- Location -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <!--    &lt;!&ndash; Location &ndash;&gt;-->
+    <!--    <RelativeLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content">-->
 
-        <Spinner
-            android:id="@+id/spinner_place"
-            style="@style/AppTheme.FilterSpinner"
-            android:layout_centerVertical="true"
-            android:entries="@array/places" />
+    <!--        <Spinner-->
+    <!--            android:id="@+id/spinner_place"-->
+    <!--            style="@style/AppTheme.FilterSpinner"-->
+    <!--            android:layout_centerVertical="true"-->
+    <!--            android:entries="@array/places" />-->
 
-    </RelativeLayout>
+    <!--    </RelativeLayout>-->
 
     <!-- Sort by -->
     <RelativeLayout
