@@ -129,7 +129,9 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
     private void onRSVPClicked() throws ParseException {
         rsvpJioFunction(user.getUid(), mEvent.getID()).addOnSuccessListener(result -> {
             mModel.setUser(user.getEmail());
-            mModel.setEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), jio -> mUserAdapter.submitList(jio.getUsersAttending()));
+            if (getView() != null) {
+                mModel.setEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), jio -> mUserAdapter.submitList(jio.getUsersAttending()));
+            }
         });
     }
 

@@ -165,7 +165,9 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         rsvpButton.setOnClickListener(v -> {
             rsvpFunction(user.getUid(), mEvent.getID()).addOnSuccessListener(result -> {
                 mModel.setUser(user.getEmail());
-                mModel.setEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
+                if (getView() != null) {
+                    mModel.setEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
+                }
             });
         });
 

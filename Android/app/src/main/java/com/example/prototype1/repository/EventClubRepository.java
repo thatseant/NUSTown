@@ -14,6 +14,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -136,8 +137,21 @@ public class EventClubRepository {
 
         Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
             for (Object eventDocument : documentList) {
-                NEvent mEvent = ((DocumentSnapshot) eventDocument).toObject(NEvent.class);
-                mResults.add(mEvent);
+                NEvent newEvent = ((DocumentSnapshot) eventDocument).toObject(NEvent.class);
+                int newEventIndex = -1;
+                for (int i = 0; i < mResults.size(); i++) {
+                    Date prevEventTime = mResults.get(i).getTime();
+                    if (prevEventTime.compareTo(newEvent.getTime()) > 0) {//newEvent is before prevEvent
+                        newEventIndex = i;
+                        break;
+                    }
+                }
+
+                if (newEventIndex != -1) {
+                    mResults.add(newEventIndex, newEvent);
+                } else {
+                    mResults.add(newEvent);
+                }
             }
             myEventsCallback.onCallback(mResults);
         });
@@ -178,7 +192,21 @@ public class EventClubRepository {
             for (Object query : queryList) {
                 QuerySnapshot querySnapshot = ((QuerySnapshot) query);
                 for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                    mResults.add(document.toObject(NEvent.class));
+                    int newEventIndex = -1;
+                    NEvent newEvent = document.toObject(NEvent.class);
+                    for (int i = 0; i < mResults.size(); i++) {
+                        Date prevEventTime = mResults.get(i).getTime();
+                        if (prevEventTime.compareTo(newEvent.getTime()) > 0) {//newEvent is before prevEvent
+                            newEventIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (newEventIndex != -1) {
+                        mResults.add(newEventIndex, newEvent);
+                    } else {
+                        mResults.add(newEvent);
+                    }
                 }
             }
             myEventsCallback.onCallback(mResults);
