@@ -28,12 +28,12 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
     }
 
     class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val postDate: TextView = itemView.findViewById(R.id.postTitle)
+//        private val postDate: TextView = itemView.findViewById(R.id.postTitle)
         private val postCaption: TextView = itemView.findViewById(R.id.postStatus)
 //        private val clubImage: ImageView = itemView.findViewById(R.id.imageCell)
 
         fun bind(item: Map.Entry<String, String>, holder: ViewHolder, listener: OnItemSelectedListener) {
-            postDate.text = item.key
+//            postDate.text = item.key
             postCaption.text = item.value
 
             //Sets ImageView

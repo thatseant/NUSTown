@@ -12,9 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
+import com.example.prototype1.view.adapters.UsersAttendingAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,9 +40,12 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
     static public final String TAG = "InfoDialog";
 
     private View mRootView;
+    final UsersAttendingAdapter mUserAdapter = new UsersAttendingAdapter();
     private FirebaseFunctions mFunctions;
-
+    FirebaseUser user;
     private TitleFragmentViewModel mModel;
+    Button rsvpButton;
+    private NEvent mEvent;
 
     @Nullable
     @Override
@@ -47,31 +53,40 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_info_dialog, container, false);
+        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
+        mEvent = getArguments().getParcelable("mEvent");
+        rsvpButton = mRootView.findViewById(R.id.button_jio_rsvp);
+        mModel.getUser().observe(getViewLifecycleOwner(), mUser -> {
+            if (mUser.getJioEventAttending().contains(mEvent.getID())) {
+                rsvpButton.setText("Attending");
+            } else {
+                rsvpButton.setText("RSVP");
+            }
 
-        NEvent mEvent = getArguments().getParcelable("mEvent");
+
+        });
+
+        TextView jioAttendees = mRootView.findViewById(R.id.jioDialogAttendees);
+        mModel.setEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), updatedEvent -> jioAttendees.setText(updatedEvent.getNumberAttending() + " Attending"));
+        user = FirebaseAuth.getInstance().getCurrentUser();
         mFunctions = FirebaseFunctions.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         TextView jioName = mRootView.findViewById(R.id.jioDialogName);
         jioName.setText(mEvent.getName());
         TextView jioInfo = mRootView.findViewById(R.id.jioDialogInfo);
         jioInfo.setText(mEvent.getInfo());
-
         TextView jioTime = mRootView.findViewById(R.id.jioDialogTime);
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
         jioTime.setText(dateFormat.format(mEvent.getTime()));
 
 
-        TextView jioAttendees = mRootView.findViewById(R.id.jioDialogAttendees);
-        jioAttendees.setText(mEvent.getNumberAttending() + " Attending");
         mRootView.findViewById(R.id.button_jio_rsvp).setOnClickListener(this);
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
 
-        Button rsvpButton = mRootView.findViewById(R.id.button_jio_rsvp);
-        rsvpButton.setOnClickListener(v -> {
-            rsvpJioFunction(user.getUid(), mEvent.getID());
-        });
-
-        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class); //returns same instance of ViewModel in TitleFragment
+        //Link Users Recycler View to Adapter
+        RecyclerView recyclerView = mRootView.findViewById(R.id.recycler_jio_users_attending);
+        recyclerView.setAdapter(mUserAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        mUserAdapter.submitList(mEvent.getUsersAttending());
         return mRootView;
     }
 
@@ -112,13 +127,13 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
     }
 
     private void onRSVPClicked() throws ParseException {
-
-        dismiss();
+        rsvpJioFunction(user.getUid(), mEvent.getID()).addOnSuccessListener(result -> {
+            mModel.setUser(user.getEmail());
+            if (getView() != null) {
+                mModel.setEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), jio -> mUserAdapter.submitList(jio.getUsersAttending()));
+            }
+        });
     }
-
-
-
-
 
 
     @Override
@@ -126,4 +141,5 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         super.onDismiss(dialog);
         mModel.getJiosData();
     }
+
 }

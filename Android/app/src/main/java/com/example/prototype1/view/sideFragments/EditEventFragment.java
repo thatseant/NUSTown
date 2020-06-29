@@ -82,7 +82,7 @@ public class EditEventFragment extends Fragment {
             String newInfoString = newEventInfo.getText().toString();
 
             updatedEvent = new NEvent(eventToEdit.getID(), newNameString, formattedTimeString, newCatString, newPlaceString, eventToEdit.getRating(),
-                    eventToEdit.getNumberAttending(), newURLString, eventToEdit.getImage(), newInfoString, eventToEdit.getImgUrl(), eventToEdit.getOrg(), eventToEdit.getUpdates(), eventToEdit.getMaxAttending()); //Changes name, place, category
+                    eventToEdit.getNumberAttending(), newURLString, eventToEdit.getImage(), newInfoString, eventToEdit.getImgUrl(), eventToEdit.getOrg(), eventToEdit.getUpdates(), eventToEdit.getMaxAttending(), eventToEdit.getUsersAttending()); //Changes name, place, category
 
             mModel.updateEvent(updatedEvent, eventType); //Updates Repository via ViewModel
             mModel.getEventsData();

@@ -5,8 +5,5 @@
         android:id="@+id/menu_sign_out"
         android:title="@string/sign_out" />
 
-    <item
-        android:id="@+id/menu_add_items"
-        android:title="@string/add_random_items" />
 
 </menu>

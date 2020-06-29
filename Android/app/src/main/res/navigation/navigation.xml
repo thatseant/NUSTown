@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/eventListFragment">
+    app:startDestination="@id/homeFragment">
     <fragment
         android:id="@+id/eventListFragment"
         android:name="com.example.prototype1.view.mainFragments.EventListFragment"
@@ -31,6 +31,9 @@
         <argument
             android:name="type"
             app:argType="string" />
+        <action
+            android:id="@+id/action_eventDetailFragment_to_clubDetailFragment"
+            app:destination="@id/clubDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/editEvent"
@@ -87,7 +90,11 @@
         android:id="@+id/homeFragment"
         android:name="com.example.prototype1.view.mainFragments.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_eventDetailFragment"
+            app:destination="@id/eventDetailFragment" />
+    </fragment>
 
 
 </navigation>

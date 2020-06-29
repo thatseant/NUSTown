@@ -78,7 +78,7 @@ public class Filters {
     public String getSearchDescription(Context context) {
         StringBuilder desc = new StringBuilder();
 
-        if (category == null && place == null) {
+        if (category == null) {
             desc.append("<b>");
             desc.append(context.getString(R.string.all_events));
             desc.append("</b>");
@@ -90,15 +90,15 @@ public class Filters {
             desc.append("</b>");
         }
 
-        if (category != null && place != null) {
-            desc.append(" in ");
-        }
+//        if (category != null && place != null) {
+//            desc.append(" in ");
+//        }
 
-        if (place != null) {
-            desc.append("<b>");
-            desc.append(place);
-            desc.append("</b>");
-        }
+//        if (place != null) {
+//            desc.append("<b>");
+//            desc.append(place);
+//            desc.append("</b>");
+//        }
 
 
         return desc.toString();

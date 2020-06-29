@@ -53,6 +53,7 @@ dependencies {
     implementation 'me.zhanghai.android.materialratingbar:library:1.4.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0'
+    implementation 'com.mikhaellopez:circularimageview:4.2.0'
     // Java language implementation
     def nav_version = "2.3.0-rc01"
 

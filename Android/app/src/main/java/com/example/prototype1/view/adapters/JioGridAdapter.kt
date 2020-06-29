@@ -11,16 +11,15 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.prototype1.R
 import com.example.prototype1.model.NEvent
-import com.google.firebase.storage.FirebaseStorage
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, ClubEventsAdapter.ViewHolder>(NEventDiffCallback()) {
+class JioGridAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, JioGridAdapter.ViewHolder>(NEventDiffCallback()) {
     private val newListener: OnItemSelectedListener = mListener
 
 
     interface OnItemSelectedListener {
-        fun onItemSelected(mEvent: NEvent, view: View)
+        fun onJioSelected(mEvent: NEvent, view: View)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {//Called for every item in RecyclerView when it becomes visible
@@ -44,27 +43,27 @@ class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent,
             eventDate.text = dateFormat.format(item.time)
 
             //Sets ImageView
-            val storageReference = FirebaseStorage.getInstance().reference
-            val imageRef = storageReference.child("events/" + item.ID + ".png")
-
-            imageRef.downloadUrl.addOnSuccessListener {
-                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
-                        .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
-
-            }.addOnFailureListener { eventImage.setImageResource(R.drawable.nus); }
-
-//            //Sets ImageView
-//            if (item.imgUrl != "") {
-//                Glide.with(holder.eventImage.context).load(item.imgUrl).apply(RequestOptions()
-//                        .placeholder(R.drawable.nus)
-//                ).thumbnail(0.02f).into(eventImage)
-//            } else {
-//                eventImage.visibility = View.GONE;
+//            val storageReference = FirebaseStorage.getInstance().reference
+//            val imageRef = storageReference.child("events/" + item.image)
+//
+//            imageRef.downloadUrl.addOnSuccessListener {
+//                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
+//                        .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
+//
 //            }
+
+            //Sets ImageView
+            if (item.imgUrl != "") {
+                Glide.with(holder.eventImage.context).load(item.imgUrl).apply(RequestOptions()
+                        .placeholder(R.drawable.nus)
+                ).thumbnail(0.02f).into(eventImage)
+            } else {
+                eventImage.visibility = View.GONE;
+            }
 
 
             itemView.setOnClickListener { view ->
-                listener.onItemSelected(item, view)
+                listener.onJioSelected(item, view)
             }
         }
 

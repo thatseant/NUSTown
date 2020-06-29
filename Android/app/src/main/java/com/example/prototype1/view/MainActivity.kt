@@ -62,17 +62,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.menu_main, menu)
-        inflater.inflate(R.menu.bottom_nav_menu, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         return when (item.itemId) {
-            R.id.menu_add_items -> {
-//                onAddItemsClicked()
-                true
-            }
             R.id.menu_sign_out -> {
                 AuthUI.getInstance().signOut(this)
                 startSignIn()

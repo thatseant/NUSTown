@@ -6,6 +6,7 @@ const admin = require('firebase-admin');
 const path = require('path');
 const os = require('os');
 const fs = require("fs");
+var allSettled = require('promise.allsettled');
 
 
 const serviceAccount = require("./NUSTown-ffc8c62cae11");
@@ -637,3 +638,63 @@ exports.rsvpJioFunction = functions.https.onCall(async (data, context) => {
    
       }
   })
+
+exports.downloadEventsPhoto = functions.https.onRequest(async (req, res) => {
+    try {
+        promises = []
+        await admin.firestore().collection("events").get().then(async (querySnapshot) => {
+
+            for (const doc of querySnapshot.docs) {
+                promises.push(
+                    downloadToCloud(doc.data().id, doc.data().imgUrl)
+                )
+            }
+
+            await allSettled(promises)
+            allSettled.shim()
+
+
+            return null;
+        });
+
+
+        res.status(200).json({result: `Success`});
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+})
+
+async function downloadToCloud(id, imageURL) {
+      if (imageURL!== "") {
+          const picName = id + ".png";
+          const tempFilePath = path.join(os.tmpdir(), picName);
+          await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
+              {destination: "events/"+ picName,  metadata: {metadata :{
+                          firebaseStorageDownloadTokens: uuidv4(),
+                      }
+                  },}))
+      }
+
+}
+
+async function download (newURL, downloadPath) {
+    const url = newURL
+    const path = downloadPath
+    const writer = fs.createWriteStream(path)
+
+    const response = await axios({
+        url,
+        method: 'GET',
+        responseType: 'stream'
+    })
+
+    console.log("success insta")
+
+    response.data.pipe(writer)
+
+    return new Promise((resolve, reject) => {
+        writer.on('finish', resolve)
+        writer.on('error', reject)
+    })
+}

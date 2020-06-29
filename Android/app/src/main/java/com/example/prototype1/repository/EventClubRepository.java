@@ -14,6 +14,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -95,6 +96,22 @@ public class EventClubRepository {
         FirebaseFirestore.getInstance().collection(type).add(newEvent);
     }
 
+    public void getEvent(String eventID, String type, final MyEventCallback myEventCallback) {
+        FirebaseFirestore.getInstance().collection(type).document(eventID).get().addOnSuccessListener(document -> {
+            NEvent updatedEvent = document.toObject(NEvent.class);
+            myEventCallback.onCallback(updatedEvent);
+        });
+    }
+
+    public void getClubFromEvent(NEvent mEvent, final MyClubCallback myClubCallback) {
+        String clubName = mEvent.getOrg();
+        FirebaseFirestore.getInstance().collection("clubs").document(clubName).get().addOnSuccessListener(document -> {
+            NClub mClub = document.toObject(NClub.class);
+            myClubCallback.onCallback(mClub);
+        });
+    }
+
+
     public void getClubEvents(NClub mClub, final MyEventsCallback myEventsCallback) {
         ArrayList<NEvent> mResults = new ArrayList<>();
 
@@ -120,7 +137,40 @@ public class EventClubRepository {
 
         Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
             for (Object eventDocument : documentList) {
-                NEvent mEvent = ((DocumentSnapshot) eventDocument).toObject(NEvent.class);
+                NEvent newEvent = ((DocumentSnapshot) eventDocument).toObject(NEvent.class);
+                int newEventIndex = -1;
+                for (int i = 0; i < mResults.size(); i++) {
+                    Date prevEventTime = mResults.get(i).getTime();
+                    if (prevEventTime.compareTo(newEvent.getTime()) > 0) {//newEvent is before prevEvent
+                        newEventIndex = i;
+                        break;
+                    }
+                }
+
+                if (newEventIndex != -1) {
+                    mResults.add(newEventIndex, newEvent);
+                } else {
+                    mResults.add(newEvent);
+                }
+            }
+            myEventsCallback.onCallback(mResults);
+        });
+    }
+
+    public void getUserJios(NUser mUser, final MyEventsCallback myEventsCallback) {
+        ArrayList<NEvent> mResults = new ArrayList<>();
+        List<Task<DocumentSnapshot>> tasks = new ArrayList<Task<DocumentSnapshot>>();
+        List<String> eventIDs = mUser.getJioEventAttending();
+
+        for (String eventID : eventIDs) {
+            tasks.add(FirebaseFirestore.getInstance().collection("jios").document(eventID).get());
+        }
+
+        Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
+            for (Object eventDocument : documentList) {
+                DocumentSnapshot eventDocumentSnapshot = ((DocumentSnapshot) eventDocument);
+                NEvent mEvent = eventDocumentSnapshot.toObject(NEvent.class);
+                mEvent.setID(eventDocumentSnapshot.getId());
                 mResults.add(mEvent);
             }
             myEventsCallback.onCallback(mResults);
@@ -142,10 +192,43 @@ public class EventClubRepository {
             for (Object query : queryList) {
                 QuerySnapshot querySnapshot = ((QuerySnapshot) query);
                 for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                    mResults.add(document.toObject(NEvent.class));
+                    int newEventIndex = -1;
+                    NEvent newEvent = document.toObject(NEvent.class);
+                    for (int i = 0; i < mResults.size(); i++) {
+                        Date prevEventTime = mResults.get(i).getTime();
+                        if (prevEventTime.compareTo(newEvent.getTime()) > 0) {//newEvent is before prevEvent
+                            newEventIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (newEventIndex != -1) {
+                        mResults.add(newEventIndex, newEvent);
+                    } else {
+                        mResults.add(newEvent);
+                    }
                 }
             }
             myEventsCallback.onCallback(mResults);
+        });
+    }
+
+    public void getAttendees(NEvent mEvent, final MyAttendeesCallback myAttendeesCallback) {
+        ArrayList<NUser> mResults = new ArrayList<>();
+        List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+
+        List<String> attendeesID = mEvent.getUsersAttending();
+
+        for (String attendeeID : attendeesID) {
+            tasks.add(FirebaseFirestore.getInstance().collection("users").document(attendeeID).get());
+        }
+
+        Tasks.whenAllSuccess(tasks).addOnSuccessListener(documentList -> {
+            for (Object eventDocument : documentList) {
+                NUser mUser = ((DocumentSnapshot) eventDocument).toObject(NUser.class);
+                mResults.add(mUser);
+            }
+            myAttendeesCallback.onCallback(mResults);
         });
     }
 
@@ -168,9 +251,22 @@ public class EventClubRepository {
         void onCallback(ArrayList<NClub> clubList);
     }
 
+    public interface MyAttendeesCallback {
+        void onCallback(ArrayList<NUser> attendeesList);
+    }
+
     public interface MyUserCallback {
         void onCallback(NUser mUser);
     }
+
+    public interface MyEventCallback {
+        void onCallback(NEvent mEvent);
+    }
+
+    public interface MyClubCallback {
+        void onCallback(NClub mClub);
+    }
+
 }
 
 
