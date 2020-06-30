@@ -75,6 +75,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<ArrayList<NClub>> getClubsData() {//Called when TitleFragment first launches and whenever a query is performed
+        mRepository.searchClubs(mClubLiveData::setValue);
         return mClubLiveData;
     }
 
