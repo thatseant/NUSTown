@@ -23,6 +23,9 @@ public class Filters {
         displayPast = true;
     }
 
+    public Filters(Boolean noFilter) {
+    }
+
     public boolean hasCategory() {
         return !(TextUtils.isEmpty(category));
     }
@@ -89,16 +92,6 @@ public class Filters {
             desc.append(category);
             desc.append("</b>");
         }
-
-//        if (category != null && place != null) {
-//            desc.append(" in ");
-//        }
-
-//        if (place != null) {
-//            desc.append("<b>");
-//            desc.append(place);
-//            desc.append("</b>");
-//        }
 
 
         return desc.toString();

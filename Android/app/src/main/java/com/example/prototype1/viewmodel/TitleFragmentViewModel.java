@@ -12,8 +12,12 @@ import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.model.NUser;
 import com.example.prototype1.repository.EventClubRepository;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.stream.Collectors;
 
 
 public class TitleFragmentViewModel extends AndroidViewModel {
@@ -41,9 +45,17 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     public TitleFragmentViewModel(Application application, SavedStateHandle savedStateHandle) {
         super(application);
         mRepository = new EventClubRepository();
-        mRepository.getAllEvents(mEventLiveData::setValue); //TODO: change repository function name to getAllEvents
-        mRepository.getAllClubs(mClubLiveData::setValue);
-        mRepository.getAllJios(mJioLiveData::setValue);
+
+
+        mRepository.searchDocuments(new Filters(), "events", resultList -> //Get All Events
+                mEventLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)))
+        );
+        mRepository.searchDocuments(new Filters(), "clubs", resultList -> //Get All Clubs
+                mClubLiveData.setValue(resultList.stream().map(document -> document.toObject(NClub.class)).collect(Collectors.toCollection(ArrayList::new)))
+        );
+        mRepository.searchDocuments(new Filters(), "jios", resultList -> //Get All Jios
+                mJioLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)))
+        );
 //        mState = savedStateHandle; //Planned to be used to save scroll position, still resolving
     }
 
@@ -64,42 +76,44 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mJioFilters = filters;
     }
 
+
+    //Get Collections
     public MutableLiveData<ArrayList<NEvent>> getEventsData() {//Called when EventListFragment first launches and whenever a query is performed
-        mRepository.searchEvents(mEventLiveData::setValue, mEventFilters, "events"); //First parameter is a callback; mLiveData value is set AFTER asynchronous completion of Firebase Query
+        mRepository.searchDocuments(mEventFilters, "events", resultList ->
+                mEventLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new))));
         return mEventLiveData;
     }
 
     public MutableLiveData<ArrayList<NEvent>> getJiosData() {//Called when JioListFragment first launches and whenever a query is performed
-        mRepository.searchEvents(mJioLiveData::setValue, mJioFilters, "jios"); //First parameter is a callback; mLiveData value is set AFTER asynchronous completion of Firebase Query
+        mRepository.searchDocuments(mJioFilters, "jios", resultList ->
+                mJioLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new))));
         return mJioLiveData;
     }
 
     public MutableLiveData<ArrayList<NClub>> getClubsData() {//Called when TitleFragment first launches and whenever a query is performed
-        mRepository.searchClubs(mClubLiveData::setValue);
+        mRepository.searchDocuments(new Filters(true), "clubs", resultList ->
+                mClubLiveData.setValue(resultList.stream().map(document -> document.toObject(NClub.class)).collect(Collectors.toCollection(ArrayList::new)))
+        );
         return mClubLiveData;
     }
 
+
+    //Edit Documents
     public void updateEvent(NEvent updatedEvent, String type) {
-        mRepository.updateEvent(updatedEvent, type);
+        mRepository.updateDoc(updatedEvent.getID(), updatedEvent, type);
     }
 
     public void deleteEvent(NEvent eventToDelete) {
-        mRepository.deleteEvent(eventToDelete);
+        mRepository.deleteDoc(eventToDelete.getID(), "events");
     }
 
     public void addEvent(NEvent newEvent, String type) {
-        mRepository.addEvent(newEvent, type);
-    }
-
-
-    public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub) {
-        mRepository.getClubEvents(mClub, clubEvents -> mClubEventLiveData.setValue(clubEvents));
-        return mClubEventLiveData;
+        mRepository.addDoc(newEvent, type);
     }
 
 
     public void setUser(String userID) {
-        mRepository.getUser(userID, mUser -> mUserLiveData.setValue(mUser));
+        mRepository.getUser(userID, user -> mUserLiveData.setValue(user));
     }
 
 
@@ -107,29 +121,66 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mUserLiveData;
     }
 
-    public LiveData<NEvent> setEvent(String eventID, String type) {
-        mRepository.getEvent(eventID, type, mEvent -> mSingleEventLiveData.setValue(mEvent));
+
+    public LiveData<NEvent> getUpdatedEvent(String eventID, String type) {
+        mRepository.getDocument(eventID, type, document -> mSingleEventLiveData.setValue(document.toObject(NEvent.class)));
         return mSingleEventLiveData;
     }
 
+
     public LiveData<NClub> getClubFromEvent(NEvent mEvent) {
-        mRepository.getClubFromEvent(mEvent, mClub -> mSingleClubLiveData.setValue(mClub));
+        mRepository.getDocument(mEvent.getOrg(), "clubs", document -> mSingleClubLiveData.setValue(document.toObject(NClub.class)));
         return mSingleClubLiveData;
     }
 
+    public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub) {
+        mRepository.multipleDocumentSearches(Arrays.asList(mClub.getName()), "org", "events", docs ->
+                mClubEventLiveData.setValue(documentsToEvents(docs)));
+        return mClubEventLiveData;
+    }
+
+
     public LiveData<ArrayList<NEvent>> getUserEvents() {
-        mUserLiveData.observeForever(user -> mRepository.getUserEvents(user, userEvents -> mUserEventLiveData.setValue(userEvents)));
+        mUserLiveData.observeForever(user ->
+                mRepository.multipleDocumentSearches(user.getEventAttending(), "id", "events", docs ->
+                        mUserEventLiveData.setValue(documentsToEvents(docs))));
         return mUserEventLiveData;
     }
 
     public LiveData<ArrayList<NEvent>> getUserJios() {
-        mUserLiveData.observeForever(user -> mRepository.getUserJios(user, userEvents -> mUserJioLiveData.setValue(userEvents)));
+        mUserLiveData.observeForever(user ->
+                mRepository.multipleDocumentSearches(user.getJioEventAttending(), "id", "jios", docs ->
+                        mUserJioLiveData.setValue(documentsToEvents(docs))));
         return mUserJioLiveData;
     }
 
     public LiveData<ArrayList<NEvent>> getUserFeed() {
-        mUserLiveData.observeForever(user -> mRepository.getUserFeed(user, userEvents -> mUserFeedLiveData.setValue(userEvents)));
+        mUserLiveData.observeForever(user ->
+                mRepository.multipleDocumentSearches(user.getClubsSubscribedTo(), "org", "events", docs ->
+                        mUserFeedLiveData.setValue(documentsToEvents(docs))));
         return mUserFeedLiveData;
+    }
+
+    public ArrayList<NEvent> documentsToEvents(ArrayList<DocumentSnapshot> documents) {
+        ArrayList<NEvent> mResults = new ArrayList<>();
+        for (DocumentSnapshot document : documents) {
+            int newEventIndex = -1;
+            NEvent newEvent = document.toObject(NEvent.class);
+            for (int i = 0; i < mResults.size(); i++) {
+                Date prevEventTime = mResults.get(i).getTime();
+                if (prevEventTime.compareTo(newEvent.getTime()) > 0) {//newEvent is before prevEvent
+                    newEventIndex = i;
+                    break;
+                }
+            }
+
+            if (newEventIndex != -1) {
+                mResults.add(newEventIndex, newEvent);
+            } else {
+                mResults.add(newEvent);
+            }
+        }
+        return mResults;
     }
 
 //    public LiveData<ArrayList<NUser>> getUsersAttending() {

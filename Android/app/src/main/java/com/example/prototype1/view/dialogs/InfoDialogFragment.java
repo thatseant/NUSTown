@@ -67,7 +67,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         });
 
         TextView jioAttendees = mRootView.findViewById(R.id.jioDialogAttendees);
-        mModel.setEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), updatedEvent -> jioAttendees.setText(updatedEvent.getNumberAttending() + " Attending"));
+        mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), updatedEvent -> jioAttendees.setText(updatedEvent.getNumberAttending() + " Attending"));
         user = FirebaseAuth.getInstance().getCurrentUser();
         mFunctions = FirebaseFunctions.getInstance();
         TextView jioName = mRootView.findViewById(R.id.jioDialogName);
@@ -130,7 +130,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         rsvpJioFunction(user.getUid(), mEvent.getID()).addOnSuccessListener(result -> {
             mModel.setUser(user.getEmail());
             if (getView() != null) {
-                mModel.setEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), jio -> mUserAdapter.submitList(jio.getUsersAttending()));
+                mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), jio -> mUserAdapter.submitList(jio.getUsersAttending()));
             }
         });
     }
