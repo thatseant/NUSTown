@@ -27,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener, EventListAdapter.OnItemSelectedListener, JioGridAdapter.OnItemSelectedListener {
-    private TitleFragmentViewModel mModel; //Events ViewModel
     private InfoDialogFragment mInfoDialog;
 
     public HomeFragment() {
@@ -48,7 +47,8 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         Toolbar mToolbar = rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbar);
         // Inflate the layout for this fragment
-        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
+        //Events ViewModel
+        TitleFragmentViewModel mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
 //        mModel.getUser().observe(getViewLifecycleOwner(), user -> {
 ////            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("profile/" + user.getProfilePic());
 ////            storageReference.getDownloadUrl().addOnSuccessListener(url ->

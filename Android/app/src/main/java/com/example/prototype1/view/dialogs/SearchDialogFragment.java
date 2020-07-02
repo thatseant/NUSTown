@@ -85,7 +85,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
     }
 
     private void onSearchClicked() {
-        if (eventType == "jios") {
+        if (eventType.equals("jios")) {
             mModel.changeJioFilter(getFilters());
             mModel.mJioSearchCat.setValue(getFilters().getSearchDescription(requireContext())); //Updates search box text (stored in ViewModel)
             mModel.mJioSearchSort.setValue(getFilters().getOrderDescription(requireContext()));
@@ -100,7 +100,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (eventType == "jios") {
+        if (eventType.equals("jios")) {
             mModel.getJiosData();
         } else {
             mModel.getEventsData();
@@ -159,13 +159,8 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
     }
 
     @Nullable
-    private Boolean getDisplayPast() {
-        Boolean selected = mPastSwitch.isChecked();
-        if (selected) {
-            return true;
-        } else {
-            return false;
-        }
+    private boolean getDisplayPast() {
+        return mPastSwitch.isChecked();
     }
 
     @Nullable
@@ -190,11 +185,10 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
             mSortSpinner.setSelection(0, true);
         }
 
-        if (eventType == "jios") {
+        if (eventType.equals("jios")) {
             mModel.changeJioFilter(new Filters());
             mModel.mJioSearchCat.setValue("<b> All Events <b>");
             mModel.mJioSearchSort.setValue("sorted by date");
-            ;
         } else {
             mModel.changeEventFilter(new Filters());
             mModel.mEventSearchCat.setValue("<b> All Events <b>");

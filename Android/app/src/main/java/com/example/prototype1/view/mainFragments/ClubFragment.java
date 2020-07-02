@@ -18,15 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NClub;
 import com.example.prototype1.view.adapters.ClubListAdapter;
-import com.example.prototype1.view.dialogs.SearchDialogFragment;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 
 import org.jetbrains.annotations.NotNull;
 
 
 public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSelectedListener {
-    private TitleFragmentViewModel mModel; //Main ViewModel
-    private SearchDialogFragment mSearchDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,7 +38,8 @@ public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSele
         final ClubListAdapter mAdapter = new ClubListAdapter(this);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
+        //Main ViewModel
+        TitleFragmentViewModel mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
         //Link Adapter to getData() in ViewModel; getData() returns clubList
         mModel.getClubsData().observe(getViewLifecycleOwner(), mAdapter::submitList);
 

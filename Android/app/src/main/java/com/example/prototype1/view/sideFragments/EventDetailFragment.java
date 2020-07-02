@@ -83,7 +83,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
                 TextView clubTitle = rootView.findViewById(R.id.clubTitle);
                 clubTitle.setText(mClub.getName());
                 ImageView clubImage = rootView.findViewById(R.id.clubImage);
-                if (mClub.getImgUrl() != "") {
+                if (!mClub.getImgUrl().equals("")) {
                     Glide.with(requireContext()).load(mClub.getImgUrl()).apply(new RequestOptions()
                             .placeholder(R.drawable.nus)
                     ).thumbnail(0.02f).into(clubImage);
@@ -175,9 +175,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         if (Objects.equals(user.getEmail(), "sean@tan.com")) {
         Button deleteButton = rootView.findViewById(R.id.delete_button);
             deleteButton.setVisibility(View.VISIBLE);
-        deleteButton.setOnClickListener(v -> {
-            mModel.deleteEvent(mEvent);
-        });
+            deleteButton.setOnClickListener(v -> mModel.deleteEvent(mEvent));
         }
 
 

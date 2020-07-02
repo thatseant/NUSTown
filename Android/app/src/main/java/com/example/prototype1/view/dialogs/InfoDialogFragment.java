@@ -25,7 +25,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
@@ -39,7 +38,6 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
 
     static public final String TAG = "InfoDialog";
 
-    private View mRootView;
     final UsersAttendingAdapter mUserAdapter = new UsersAttendingAdapter();
     private FirebaseFunctions mFunctions;
     FirebaseUser user;
@@ -52,7 +50,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        mRootView = inflater.inflate(R.layout.fragment_info_dialog, container, false);
+        View mRootView = inflater.inflate(R.layout.fragment_info_dialog, container, false);
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
         mEvent = getArguments().getParcelable("mEvent");
         rsvpButton = mRootView.findViewById(R.id.button_jio_rsvp);
@@ -114,11 +112,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_jio_rsvp:
-                try {
-                    onRSVPClicked();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                onRSVPClicked();
                 break;
             case R.id.button_cancel:
                 dismiss();
@@ -126,7 +120,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         }
     }
 
-    private void onRSVPClicked() throws ParseException {
+    private void onRSVPClicked() {
         rsvpJioFunction(user.getUid(), mEvent.getID()).addOnSuccessListener(result -> {
             mModel.setUser(user.getEmail());
             if (getView() != null) {

@@ -2,13 +2,11 @@ package com.example.prototype1.repository;
 
 
 import com.example.prototype1.model.Filters;
-import com.example.prototype1.model.NUser;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -34,7 +32,7 @@ public class EventClubRepository {
         }
 
         if (filters.hasSortBy()) {
-            if (filters.getDisplayPast() == false) {
+            if (!filters.getDisplayPast()) {
                 query = query.whereEqualTo("isPastEvent", false);
             }
             query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
@@ -44,9 +42,8 @@ public class EventClubRepository {
 
         query.get().addOnCompleteListener(task -> { //Performs query
             if (task.isSuccessful()) {
-                for (DocumentSnapshot document : Objects.requireNonNull(task.getResult().getDocuments())) {
-                    mResults.add(document); //Adds to list of NEvent objects that matches query
-                }
+                //Adds to list of NEvent objects that matches query
+                mResults.addAll(Objects.requireNonNull(task.getResult().getDocuments()));
                 myDocumentsCallback.onCallback(mResults); //Callback required as Firebase query performed asynchronously; code after onCompleteListener will execute before it finishes
             }
         });
@@ -70,9 +67,7 @@ public class EventClubRepository {
             if (!searchType.equals("id")) {
                 for (Object query : queryList) {
                     QuerySnapshot querySnapshot = ((QuerySnapshot) query);
-                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                        mResults.add(document);
-                    }
+                    mResults.addAll(querySnapshot.getDocuments());
                 }
             } else {
                 for (Object query : queryList) {
@@ -83,6 +78,18 @@ public class EventClubRepository {
             myDocumentsCallback.onCallback(mResults);
         });
     }
+
+    public void getDoc(String fieldName, String fieldType, String collection, final MyDocumentCallback myDocumentCallback) {
+
+        if (fieldType.equals("id")) {
+            FirebaseFirestore.getInstance().collection(collection).document(fieldName).get().addOnSuccessListener(myDocumentCallback::onCallback);
+        } else {
+            FirebaseFirestore.getInstance().collection(collection).whereEqualTo(fieldType, fieldName).get().addOnSuccessListener(querySnapshot -> {
+                myDocumentCallback.onCallback(querySnapshot.getDocuments().get(0));
+            });
+        }
+    }
+
 
     public void updateDoc(String docID, Object updatedDoc, String collection) {
         FirebaseFirestore.getInstance().collection(collection).document(docID).set(updatedDoc);
@@ -96,28 +103,8 @@ public class EventClubRepository {
         FirebaseFirestore.getInstance().collection(collection).add(newDoc);
     }
 
-    public void getUser(String userID, final MyUserCallback myUserCallback) {
-        FirebaseFirestore.getInstance().collection("users").whereEqualTo("email", userID).get().addOnCompleteListener(task -> { //Performs query
-            if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                    NUser mUser = document.toObject(NUser.class);
-                    myUserCallback.onCallback(mUser);
-                }
-            }
-        });
-    }
-
-    public void getDocument(String documentID, String collection, final MyDocumentCallback myDocumentCallback) {
-        FirebaseFirestore.getInstance().collection(collection).document(documentID).get().addOnSuccessListener(document -> {
-            myDocumentCallback.onCallback(document);
-        });
-    }
-
 
     //Callbacks
-    public interface MyUserCallback {
-        void onCallback(NUser mUser);
-    }
 
     public interface MyDocumentCallback {
         void onCallback(DocumentSnapshot mDocument);

@@ -95,9 +95,7 @@ public class JioListFragment extends Fragment implements JioListAdapter.OnItemSe
         View addButton = rootView.findViewById(R.id.add_event_button);
 
         //Displays dialog for organisers to edit event
-        addButton.setOnClickListener(v -> {
-            mAddDialog.show(requireActivity().getSupportFragmentManager(), AddEventDialogFragment.TAG);
-        });
+        addButton.setOnClickListener(v -> mAddDialog.show(requireActivity().getSupportFragmentManager(), AddEventDialogFragment.TAG));
 
 
         return rootView;

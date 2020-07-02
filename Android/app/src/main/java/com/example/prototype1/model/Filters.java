@@ -50,15 +50,13 @@ public class Filters {
         return place;
     }
 
-    public void setPlace(String place) {
-        this.place = place;
-    }
-
     public void setDisplayPast(Boolean displayPast) {
         this.displayPast = displayPast;
     }
 
-    public Boolean getDisplayPast() {return displayPast;}
+    public Boolean getDisplayPast() {
+        return displayPast;
+    }
 
 
     public String getSortBy() {

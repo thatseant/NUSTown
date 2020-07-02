@@ -15,7 +15,7 @@ import com.example.prototype1.repository.EventClubRepository;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -113,7 +113,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
 
 
     public void setUser(String userID) {
-        mRepository.getUser(userID, user -> mUserLiveData.setValue(user));
+        mRepository.getDoc(userID, "email", "users", document -> mUserLiveData.setValue(document.toObject(NUser.class)));
     }
 
 
@@ -123,18 +123,18 @@ public class TitleFragmentViewModel extends AndroidViewModel {
 
 
     public LiveData<NEvent> getUpdatedEvent(String eventID, String type) {
-        mRepository.getDocument(eventID, type, document -> mSingleEventLiveData.setValue(document.toObject(NEvent.class)));
+        mRepository.getDoc(eventID, "id", type, document -> mSingleEventLiveData.setValue(document.toObject(NEvent.class)));
         return mSingleEventLiveData;
     }
 
 
     public LiveData<NClub> getClubFromEvent(NEvent mEvent) {
-        mRepository.getDocument(mEvent.getOrg(), "clubs", document -> mSingleClubLiveData.setValue(document.toObject(NClub.class)));
+        mRepository.getDoc(mEvent.getOrg(), "id", "clubs", document -> mSingleClubLiveData.setValue(document.toObject(NClub.class)));
         return mSingleClubLiveData;
     }
 
     public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub) {
-        mRepository.multipleDocumentSearches(Arrays.asList(mClub.getName()), "org", "events", docs ->
+        mRepository.multipleDocumentSearches(Collections.singletonList(mClub.getName()), "org", "events", docs ->
                 mClubEventLiveData.setValue(documentsToEvents(docs)));
         return mClubEventLiveData;
     }
