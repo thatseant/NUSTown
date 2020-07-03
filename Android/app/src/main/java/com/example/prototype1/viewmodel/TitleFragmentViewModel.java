@@ -13,6 +13,7 @@ import com.example.prototype1.model.NEvent;
 import com.example.prototype1.model.NUser;
 import com.example.prototype1.repository.EventClubRepository;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,9 +35,17 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<NEvent>> mUserFeedLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserJioLiveData = new MutableLiveData<>();
     //    private final MutableLiveData<ArrayList<NUser>> mAttendeesLiveData = new MutableLiveData<>();
+
     private final MutableLiveData<NUser> mUserLiveData = new MutableLiveData<>();
+    private ListenerRegistration userListener = null;
+
     private final MutableLiveData<NEvent> mSingleEventLiveData = new MutableLiveData<>();
+    private ListenerRegistration eventListener = null;
+
+
     private final MutableLiveData<NClub> mSingleClubLiveData = new MutableLiveData<>();
+    private ListenerRegistration clubListener = null;
+
     private boolean mIsSigningIn;
     private Filters mEventFilters = new Filters();
     private Filters mJioFilters = new Filters();
@@ -157,7 +166,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
 
 
     public void setUser(String userID) {
-        mRepository.getDoc(userID, "email", "users", document -> mUserLiveData.setValue(document.toObject(NUser.class)));
+        mRepository.getDoc(userID, "email", "users", document -> mUserLiveData.setValue(document.toObject(NUser.class)), docListener -> userListener = docListener);
     }
 
 
@@ -167,13 +176,19 @@ public class TitleFragmentViewModel extends AndroidViewModel {
 
 
     public LiveData<NEvent> getUpdatedEvent(String eventID, String type) {
-        mRepository.getDoc(eventID, "id", type, document -> mSingleEventLiveData.setValue(document.toObject(NEvent.class)));
+        if (eventListener != null) {
+            eventListener.remove();
+        }
+        mRepository.getDoc(eventID, "id", type, document -> mSingleEventLiveData.setValue(document.toObject(NEvent.class)), docListener -> eventListener = docListener);
         return mSingleEventLiveData;
     }
 
 
     public LiveData<NClub> getClubFromEvent(NEvent mEvent) {
-        mRepository.getDoc(mEvent.getOrg(), "id", "clubs", document -> mSingleClubLiveData.setValue(document.toObject(NClub.class)));
+        if (clubListener != null) {
+            clubListener.remove();
+        }
+        mRepository.getDoc(mEvent.getOrg(), "id", "clubs", document -> mSingleClubLiveData.setValue(document.toObject(NClub.class)), docListener -> clubListener = docListener);
         return mSingleClubLiveData;
     }
 

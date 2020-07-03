@@ -62,7 +62,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         // Retrieve NEvent object clicked on in RecyclerView
         assert getArguments() != null;
         NEvent mEvent = EventDetailFragmentArgs.fromBundle(getArguments()).getMEvent();
-        mModel.getUpdatedEvent(mEvent.getID(), "events");
+//        mModel.getUpdatedEvent(mEvent.getID(), "events");
 
         View rootView = inflater.inflate(R.layout.fragment_event_detail, container, false);
 

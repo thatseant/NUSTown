@@ -84,7 +84,8 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         RecyclerView recyclerView = mRootView.findViewById(R.id.recycler_jio_users_attending);
         recyclerView.setAdapter(mUserAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mUserAdapter.submitList(mEvent.getUsersAttending());
+//        mUserAdapter.submitList(mEvent.getUsersAttending());
+        mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
         return mRootView;
     }
 
@@ -122,10 +123,10 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
 
     private void onRSVPClicked() {
         rsvpJioFunction(user.getUid(), mEvent.getID()).addOnSuccessListener(result -> {
-            mModel.setUser(user.getEmail());
-            if (getView() != null) {
-                mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), jio -> mUserAdapter.submitList(jio.getUsersAttending()));
-            }
+//            mModel.setUser(user.getEmail());
+//            if (getView() != null) {
+//                mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), jio -> mUserAdapter.submitList(jio.getUsersAttending()));
+//            }
         });
     }
 

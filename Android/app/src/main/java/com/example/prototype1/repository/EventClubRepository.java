@@ -10,6 +10,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -91,11 +92,12 @@ public class EventClubRepository {
         });
     }
 
-    public void getDoc(String fieldName, String fieldType, String collection, final MyDocumentCallback myDocumentCallback) {
+    public void getDoc(String fieldName, String fieldType, String collection, final MyDocumentCallback myDocumentCallback, final MyListenerCallback myListenerCallback) {
 
         if (fieldType.equals("id")) {
 //            FirebaseFirestore.getInstance().collection(collection).document(fieldName).get().addOnSuccessListener(myDocumentCallback::onCallback);
-            FirebaseFirestore.getInstance().collection(collection).document(fieldName).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            ListenerRegistration docListener = FirebaseFirestore.getInstance().collection(collection).document(fieldName).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot snapshot,
                                     @Nullable FirebaseFirestoreException e) {
@@ -104,6 +106,8 @@ public class EventClubRepository {
                     }
                 }
             });
+
+            myListenerCallback.onCallback(docListener);
         } else {
             FirebaseFirestore.getInstance().collection(collection).whereEqualTo(fieldType, fieldName).addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
@@ -143,6 +147,10 @@ public class EventClubRepository {
 
     public interface MyDocumentsCallback {
         void onCallback(ArrayList<DocumentSnapshot> resultList);
+    }
+
+    public interface MyListenerCallback {
+        void onCallback(ListenerRegistration docListener);
     }
 
 }

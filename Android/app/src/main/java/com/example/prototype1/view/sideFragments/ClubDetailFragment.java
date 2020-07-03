@@ -48,6 +48,7 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
                              Bundle savedInstanceState) {
         mFunctions = FirebaseFunctions.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         // Retrieve NClub object clicked on in RecyclerView
         assert getArguments() != null;
         NClub mClub = ClubDetailFragmentArgs.fromBundle(getArguments()).getMClub();
