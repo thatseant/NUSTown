@@ -1,11 +1,15 @@
 package com.example.prototype1.repository;
 
 
+import androidx.annotation.Nullable;
+
 import com.example.prototype1.model.Filters;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -90,11 +94,30 @@ public class EventClubRepository {
     public void getDoc(String fieldName, String fieldType, String collection, final MyDocumentCallback myDocumentCallback) {
 
         if (fieldType.equals("id")) {
-            FirebaseFirestore.getInstance().collection(collection).document(fieldName).get().addOnSuccessListener(myDocumentCallback::onCallback);
-        } else {
-            FirebaseFirestore.getInstance().collection(collection).whereEqualTo(fieldType, fieldName).get().addOnSuccessListener(querySnapshot -> {
-                myDocumentCallback.onCallback(querySnapshot.getDocuments().get(0));
+//            FirebaseFirestore.getInstance().collection(collection).document(fieldName).get().addOnSuccessListener(myDocumentCallback::onCallback);
+            FirebaseFirestore.getInstance().collection(collection).document(fieldName).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                    @Nullable FirebaseFirestoreException e) {
+                    if (snapshot != null && snapshot.exists()) {
+                        myDocumentCallback.onCallback(snapshot);
+                    }
+                }
             });
+        } else {
+            FirebaseFirestore.getInstance().collection(collection).whereEqualTo(fieldType, fieldName).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot snapshot,
+                                    @Nullable FirebaseFirestoreException e) {
+                    if (snapshot != null) {
+                        myDocumentCallback.onCallback(snapshot.getDocuments().get(0));
+                    }
+                }
+            });
+
+//            FirebaseFirestore.getInstance().collection(collection).whereEqualTo(fieldType, fieldName).get().addOnSuccessListener(querySnapshot -> {
+//                myDocumentCallback.onCallback(querySnapshot.getDocuments().get(0));
+//            });
         }
     }
 

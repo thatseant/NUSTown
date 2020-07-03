@@ -110,7 +110,7 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
 
 
         subscribeButton.setOnClickListener(v -> subscribeToClub(user.getUid(), mClub.getName()).addOnSuccessListener(result -> {
-            mModel.setUser(user.getEmail());
+//            mModel.setUser(user.getEmail());
         }));
 
         return rootView;

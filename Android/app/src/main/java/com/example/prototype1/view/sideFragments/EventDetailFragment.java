@@ -119,7 +119,8 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         final UsersAttendingAdapter mUserAdapter = new UsersAttendingAdapter();
         recyclerView.setAdapter(mUserAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mUserAdapter.submitList(mEvent.getUsersAttending());
+//        mUserAdapter.submitList(mEvent.getUsersAttending());
+        mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
 
 
         //Get image reference from cloud storage
@@ -164,10 +165,10 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         //RSVP Button invokes cloud function --- this
         rsvpButton.setOnClickListener(v -> {
             rsvpFunction(user.getUid(), mEvent.getID()).addOnSuccessListener(result -> {
-                mModel.setUser(user.getEmail());
-                if (getView() != null) {
-                    mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
-                }
+//                mModel.setUser(user.getEmail());
+//                if (getView() != null) {
+//                    mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
+//                }
             });
         });
 
