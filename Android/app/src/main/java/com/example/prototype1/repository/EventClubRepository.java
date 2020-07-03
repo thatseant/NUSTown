@@ -19,7 +19,7 @@ public class EventClubRepository {
     public EventClubRepository() {
     }
 
-    public void searchDocuments(Filters filters, String collection, final MyDocumentsCallback myDocumentsCallback) {
+    public void searchDocuments(Filters filters, String collection, int limit, DocumentSnapshot lastVisible, final MyDocumentsCallback myDocumentsCallback) {
         ArrayList<DocumentSnapshot> mResults = new ArrayList<>();
 
         Query query = FirebaseFirestore.getInstance().collection(collection);
@@ -36,6 +36,14 @@ public class EventClubRepository {
                 query = query.whereEqualTo("isPastEvent", false);
             }
             query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
+        }
+
+        if (lastVisible != null) {
+            query = query.startAfter(lastVisible);
+        }
+
+        if (limit != 0) {
+            query = query.limit(15);
         }
 
         //TODO: Add DisplayPast to query

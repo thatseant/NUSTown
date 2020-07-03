@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.text.HtmlCompat;
@@ -18,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prototype1.R;
@@ -33,6 +36,8 @@ import org.jetbrains.annotations.NotNull;
 public class EventListFragment extends Fragment implements EventListAdapter.OnItemSelectedListener {
     private TitleFragmentViewModel mModel; //Events ViewModel
     private SearchDialogFragment mSearchDialog;
+    private boolean isScrolling = false;
+    private boolean isLastItemReached = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,6 +61,33 @@ public class EventListFragment extends Fragment implements EventListAdapter.OnIt
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
         //Link Adapter to getData() in ViewModel; getData() returns eventList
         mModel.getEventsData().observe(getViewLifecycleOwner(), mAdapter::submitList);
+
+        RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                    isScrolling = true;
+                }
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager linearLayoutManager = ((LinearLayoutManager) recyclerView.getLayoutManager());
+                int firstVisibleItemPosition = linearLayoutManager.findFirstVisibleItemPosition();
+                int visibleItemCount = linearLayoutManager.getChildCount();
+                int totalItemCount = linearLayoutManager.getItemCount();
+
+                if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount)) {
+                    isScrolling = false;
+                    mModel.getEventsData();
+                }
+            }
+        };
+
+
+        recyclerView.addOnScrollListener(onScrollListener);
 
         //Automatically changes text to in search box to reflect current filter
         TextView mSearchCat = rootView.findViewById(R.id.text_current_search);

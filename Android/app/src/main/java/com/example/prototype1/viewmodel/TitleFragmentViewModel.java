@@ -41,19 +41,28 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private Filters mEventFilters = new Filters();
     private Filters mJioFilters = new Filters();
 
+    private DocumentSnapshot lastClubVisible = null;
+    private boolean isClubsLastItemReached = false;
+
+    private DocumentSnapshot lastEventVisible = null;
+    private boolean isEventsLastItemReached = false;
+    private int limit = 15;
+
 
     public TitleFragmentViewModel(Application application, SavedStateHandle savedStateHandle) {
         super(application);
         mRepository = new EventClubRepository();
 
+        getUserEvents();
+        getUserJios();
 
-        mRepository.searchDocuments(new Filters(), "events", resultList -> //Get All Events
-                mEventLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)))
-        );
-        mRepository.searchDocuments(new Filters(), "clubs", resultList -> //Get All Clubs
-                mClubLiveData.setValue(resultList.stream().map(document -> document.toObject(NClub.class)).collect(Collectors.toCollection(ArrayList::new)))
-        );
-        mRepository.searchDocuments(new Filters(), "jios", resultList -> //Get All Jios
+//        mRepository.searchDocuments(new Filters(), "events", 0, null, resultList -> //Get All Events
+//                mEventLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)))
+//        );
+//        mRepository.searchDocuments(new Filters(), "clubs",3, null, resultList -> //Get All Clubs
+//                mClubLiveData.setValue(resultList.stream().map(document -> document.toObject(NClub.class)).collect(Collectors.toCollection(ArrayList::new)))
+//        );
+        mRepository.searchDocuments(new Filters(), "jios", 0, null, resultList -> //Get All Jios
                 mJioLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)))
         );
 //        mState = savedStateHandle; //Planned to be used to save scroll position, still resolving
@@ -79,21 +88,56 @@ public class TitleFragmentViewModel extends AndroidViewModel {
 
     //Get Collections
     public MutableLiveData<ArrayList<NEvent>> getEventsData() {//Called when EventListFragment first launches and whenever a query is performed
-        mRepository.searchDocuments(mEventFilters, "events", resultList ->
-                mEventLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new))));
+        if (!isEventsLastItemReached) {
+            mRepository.searchDocuments(mEventFilters, "events", limit, lastEventVisible, resultList -> {
+                        if (resultList.size() < limit) {
+                            isEventsLastItemReached = true;
+                        }
+                        lastEventVisible = resultList.get(resultList.size() - 1);
+
+                        ArrayList<NEvent> fullList = new ArrayList<>();
+                        if (mEventLiveData.getValue() != null) {
+                            fullList.addAll(mEventLiveData.getValue());
+                        }
+                        fullList.addAll(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)));
+                        mEventLiveData.setValue(fullList);
+                    }
+            );
+        }
+//        mRepository.searchDocuments(mEventFilters, "events", 0, null, resultList ->
+//                mEventLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new))));
         return mEventLiveData;
     }
 
+    public void clearEventLiveData() {
+        mEventLiveData.setValue(null);
+        isEventsLastItemReached = false;
+        lastEventVisible = null;
+    }
+
     public MutableLiveData<ArrayList<NEvent>> getJiosData() {//Called when JioListFragment first launches and whenever a query is performed
-        mRepository.searchDocuments(mJioFilters, "jios", resultList ->
+        mRepository.searchDocuments(mJioFilters, "jios", 0, null, resultList ->
                 mJioLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new))));
         return mJioLiveData;
     }
 
     public MutableLiveData<ArrayList<NClub>> getClubsData() {//Called when TitleFragment first launches and whenever a query is performed
-        mRepository.searchDocuments(new Filters(true), "clubs", resultList ->
-                mClubLiveData.setValue(resultList.stream().map(document -> document.toObject(NClub.class)).collect(Collectors.toCollection(ArrayList::new)))
-        );
+        if (!isClubsLastItemReached) {
+            mRepository.searchDocuments(new Filters(true), "clubs", limit, lastClubVisible, resultList -> {
+                        if (resultList.size() < limit) {
+                            isClubsLastItemReached = true;
+                        }
+                        lastClubVisible = resultList.get(resultList.size() - 1);
+
+                        ArrayList<NClub> fullList = new ArrayList<>();
+                        if (mClubLiveData.getValue() != null) {
+                            fullList.addAll(mClubLiveData.getValue());
+                        }
+                        fullList.addAll(resultList.stream().map(document -> document.toObject(NClub.class)).collect(Collectors.toCollection(ArrayList::new)));
+                        mClubLiveData.setValue(fullList);
+                    }
+            );
+        }
         return mClubLiveData;
     }
 

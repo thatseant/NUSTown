@@ -93,6 +93,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
             mModel.changeEventFilter(getFilters());
             mModel.mEventSearchCat.setValue(getFilters().getSearchDescription(requireContext())); //Updates search box text (stored in ViewModel)
             mModel.mEventSearchSort.setValue(getFilters().getOrderDescription(requireContext()));
+            mModel.clearEventLiveData();
         }
         dismiss();
     }
