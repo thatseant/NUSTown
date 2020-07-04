@@ -26,6 +26,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     public final MutableLiveData<String> mEventSearchSort = new MutableLiveData<>();
     public final MutableLiveData<String> mJioSearchCat = new MutableLiveData<>();
     public final MutableLiveData<String> mJioSearchSort = new MutableLiveData<>();
+    public final MutableLiveData<String> mClubSearchCat = new MutableLiveData<>();
     private final EventClubRepository mRepository;
     private final MutableLiveData<ArrayList<NEvent>> mEventLiveData = new MutableLiveData<>(); //TODO: change name to mEventLiveData
     private final MutableLiveData<ArrayList<NClub>> mClubLiveData = new MutableLiveData<>();
@@ -49,6 +50,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private boolean mIsSigningIn;
     private Filters mEventFilters = new Filters();
     private Filters mJioFilters = new Filters();
+    private Filters mClubFilters = new Filters(true);
 
     private DocumentSnapshot lastClubVisible = null;
     private boolean isClubsLastItemReached = false;
@@ -94,22 +96,27 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mJioFilters = filters;
     }
 
+    public void changeClubFilter(Filters filters) {//Called whenever a query is performed
+        mClubFilters = filters;
+    }
 
     //Get Collections
     public MutableLiveData<ArrayList<NEvent>> getEventsData() {//Called when EventListFragment first launches and whenever a query is performed
         if (!isEventsLastItemReached) {
             mRepository.searchDocuments(mEventFilters, "events", limit, lastEventVisible, resultList -> {
-                        if (resultList.size() < limit) {
-                            isEventsLastItemReached = true;
-                        }
-                        lastEventVisible = resultList.get(resultList.size() - 1);
+                        if (resultList.size() != 0) {
+                            if (resultList.size() < limit) {
+                                isEventsLastItemReached = true;
+                            }
+                            lastEventVisible = resultList.get(resultList.size() - 1);
 
-                        ArrayList<NEvent> fullList = new ArrayList<>();
-                        if (mEventLiveData.getValue() != null) {
-                            fullList.addAll(mEventLiveData.getValue());
+                            ArrayList<NEvent> fullList = new ArrayList<>();
+                            if (mEventLiveData.getValue() != null) {
+                                fullList.addAll(mEventLiveData.getValue());
+                            }
+                            fullList.addAll(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)));
+                            mEventLiveData.setValue(fullList);
                         }
-                        fullList.addAll(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)));
-                        mEventLiveData.setValue(fullList);
                     }
             );
         }
@@ -124,6 +131,12 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         lastEventVisible = null;
     }
 
+    public void clearClubLiveData() { //Clears Clubs Live Data on New Search
+        mClubLiveData.setValue(null);
+        isClubsLastItemReached = false;
+        lastClubVisible = null;
+    }
+
     public MutableLiveData<ArrayList<NEvent>> getJiosData() {//Called when JioListFragment first launches and whenever a query is performed
         mRepository.searchDocuments(mJioFilters, "jios", 0, null, resultList ->
                 mJioLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new))));
@@ -132,18 +145,20 @@ public class TitleFragmentViewModel extends AndroidViewModel {
 
     public MutableLiveData<ArrayList<NClub>> getClubsData() {//Called when TitleFragment first launches and whenever a query is performed
         if (!isClubsLastItemReached) {
-            mRepository.searchDocuments(new Filters(true), "clubs", limit, lastClubVisible, resultList -> {
-                        if (resultList.size() < limit) {
-                            isClubsLastItemReached = true;
-                        }
-                        lastClubVisible = resultList.get(resultList.size() - 1);
+            mRepository.searchDocuments(mClubFilters, "clubs", limit, lastClubVisible, resultList -> {
+                if (resultList.size() != 0) {
+                    if (resultList.size() < limit) {
+                        isClubsLastItemReached = true;
+                    }
+                    lastClubVisible = resultList.get(resultList.size() - 1);
 
-                        ArrayList<NClub> fullList = new ArrayList<>();
-                        if (mClubLiveData.getValue() != null) {
-                            fullList.addAll(mClubLiveData.getValue());
-                        }
-                        fullList.addAll(resultList.stream().map(document -> document.toObject(NClub.class)).collect(Collectors.toCollection(ArrayList::new)));
-                        mClubLiveData.setValue(fullList);
+                    ArrayList<NClub> fullList = new ArrayList<>();
+                    if (mClubLiveData.getValue() != null) {
+                        fullList.addAll(mClubLiveData.getValue());
+                    }
+                    fullList.addAll(resultList.stream().map(document -> document.toObject(NClub.class)).collect(Collectors.toCollection(ArrayList::new)));
+                    mClubLiveData.setValue(fullList);
+                }
                     }
             );
         }

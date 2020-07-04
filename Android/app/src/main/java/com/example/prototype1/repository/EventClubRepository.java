@@ -43,6 +43,12 @@ public class EventClubRepository {
             query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
         }
 
+        if (filters.hasClubCategory()) {
+            if (filters.getClubCategory() != 0) {
+                query = query.whereEqualTo("cat", filters.getClubCategory());
+            }
+        }
+
         if (lastVisible != null) {
             query = query.startAfter(lastVisible);
         }
