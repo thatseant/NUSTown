@@ -98,17 +98,17 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     //Get Collections
     public MutableLiveData<ArrayList<NEvent>> getEventsData() {//Called when EventListFragment first launches and whenever a query is performed
         if (!isEventsLastItemReached) {
-            mRepository.searchDocuments(mEventFilters, "events", limit, lastEventVisible, resultList -> {
-                        if (resultList.size() < limit) {
-                            isEventsLastItemReached = true;
-                        }
-                        lastEventVisible = resultList.get(resultList.size() - 1);
+            mRepository.searchDocuments(mEventFilters, "events2", limit, lastEventVisible, resultList -> {
+                if (resultList.size() < limit) {
+                    isEventsLastItemReached = true;
+                }
+                lastEventVisible = resultList.get(resultList.size() - 1);
 
-                        ArrayList<NEvent> fullList = new ArrayList<>();
-                        if (mEventLiveData.getValue() != null) {
-                            fullList.addAll(mEventLiveData.getValue());
-                        }
-                        fullList.addAll(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)));
+                ArrayList<NEvent> fullList = new ArrayList<>();
+                if (mEventLiveData.getValue() != null) {
+                    fullList.addAll(mEventLiveData.getValue());
+                }
+                fullList.addAll(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)));
                         mEventLiveData.setValue(fullList);
                     }
             );
@@ -193,7 +193,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub) {
-        mRepository.multipleDocumentSearches(Collections.singletonList(mClub.getName()), "org", "events", docs ->
+        mRepository.multipleDocumentSearches(Collections.singletonList(mClub.getName()), "org", "events2", docs -> //TODO: Change collection to events
                 mClubEventLiveData.setValue(documentsToEvents(docs)));
         return mClubEventLiveData;
     }
@@ -201,7 +201,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
 
     public LiveData<ArrayList<NEvent>> getUserEvents() {
         mUserLiveData.observeForever(user ->
-                mRepository.multipleDocumentSearches(user.getEventAttending(), "id", "events", docs ->
+                mRepository.multipleDocumentSearches(user.getEventAttending(), "id", "events2", docs ->
                         mUserEventLiveData.setValue(documentsToEvents(docs))));
         return mUserEventLiveData;
     }
@@ -215,7 +215,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
 
     public LiveData<ArrayList<NEvent>> getUserFeed() {
         mUserLiveData.observeForever(user ->
-                mRepository.multipleDocumentSearches(user.getClubsSubscribedTo(), "org", "events", docs ->
+                mRepository.multipleDocumentSearches(user.getClubsSubscribedTo(), "org", "events2", docs ->
                         mUserFeedLiveData.setValue(documentsToEvents(docs))));
         return mUserFeedLiveData;
     }

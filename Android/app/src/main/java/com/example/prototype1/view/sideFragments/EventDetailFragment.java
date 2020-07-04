@@ -103,7 +103,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         //ViewPager Tabs for posts updates
         ViewPager2 updatesViewPager = rootView.findViewById(R.id.updatesViewPager);
         if (mEvent.getUpdates() != null) {
-            ArrayList<Map.Entry<? extends String, ? extends String>> allUpdates = new ArrayList<>(mEvent.getUpdates().entrySet());
+            ArrayList<Map.Entry<? extends String, ? extends ArrayList<String>>> allUpdates = new ArrayList<>(mEvent.getUpdates().entrySet());
             final UpdatesPagerAdapter mAdapter = new UpdatesPagerAdapter(this);
             mAdapter.submitList(allUpdates);
             updatesViewPager.setAdapter(mAdapter);
@@ -120,7 +120,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         recyclerView.setAdapter(mUserAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 //        mUserAdapter.submitList(mEvent.getUsersAttending());
-        mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
+        mModel.getUpdatedEvent(mEvent.getID(), "events2").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
 
 
         //Get image reference from cloud storage
@@ -211,7 +211,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
     }
 
     @Override
-    public void onItemSelected(@NotNull Map.Entry<String, String> mClub, @NotNull View view) {
+    public void onItemSelected(@NotNull Map.Entry<String, ? extends ArrayList<String>> mClub, @NotNull View view) {
 //        NavController navController = Navigation.findNavController(view);
 //        navController.navigate(ClubFragmentDirections.actionClubFragmentToClubDetailFragment(mClub));
     }
