@@ -12,12 +12,18 @@ import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.model.NUser;
 import com.example.prototype1.repository.EventClubRepository;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -35,6 +41,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<NEvent>> mUserEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserFeedLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserJioLiveData = new MutableLiveData<>();
+    private final FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
     //    private final MutableLiveData<ArrayList<NUser>> mAttendeesLiveData = new MutableLiveData<>();
 
     private final MutableLiveData<NUser> mUserLiveData = new MutableLiveData<>();
@@ -255,6 +262,19 @@ public class TitleFragmentViewModel extends AndroidViewModel {
             }
         }
         return mResults;
+    }
+
+    public Task<String> subscribeToClub(String clubName) {
+        //create the arguments to the callable function.
+        Map<String, Object> data = new HashMap<>();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        data.put("email", user.getUid());
+        data.put("club_name", clubName);
+
+        return mFunctions
+                .getHttpsCallable("subscribeToClub")
+                .call(data)
+                .continueWith(task -> null);
     }
 
 //    public LiveData<ArrayList<NUser>> getUsersAttending() {

@@ -44,25 +44,7 @@
             android:text="Events I'm Attending"
             android:textSize="24sp" />
 
-        <TextView
-            android:paddingTop="16dp"
-            android:layout_below="@id/recycler_casual_jios"
-            android:id="@+id/rsvp_feed_info"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingLeft="16dp"
-            android:text="From Clubs I've Followed"
-            android:textSize="24sp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:paddingLeft="8dp"
-            android:layout_marginTop="16dp"
-            android:id="@+id/recycler_events_feed"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/rsvp_feed_info"
-            android:background="@android:color/white"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 
         <androidx.recyclerview.widget.RecyclerView
@@ -72,6 +54,7 @@
             android:layout_below="@+id/rsvp_event_info"
             android:background="@android:color/white"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
 
         <TextView
             android:id="@+id/jios_info"
@@ -93,6 +76,47 @@
             android:nestedScrollingEnabled="false"
             android:paddingLeft="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <LinearLayout
+            android:id="@+id/clubs_following"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/recycler_casual_jios"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp">
+
+            <TextView
+                android:id="@+id/rsvp_feed_info"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="From Clubs I've Followed"
+                android:textSize="24sp" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/clubs_following_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="0"
+                android:clickable="true"
+                android:src="@drawable/ic_baseline_list_alt_24" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_events_feed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/clubs_following"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/white"
+            android:paddingLeft="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
 
     </RelativeLayout>
 </androidx.core.widget.NestedScrollView>
