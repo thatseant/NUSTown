@@ -85,7 +85,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         recyclerView.setAdapter(mUserAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 //        mUserAdapter.submitList(mEvent.getUsersAttending());
-        mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
+        mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
         return mRootView;
     }
 

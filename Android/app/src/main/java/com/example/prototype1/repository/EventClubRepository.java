@@ -69,7 +69,9 @@ public class EventClubRepository {
         for (String searchTerm : searchList) {
 
             if (searchType.equals("id")) {
-                tasks.add(FirebaseFirestore.getInstance().collection(collection).document(searchTerm).get());
+                if (!searchTerm.equals("")) {
+                    tasks.add(FirebaseFirestore.getInstance().collection(collection).document(searchTerm).get());
+                }
             } else {
                 tasks.add(FirebaseFirestore.getInstance().collection(collection).whereEqualTo(searchType, searchTerm).get());
             }
