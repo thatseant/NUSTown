@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener{
-    private ImageView mImage;
     private FirebaseFunctions mFunctions;
     private TitleFragmentViewModel mModel; //Events ViewModel
 
@@ -49,6 +48,7 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
                              Bundle savedInstanceState) {
         mFunctions = FirebaseFunctions.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         // Retrieve NClub object clicked on in RecyclerView
         assert getArguments() != null;
         NClub mClub = ClubDetailFragmentArgs.fromBundle(getArguments()).getMClub();
@@ -57,12 +57,12 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
 
 
         //Get image reference from cloud storage
-        mImage = rootView.findViewById(R.id.club_image);
+        ImageView mImage = rootView.findViewById(R.id.club_image);
 //        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 //        StorageReference imageRef = storageReference.child("clubs/" + mEvent.getImage());
 //
 //        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).into(mImage)); //TODO: Figure out how to load image without needing URL
-        if (mClub.getImgUrl() != "") {
+        if (!mClub.getImgUrl().equals("")) {
             Glide.with(requireContext()).load(mClub.getImgUrl()).apply(new RequestOptions()
                     .placeholder(R.drawable.nus)).thumbnail(0.02f).into(mImage);
         } else {
@@ -110,11 +110,9 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         });
 
 
-        subscribeButton.setOnClickListener(v -> {
-            subscribeToClub(user.getUid(), mClub.getName()).addOnSuccessListener(result -> {
-                mModel.setUser(user.getEmail());
-            });
-        });
+        subscribeButton.setOnClickListener(v -> subscribeToClub(user.getUid(), mClub.getName()).addOnSuccessListener(result -> {
+//            mModel.setUser(user.getEmail());
+        }));
 
         return rootView;
 

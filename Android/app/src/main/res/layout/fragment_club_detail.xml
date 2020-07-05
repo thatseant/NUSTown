@@ -9,7 +9,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="#E0E0E0">
 
 
@@ -147,7 +147,6 @@
                     android:id="@+id/recycler_club_events"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/club_info_text"
                     android:background="@android:color/white"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 

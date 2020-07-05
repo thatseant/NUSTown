@@ -35,7 +35,6 @@
         android:id="@+id/recycler_jio_users_attending"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/club_info_text"
         android:background="@android:color/white"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 

@@ -30,7 +30,7 @@
             android:paddingLeft="16dp"
             android:paddingTop="16dp"
             android:text="My Events Feed"
-            android:textSize="32dp"
+            android:textSize="32sp"
             android:textStyle="bold" />
 
 
@@ -42,7 +42,7 @@
             android:paddingLeft="16dp"
             android:paddingTop="24dp"
             android:text="Events I'm Attending"
-            android:textSize="24dp" />
+            android:textSize="24sp" />
 
         <TextView
             android:paddingTop="16dp"
@@ -52,7 +52,7 @@
             android:layout_height="match_parent"
             android:paddingLeft="16dp"
             android:text="From Clubs I've Followed"
-            android:textSize="24dp" />
+            android:textSize="24sp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:paddingLeft="8dp"
@@ -81,7 +81,7 @@
             android:paddingLeft="16dp"
             android:paddingTop="16dp"
             android:text="Casual Jios"
-            android:textSize="24dp" />
+            android:textSize="24sp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_casual_jios"

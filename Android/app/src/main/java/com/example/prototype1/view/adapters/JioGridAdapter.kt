@@ -58,7 +58,7 @@ class JioGridAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, Ji
                         .placeholder(R.drawable.nus)
                 ).thumbnail(0.02f).into(eventImage)
             } else {
-                eventImage.visibility = View.GONE;
+                eventImage.visibility = View.GONE
             }
 
 

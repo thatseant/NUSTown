@@ -45,7 +45,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="4dp"
-            android:layout_below="@+id/filter_bar_container"
+            android:layout_below="@+id/toolbar"
             android:background="@drawable/bg_shadow" />
 
         <!-- Empty list (pizza guy) view -->

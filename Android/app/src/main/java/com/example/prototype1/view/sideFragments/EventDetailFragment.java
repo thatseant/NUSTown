@@ -62,7 +62,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         // Retrieve NEvent object clicked on in RecyclerView
         assert getArguments() != null;
         NEvent mEvent = EventDetailFragmentArgs.fromBundle(getArguments()).getMEvent();
-        mModel.setEvent(mEvent.getID(), "events");
+//        mModel.getUpdatedEvent(mEvent.getID(), "events");
 
         View rootView = inflater.inflate(R.layout.fragment_event_detail, container, false);
 
@@ -83,7 +83,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
                 TextView clubTitle = rootView.findViewById(R.id.clubTitle);
                 clubTitle.setText(mClub.getName());
                 ImageView clubImage = rootView.findViewById(R.id.clubImage);
-                if (mClub.getImgUrl() != "") {
+                if (!mClub.getImgUrl().equals("")) {
                     Glide.with(requireContext()).load(mClub.getImgUrl()).apply(new RequestOptions()
                             .placeholder(R.drawable.nus)
                     ).thumbnail(0.02f).into(clubImage);
@@ -119,7 +119,8 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         final UsersAttendingAdapter mUserAdapter = new UsersAttendingAdapter();
         recyclerView.setAdapter(mUserAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mUserAdapter.submitList(mEvent.getUsersAttending());
+//        mUserAdapter.submitList(mEvent.getUsersAttending());
+        mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
 
 
         //Get image reference from cloud storage
@@ -164,10 +165,10 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         //RSVP Button invokes cloud function --- this
         rsvpButton.setOnClickListener(v -> {
             rsvpFunction(user.getUid(), mEvent.getID()).addOnSuccessListener(result -> {
-                mModel.setUser(user.getEmail());
-                if (getView() != null) {
-                    mModel.setEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
-                }
+//                mModel.setUser(user.getEmail());
+//                if (getView() != null) {
+//                    mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
+//                }
             });
         });
 
@@ -175,9 +176,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         if (Objects.equals(user.getEmail(), "sean@tan.com")) {
         Button deleteButton = rootView.findViewById(R.id.delete_button);
             deleteButton.setVisibility(View.VISIBLE);
-        deleteButton.setOnClickListener(v -> {
-            mModel.deleteEvent(mEvent);
-        });
+            deleteButton.setOnClickListener(v -> mModel.deleteEvent(mEvent));
         }
 
 

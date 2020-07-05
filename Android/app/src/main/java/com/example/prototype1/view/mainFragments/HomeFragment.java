@@ -27,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener, EventListAdapter.OnItemSelectedListener, JioGridAdapter.OnItemSelectedListener {
-    private TitleFragmentViewModel mModel; //Events ViewModel
     private InfoDialogFragment mInfoDialog;
 
     public HomeFragment() {
@@ -42,19 +41,15 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mInfoDialog = new InfoDialogFragment();
 
+        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         Toolbar mToolbar = rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbar);
-        // Inflate the layout for this fragment
-        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
-//        mModel.getUser().observe(getViewLifecycleOwner(), user -> {
-////            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("profile/" + user.getProfilePic());
-////            storageReference.getDownloadUrl().addOnSuccessListener(url ->
-////                Glide.with(getContext()).load(url).into(profilePic));
-//
-//        });
+        mInfoDialog = new InfoDialogFragment();
+
+        //Events ViewModel
+        TitleFragmentViewModel mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
 
         //Link Events Recycler View to Adapter
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_rsvp_events);

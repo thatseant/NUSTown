@@ -23,6 +23,9 @@ public class Filters {
         displayPast = true;
     }
 
+    public Filters(Boolean noFilter) {
+    }
+
     public boolean hasCategory() {
         return !(TextUtils.isEmpty(category));
     }
@@ -47,15 +50,13 @@ public class Filters {
         return place;
     }
 
-    public void setPlace(String place) {
-        this.place = place;
-    }
-
     public void setDisplayPast(Boolean displayPast) {
         this.displayPast = displayPast;
     }
 
-    public Boolean getDisplayPast() {return displayPast;}
+    public Boolean getDisplayPast() {
+        return displayPast;
+    }
 
 
     public String getSortBy() {
@@ -89,16 +90,6 @@ public class Filters {
             desc.append(category);
             desc.append("</b>");
         }
-
-//        if (category != null && place != null) {
-//            desc.append(" in ");
-//        }
-
-//        if (place != null) {
-//            desc.append("<b>");
-//            desc.append(place);
-//            desc.append("</b>");
-//        }
 
 
         return desc.toString();
