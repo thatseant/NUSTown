@@ -1,11 +1,16 @@
 package com.example.prototype1.repository;
 
 
+import androidx.annotation.Nullable;
+
 import com.example.prototype1.model.Filters;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -19,7 +24,7 @@ public class EventClubRepository {
     public EventClubRepository() {
     }
 
-    public void searchDocuments(Filters filters, String collection, final MyDocumentsCallback myDocumentsCallback) {
+    public void searchDocuments(Filters filters, String collection, int limit, DocumentSnapshot lastVisible, final MyDocumentsCallback myDocumentsCallback) {
         ArrayList<DocumentSnapshot> mResults = new ArrayList<>();
 
         Query query = FirebaseFirestore.getInstance().collection(collection);
@@ -36,6 +41,14 @@ public class EventClubRepository {
                 query = query.whereEqualTo("isPastEvent", false);
             }
             query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
+        }
+
+        if (lastVisible != null) {
+            query = query.startAfter(lastVisible);
+        }
+
+        if (limit != 0) {
+            query = query.limit(15);
         }
 
         //TODO: Add DisplayPast to query
@@ -56,7 +69,9 @@ public class EventClubRepository {
         for (String searchTerm : searchList) {
 
             if (searchType.equals("id")) {
-                tasks.add(FirebaseFirestore.getInstance().collection(collection).document(searchTerm).get());
+                if (!searchTerm.equals("")) {
+                    tasks.add(FirebaseFirestore.getInstance().collection(collection).document(searchTerm).get());
+                }
             } else {
                 tasks.add(FirebaseFirestore.getInstance().collection(collection).whereEqualTo(searchType, searchTerm).get());
             }
@@ -79,14 +94,36 @@ public class EventClubRepository {
         });
     }
 
-    public void getDoc(String fieldName, String fieldType, String collection, final MyDocumentCallback myDocumentCallback) {
+    public void getDoc(String fieldName, String fieldType, String collection, final MyDocumentCallback myDocumentCallback, final MyListenerCallback myListenerCallback) {
 
         if (fieldType.equals("id")) {
-            FirebaseFirestore.getInstance().collection(collection).document(fieldName).get().addOnSuccessListener(myDocumentCallback::onCallback);
-        } else {
-            FirebaseFirestore.getInstance().collection(collection).whereEqualTo(fieldType, fieldName).get().addOnSuccessListener(querySnapshot -> {
-                myDocumentCallback.onCallback(querySnapshot.getDocuments().get(0));
+//            FirebaseFirestore.getInstance().collection(collection).document(fieldName).get().addOnSuccessListener(myDocumentCallback::onCallback);
+            ListenerRegistration docListener = FirebaseFirestore.getInstance().collection(collection).document(fieldName).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                    @Nullable FirebaseFirestoreException e) {
+                    if (snapshot != null && snapshot.exists()) {
+                        myDocumentCallback.onCallback(snapshot);
+                    }
+                }
             });
+
+            myListenerCallback.onCallback(docListener);
+        } else {
+            FirebaseFirestore.getInstance().collection(collection).whereEqualTo(fieldType, fieldName).addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot snapshot,
+                                    @Nullable FirebaseFirestoreException e) {
+                    if (snapshot != null) {
+                        myDocumentCallback.onCallback(snapshot.getDocuments().get(0));
+                    }
+                }
+            });
+
+//            FirebaseFirestore.getInstance().collection(collection).whereEqualTo(fieldType, fieldName).get().addOnSuccessListener(querySnapshot -> {
+//                myDocumentCallback.onCallback(querySnapshot.getDocuments().get(0));
+//            });
         }
     }
 
@@ -112,6 +149,10 @@ public class EventClubRepository {
 
     public interface MyDocumentsCallback {
         void onCallback(ArrayList<DocumentSnapshot> resultList);
+    }
+
+    public interface MyListenerCallback {
+        void onCallback(ListenerRegistration docListener);
     }
 
 }

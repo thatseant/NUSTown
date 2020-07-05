@@ -3,6 +3,7 @@ package com.example.prototype1.view.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -29,8 +30,10 @@ class UsersAttendingAdapter : ListAdapter<String, UsersAttendingAdapter.ViewHold
 
     class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val userImage: CircularImageView = itemView.findViewById(R.id.userPic)
+        private val userName: TextView = itemView.findViewById(R.id.username)
 
         fun bind(item: String, holder: ViewHolder) {
+            userName.text = "nusboi" //TODO: Placeholder Username
             //Sets ImageView
             val storageReference = FirebaseStorage.getInstance().reference
             val imageRef = storageReference.child("profile/" + item + ".jpg")
