@@ -81,20 +81,34 @@ public class EditEventFragment extends Fragment {
             String newURLString = newEventURL.getText().toString();
             String newInfoString = newEventInfo.getText().toString();
 
-            updatedEvent = new NEvent(eventToEdit.getID(), newNameString, formattedTimeString, newCatString, newPlaceString, eventToEdit.getRating(),
-                    eventToEdit.getNumberAttending(), newURLString, eventToEdit.getImage(), newInfoString, eventToEdit.getImgUrl(), eventToEdit.getOrg(), eventToEdit.getUpdates(), eventToEdit.getMaxAttending(), eventToEdit.getUsersAttending()); //Changes name, place, category
+            updatedEvent = eventToEdit; //Changes name, place, category
+
+            updatedEvent.setTime(formattedTimeString);
+            updatedEvent.setName(newNameString);
+            updatedEvent.setCategory(newCatString);
+            updatedEvent.setPlace(newPlaceString);
+            updatedEvent.setUrl(newURLString);
+            updatedEvent.setInfo(newInfoString);
 
             mModel.updateEvent(updatedEvent, eventType); //Updates Repository via ViewModel
             mModel.getEventsData();
+
+//            if (eventType=="jios") {
+//                NavController navController = Navigation.findNavController(EditEventView);
+//                navController.navigate(EditEventFragmentDirections.actionEditEventToJioListFragment());
+//            } else {
+//                NavController navController = Navigation.findNavController(EditEventView);
+//                navController.navigate(EditEventFragmentDirections.actionEditEventToEventDetailFragment(updatedEvent, eventType));
+//            }
             NavController navController = Navigation.findNavController(EditEventView);
-            navController.navigate(EditEventFragmentDirections.actionEditEventToEventDetailFragment(updatedEvent, eventType));
+            navController.popBackStack();
         });
 
         //Close EventDetailFragment on buttonClose clicked
         ImageView buttonClose = EditEventView.findViewById(R.id.edit_button_back);
         buttonClose.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(EditEventView);
-            navController.navigate(EditEventFragmentDirections.actionEditEventToEventDetailFragment(eventToEdit, eventType));
+            navController.popBackStack();
         });
 
         return EditEventView;
