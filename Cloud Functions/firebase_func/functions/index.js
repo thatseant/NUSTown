@@ -57,6 +57,38 @@ exports.isPastEvent = functions.https.onRequest(async (req, res) => {
 
 });
 
+exports.isPastJio = functions.https.onRequest(async (req, res) => {
+
+    try {
+        promises = []
+        await admin.firestore().collection("jios").get().then(async (querySnapshot) => {
+
+            for (const doc of querySnapshot.docs) {
+                var data = doc.data()
+                if (data.time.toDate()  < new Date()) {
+                    promises.push(doc.ref.update({
+                        "isPastEvent": true
+                    }))
+                } else {
+                    promises.push(doc.ref.update({
+                        "isPastEvent": false
+                    }))
+                }
+            }
+
+            await Promise.all(promises)
+
+            return null;
+
+        })
+        res.status(200).json({ result: `Success` });
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+
+});
+
 
 exports.createEvent = functions.https.onRequest(async (req, res) => {
 
