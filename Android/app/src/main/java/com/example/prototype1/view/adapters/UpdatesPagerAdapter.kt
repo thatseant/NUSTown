@@ -2,7 +2,9 @@ package com.example.prototype1.view.adapters
 
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -28,14 +30,18 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
     }
 
     class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-//        private val postDate: TextView = itemView.findViewById(R.id.postTitle)
+        //        private val postDate: TextView = itemView.findViewById(R.id.postTitle)
         private val postCaption: TextView = itemView.findViewById(R.id.postStatus)
+        private val editButton: Button = itemView.findViewById(R.id.edit_post_button)
 //        private val clubImage: ImageView = itemView.findViewById(R.id.imageCell)
 
         fun bind(item: Map.Entry<String, String>, holder: ViewHolder, listener: OnItemSelectedListener) {
 //            postDate.text = item.key
             postCaption.text = item.value
-
+            editButton.visibility = VISIBLE
+            editButton.setOnClickListener { view ->
+                listener.onItemSelected(item, view)
+            }
             //Sets ImageView
 //            if (item.imgUrl != "") {
 //                Glide.with(holder.clubImage.context).load(item.imgUrl).apply(RequestOptions()
@@ -44,10 +50,6 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
 //            } else {
 //                clubImage.setImageResource(R.drawable.nus)
 //            }
-
-            itemView.setOnClickListener { view ->
-                listener.onItemSelected(item, view)
-            }
         }
 
         companion object {

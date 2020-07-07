@@ -153,6 +153,7 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_users_attending"
                     android:layout_width="match_parent"
@@ -185,6 +186,13 @@
                     android:textColor="@android:color/black"
                     android:textSize="14sp"
                     tools:text="" />
+
+                <Button
+                    android:id="@+id/new_post_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Create New Post"
+                    android:visibility="gone" />
 
                 <com.google.android.material.tabs.TabLayout
                     android:id="@+id/posts_tab_layout"
