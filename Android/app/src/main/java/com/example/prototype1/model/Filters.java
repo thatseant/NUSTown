@@ -14,6 +14,8 @@ public class Filters {
     private String category = null;
     private String place = null;
     private String sortBy;
+    private int club_category = 0;
+    private String club_category_text = null;
     private Boolean displayPast;
     private Query.Direction sortDirection;
 
@@ -26,12 +28,17 @@ public class Filters {
     public Filters(Boolean noFilter) {
     }
 
+
     public boolean hasCategory() {
         return !(TextUtils.isEmpty(category));
     }
 
     public boolean hasPlace() {
         return !(TextUtils.isEmpty(place));
+    }
+
+    public boolean hasClubCategory() {
+        return !(TextUtils.isEmpty(Integer.toString(club_category)));
     }
 
     public boolean hasSortBy() {
@@ -44,6 +51,22 @@ public class Filters {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public int getClubCategory() {
+        return club_category;
+    }
+
+    public void setClubCategory(int category) {
+        this.club_category = category;
+    }
+
+    public String getClubCategoryText() {
+        return club_category_text;
+    }
+
+    public void setClubCategoryText(String category) {
+        this.club_category_text = category;
     }
 
     public String getPlace() {
@@ -75,7 +98,6 @@ public class Filters {
         this.sortDirection = sortDirection;
     }
 
-
     public String getSearchDescription(Context context) {
         StringBuilder desc = new StringBuilder();
 
@@ -88,6 +110,25 @@ public class Filters {
         if (category != null) {
             desc.append("<b>");
             desc.append(category);
+            desc.append("</b>");
+        }
+
+
+        return desc.toString();
+    }
+
+    public String getClubSearchDescription(Context context) {
+        StringBuilder desc = new StringBuilder();
+
+        if (club_category == 0) {
+            desc.append("<b>");
+            desc.append(context.getString(R.string.all_clubs));
+            desc.append("</b>");
+        }
+
+        if (club_category != 0) {
+            desc.append("<b>");
+            desc.append(club_category_text);
             desc.append("</b>");
         }
 

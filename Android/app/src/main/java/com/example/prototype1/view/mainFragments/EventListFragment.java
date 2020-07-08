@@ -114,6 +114,7 @@ public class EventListFragment extends Fragment implements EventListAdapter.OnIt
             mModel.changeEventFilter(new Filters()); //Reset mFilter in ViewModel as mFilter is parameter of getData()
             mModel.mEventSearchCat.setValue("<b> All Events <b>");
             mModel.mEventSearchSort.setValue("sorted by date");
+            mModel.clearEventLiveData();
             mModel.getEventsData();
         });
 

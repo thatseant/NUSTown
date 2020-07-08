@@ -20,14 +20,17 @@ import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.ClubEventsAdapter;
 import com.example.prototype1.view.adapters.EventListAdapter;
 import com.example.prototype1.view.adapters.JioGridAdapter;
+import com.example.prototype1.view.dialogs.FollowingDialogFragment;
 import com.example.prototype1.view.dialogs.InfoDialogFragment;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
 
 
 public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener, EventListAdapter.OnItemSelectedListener, JioGridAdapter.OnItemSelectedListener {
     private InfoDialogFragment mInfoDialog;
+    private FollowingDialogFragment mClubDialog;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -47,6 +50,7 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         Toolbar mToolbar = rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbar);
         mInfoDialog = new InfoDialogFragment();
+        mClubDialog = new FollowingDialogFragment();
 
         //Events ViewModel
         TitleFragmentViewModel mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
@@ -71,6 +75,12 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         feedRecyclerView.setAdapter(mFeedAdapter);
         feedRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mModel.getUserFeed().observe(getViewLifecycleOwner(), mFeedAdapter::submitList);
+
+        FloatingActionButton followingButton = rootView.findViewById(R.id.clubs_following_button);
+
+        followingButton.setOnClickListener(v -> {
+            mClubDialog.show(requireActivity().getSupportFragmentManager(), FollowingDialogFragment.TAG);
+        });
 
         return rootView;
     }
