@@ -5,18 +5,20 @@ import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.prototype1.R
 
-class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.Entry<String, String>, UpdatesPagerAdapter.ViewHolder>(UpdatesDiffCallback()) {
+class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.Entry<String, ArrayList<String>>, UpdatesPagerAdapter.ViewHolder>(UpdatesDiffCallback()) {
     private val newListener: OnItemSelectedListener = mListener
 
 
     interface OnItemSelectedListener {
-        fun onItemSelected(MPost: Map.Entry<String, String>, view: View)
+        fun onItemSelected(MPost: Map.Entry<String, ArrayList<String>>, view: View)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {//Called for every item in RecyclerView when it becomes visible
@@ -33,20 +35,19 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
         //        private val postDate: TextView = itemView.findViewById(R.id.postTitle)
         private val postCaption: TextView = itemView.findViewById(R.id.postStatus)
         private val editButton: Button = itemView.findViewById(R.id.edit_post_button)
-//        private val clubImage: ImageView = itemView.findViewById(R.id.imageCell)
+        private val postImage: ImageView = itemView.findViewById(R.id.postImage)
 
-        fun bind(item: Map.Entry<String, String>, holder: ViewHolder, listener: OnItemSelectedListener) {
+        fun bind(item: Map.Entry<String, ArrayList<String>>, holder: ViewHolder, listener: OnItemSelectedListener) {
 //            postDate.text = item.key
-            postCaption.text = item.value
+            postCaption.text = item.value.get(0)
             editButton.visibility = VISIBLE
             editButton.setOnClickListener { view ->
                 listener.onItemSelected(item, view)
             }
             //Sets ImageView
 //            if (item.imgUrl != "") {
-//                Glide.with(holder.clubImage.context).load(item.imgUrl).apply(RequestOptions()
-//                        .placeholder(R.drawable.nus)
-//                ).thumbnail(0.02f).into(clubImage)
+            Glide.with(holder.postImage.context).load(item.value.get(1))
+                    .thumbnail(0.02f).into(postImage)
 //            } else {
 //                clubImage.setImageResource(R.drawable.nus)
 //            }
@@ -65,13 +66,13 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
 }
 
 //Only refreshes items that changed in RecyclerView
-class UpdatesDiffCallback : DiffUtil.ItemCallback<Map.Entry<String, String>>() {
+class UpdatesDiffCallback : DiffUtil.ItemCallback<Map.Entry<String, ArrayList<String>>>() {
 
-    override fun areItemsTheSame(oldItem: Map.Entry<String, String>, newItem: Map.Entry<String, String>): Boolean {
+    override fun areItemsTheSame(oldItem: Map.Entry<String, ArrayList<String>>, newItem: Map.Entry<String, ArrayList<String>>): Boolean {
         return oldItem.key == newItem.key
     }
 
-    override fun areContentsTheSame(oldItem: Map.Entry<String, String>, newItem: Map.Entry<String, String>): Boolean {
+    override fun areContentsTheSame(oldItem: Map.Entry<String, ArrayList<String>>, newItem: Map.Entry<String, ArrayList<String>>): Boolean {
         return oldItem == newItem
     }
 

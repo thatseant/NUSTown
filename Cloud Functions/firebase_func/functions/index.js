@@ -365,7 +365,7 @@ async function createInstaEvents (orgName, userID, numberOfPosts) {
             if (newPost) {
                 if (allPosts[newPost.id]) {
                     var postToUpdate = allPosts[newPost.id]
-                    postToUpdate.updates[newPost.postDate] = newPost.info
+                    postToUpdate.updates[newPost.postDate] = [newPost.info, newPost.imgUrl] //add imgURL to update
                     if (newPost.lastUpdate > postToUpdate.lastUpdate) {
                         postToUpdate.lastUpdate = newPost.lastUpdate
                     }
@@ -488,7 +488,7 @@ function InstaToDatabase(orgName, allMedia, i, userID) {
                 var updates = {}
 
                 let postDateString = moment(post_date).format("DD MMM")
-                updates[postDateString] = caption
+                updates[postDateString] = [caption, imageURL]
 
                 let newDoc = {
                     image: orgName + "_" + stringDate + ".png",
@@ -529,7 +529,7 @@ async function uploadEventFirestore(id, newDoc) {
                         newDoc.lastUpdate = doc.data().lastUpdate.toDate()
                     }
                 }
-                await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: newDoc.info, "org": newDoc.org, "lastUpdate": newDoc.lastUpdate})
+                await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: [newDoc.info, newDoc.imgUrl], "org": newDoc.org, "lastUpdate": newDoc.lastUpdate})
             }
             return null;
         }

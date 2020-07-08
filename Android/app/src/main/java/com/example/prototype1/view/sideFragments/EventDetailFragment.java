@@ -104,7 +104,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         //ViewPager Tabs for posts updates
         ViewPager2 updatesViewPager = rootView.findViewById(R.id.updatesViewPager);
         if (mEvent.getUpdates() != null) {
-            ArrayList<Map.Entry<? extends String, ? extends String>> allUpdates = new ArrayList<>(mEvent.getUpdates().entrySet());
+            ArrayList<Map.Entry<? extends String, ? extends ArrayList<String>>> allUpdates = new ArrayList<>(mEvent.getUpdates().entrySet());
             final UpdatesPagerAdapter mAdapter = new UpdatesPagerAdapter(this);
             mAdapter.submitList(allUpdates);
             updatesViewPager.setAdapter(mAdapter);
