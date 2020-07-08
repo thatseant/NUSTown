@@ -215,8 +215,8 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub) {
-        mRepository.multipleDocumentSearches(Collections.singletonList(mClub.getName()), "org", "events", docs ->
-                mClubEventLiveData.setValue(documentsToEvents(docs)));
+        mRepository.multipleDocumentSearches(Collections.singletonList(mClub.getName()), "org", "events",
+                docs -> mClubEventLiveData.setValue(documentsToEvents(docs)));
         return mClubEventLiveData;
     }
 
@@ -247,18 +247,20 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         for (DocumentSnapshot document : documents) {
             int newEventIndex = -1;
             NEvent newEvent = document.toObject(NEvent.class);
-            for (int i = 0; i < mResults.size(); i++) {
-                Date prevEventTime = mResults.get(i).getTime();
-                if (prevEventTime.compareTo(newEvent.getTime()) > 0) {//newEvent is before prevEvent
-                    newEventIndex = i;
-                    break;
+            if (newEvent != null) {
+                for (int i = 0; i < mResults.size(); i++) {
+                    Date prevEventTime = mResults.get(i).getTime();
+                    if (prevEventTime.compareTo(newEvent.getTime()) > 0) {//newEvent is before prevEvent
+                        newEventIndex = i;
+                        break;
+                    }
                 }
-            }
 
-            if (newEventIndex != -1) {
-                mResults.add(newEventIndex, newEvent);
-            } else {
-                mResults.add(newEvent);
+                if (newEventIndex != -1) {
+                    mResults.add(newEventIndex, newEvent);
+                } else {
+                    mResults.add(newEvent);
+                }
             }
         }
         return mResults;

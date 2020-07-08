@@ -203,9 +203,8 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         createNewPost.setVisibility(View.VISIBLE);//TODO: Visible only to organisers
         createNewPost.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
-            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", "", mEvent));
+            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", mEvent, new ArrayList()));
         });
-
 
         return rootView;
 
@@ -225,9 +224,9 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
     }
 
     @Override
-    public void onItemSelected(@NotNull Map.Entry<String, String> mPost, @NotNull View view) {
+    public void onItemSelected(@NotNull Map.Entry<String, ? extends ArrayList<String>> mPost, @NotNull View view) {
         NavController navController = Navigation.findNavController(view);
-        navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment(mPost.getValue(), mPost.getKey(), mEvent));
+        navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment(mPost.getKey(), mEvent, mPost.getValue()));
     }
 
 }

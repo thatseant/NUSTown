@@ -19,6 +19,7 @@ import com.example.prototype1.model.NEvent;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -28,13 +29,13 @@ import java.util.Map;
  */
 public class EditPostFragment extends Fragment {
     private TitleFragmentViewModel mModel;
-    private String captionToEdit;
+    private ArrayList captionToEdit;
     private String postDate;
     private NEvent updatedEvent;
 
     private NEvent mEvent;
     private String eventType;
-    private Map<String, String> existingUpdates;
+    private Map<String, ArrayList<String>> existingUpdates;
 
     public EditPostFragment() {
         // Required empty public constructor
@@ -63,7 +64,7 @@ public class EditPostFragment extends Fragment {
         EditText captionBox = editEventView.findViewById(R.id.postCaption);
         TextView captionTitle = editEventView.findViewById(R.id.postDate);
         captionTitle.setText(postDate);
-        captionBox.setText(captionToEdit);
+        captionBox.setText(captionToEdit.get(0).toString());
 
         updatedEvent = mEvent;
         existingUpdates = updatedEvent.getUpdates();
@@ -72,7 +73,10 @@ public class EditPostFragment extends Fragment {
 
         submitButton.setOnClickListener(v -> {
             String newCaption = captionBox.getText().toString();
-            existingUpdates.put(postDate, newCaption);
+            ArrayList<String> newUpdate = new ArrayList<>();
+            newUpdate.add(newCaption);
+            newUpdate.add("");
+            existingUpdates.put(postDate, newUpdate);
             updatedEvent.setUpdates(existingUpdates);
             mModel.updateEvent(updatedEvent, "events");
             NavController navController = Navigation.findNavController(editEventView);

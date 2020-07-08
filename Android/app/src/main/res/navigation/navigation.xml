@@ -109,9 +109,6 @@
         android:name="com.example.prototype1.view.sideFragments.EditPostFragment"
         android:label="EditPostFragment">
         <argument
-            android:name="Post Caption"
-            app:argType="string" />
-        <argument
             android:name="Post Date"
             app:argType="string" />
         <argument
@@ -121,6 +118,9 @@
             android:id="@+id/action_editPostFragment_to_eventDetailFragment"
             app:popUpTo="@id/eventDetailFragment"
             app:popUpToInclusive="true" />
+        <argument
+            android:name="Post Caption"
+            app:argType="java.util.ArrayList" />
     </fragment>
 
 

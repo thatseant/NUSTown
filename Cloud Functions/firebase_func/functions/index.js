@@ -537,7 +537,7 @@ async function uploadEventFirestore(id, newDoc) {
 }
 
 
-//allInsta()
+// allInsta()
 
 
 //trigger when a new use signed up
