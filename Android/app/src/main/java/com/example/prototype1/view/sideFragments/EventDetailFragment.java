@@ -45,6 +45,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
     private FirebaseFunctions mFunctions;
     private TitleFragmentViewModel mModel;
     private String eventType;
+    NEvent mEvent;
     Button rsvpButton;
 
 
@@ -61,7 +62,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         // Retrieve NEvent object clicked on in RecyclerView
         assert getArguments() != null;
-        NEvent mEvent = EventDetailFragmentArgs.fromBundle(getArguments()).getMEvent();
+        mEvent = EventDetailFragmentArgs.fromBundle(getArguments()).getMEvent();
 //        mModel.getUpdatedEvent(mEvent.getID(), "events");
 
         View rootView = inflater.inflate(R.layout.fragment_event_detail, container, false);
@@ -111,6 +112,12 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
             new TabLayoutMediator(tabLayout, updatesViewPager,
                     (tab, position) -> tab.setText(allUpdates.get(position).getKey())
             ).attach();
+            updatesViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() { //ensures tab dynamically resize to fit content
+                @Override
+                public void onPageSelected(int position) {
+                    mAdapter.notifyDataSetChanged();
+                }
+            });
         }
 
 
@@ -192,6 +199,13 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
             });
         }
 
+        Button createNewPost = rootView.findViewById(R.id.new_post_button);
+        createNewPost.setVisibility(View.VISIBLE);//TODO: Visible only to organisers
+        createNewPost.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(rootView);
+            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", "", mEvent));
+        });
+
 
         return rootView;
 
@@ -211,9 +225,9 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
     }
 
     @Override
-    public void onItemSelected(@NotNull Map.Entry<String, String> mClub, @NotNull View view) {
-//        NavController navController = Navigation.findNavController(view);
-//        navController.navigate(ClubFragmentDirections.actionClubFragmentToClubDetailFragment(mClub));
+    public void onItemSelected(@NotNull Map.Entry<String, String> mPost, @NotNull View view) {
+        NavController navController = Navigation.findNavController(view);
+        navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment(mPost.getValue(), mPost.getKey(), mEvent));
     }
 
 }

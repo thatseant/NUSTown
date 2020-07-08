@@ -9,6 +9,13 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <Button
+            android:id="@+id/edit_post_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Edit"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/postStatus"
             style="@style/TextAppearance.AppCompat.Headline"
