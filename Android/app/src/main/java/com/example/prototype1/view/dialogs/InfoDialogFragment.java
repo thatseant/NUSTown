@@ -12,12 +12,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.UsersAttendingAdapter;
+import com.example.prototype1.view.mainFragments.JioListFragmentDirections;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,13 +47,14 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
     private TitleFragmentViewModel mModel;
     Button rsvpButton;
     private NEvent mEvent;
+    private View mRootView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View mRootView = inflater.inflate(R.layout.fragment_info_dialog, container, false);
+        mRootView = inflater.inflate(R.layout.fragment_info_dialog, container, false);
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
         mEvent = getArguments().getParcelable("mEvent");
         rsvpButton = mRootView.findViewById(R.id.button_jio_rsvp);
@@ -79,6 +83,11 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
 
         mRootView.findViewById(R.id.button_jio_rsvp).setOnClickListener(this);
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
+
+        if (Objects.equals(user.getEmail(), mEvent.getOrgUser())) {
+            mRootView.findViewById(R.id.edit_jio_button).setVisibility(View.VISIBLE);
+            mRootView.findViewById(R.id.edit_jio_button).setOnClickListener(this);
+        }
 
         //Link Users Recycler View to Adapter
         RecyclerView recyclerView = mRootView.findViewById(R.id.recycler_jio_users_attending);
@@ -118,6 +127,10 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
             case R.id.button_cancel:
                 dismiss();
                 break;
+            case R.id.edit_jio_button:
+                NavController navController = NavHostFragment.findNavController(this);
+                navController.navigate(JioListFragmentDirections.actionJioListFragmentToEditEvent(mEvent, "jios"));
+                dismiss();
         }
     }
 

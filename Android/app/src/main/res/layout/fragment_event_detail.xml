@@ -27,12 +27,12 @@
                 android:contentDescription="@string/eventdetailimage"
                 tools:src="@drawable/climb" />
 
+            <!-- Back button -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
                 android:background="@drawable/gradient_up" />
 
-            <!-- Back button -->
             <ImageView
                 android:id="@+id/event_button_back"
                 android:layout_width="wrap_content"

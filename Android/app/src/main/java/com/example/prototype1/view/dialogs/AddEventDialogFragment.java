@@ -85,6 +85,7 @@ public class AddEventDialogFragment extends DialogFragment implements View.OnCli
         newJio.setName(newNameString);
         assert time != null;
         newJio.setTime(time);
+        newJio.setOrgUser(mModel.getUser().getValue().getEmail());
         mModel.addEvent(newJio, "jios");
         dismiss();
     }

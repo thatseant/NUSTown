@@ -62,7 +62,8 @@ public class JioListFragment extends Fragment implements JioListAdapter.OnItemSe
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
         //Link Adapter to getData() in ViewModel; getData() returns jioList
-        mModel.getJiosData().observe(getViewLifecycleOwner(), mAdapter::submitList);
+        mModel.getJiosData().observe(getViewLifecycleOwner(),
+                list -> mAdapter.submitList(list));
 
         //Automatically changes text to in search box to reflect current filter
         TextView mSearchCat = rootView.findViewById(R.id.text_current_search);

@@ -121,7 +121,7 @@ public class EventClubRepository {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot snapshot,
                                     @Nullable FirebaseFirestoreException e) {
-                    if (snapshot != null) {
+                    if (snapshot.getDocuments().size() != 0) {
                         myDocumentCallback.onCallback(snapshot.getDocuments().get(0));
                     }
                 }
