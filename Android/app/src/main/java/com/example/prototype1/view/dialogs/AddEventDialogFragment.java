@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +35,8 @@ public class AddEventDialogFragment extends DialogFragment implements View.OnCli
     private View mRootView;
 
     private TitleFragmentViewModel mModel;
+    DatePicker datePicker;
+    TimePicker timePicker;
 
     @Nullable
     @Override
@@ -44,6 +48,10 @@ public class AddEventDialogFragment extends DialogFragment implements View.OnCli
 
         mRootView.findViewById(R.id.button_add).setOnClickListener(this);
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
+
+        datePicker = mRootView.findViewById(R.id.datePicker);
+        timePicker = mRootView.findViewById(R.id.timePicker);
+        timePicker.setIs24HourView(true);
 
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class); //returns same instance of ViewModel in TitleFragment
         return mRootView;
@@ -76,16 +84,21 @@ public class AddEventDialogFragment extends DialogFragment implements View.OnCli
 
     private void onApplyClicked() throws ParseException {
         EditText newEventName = mRootView.findViewById(R.id.newJioName);
-        EditText newEventTime = mRootView.findViewById(R.id.newJioTime);
+        EditText newEventPlace = mRootView.findViewById(R.id.newJioPlace);
+
+
         String newNameString = newEventName.getText().toString();
-        String newTimeString = newEventTime.getText().toString();
-        DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
-        Date time = format.parse(newTimeString);
+        String newPlaceString = newEventPlace.getText().toString();
+
+        String dateFromPicker = Integer.toString(datePicker.getDayOfMonth()) + "/" + (datePicker.getMonth() + 1) + "/" + datePicker.getYear() + " " + timePicker.getHour() + ":" + timePicker.getMinute();
+        DateFormat dateFormat = new SimpleDateFormat("d/M/yyyy H:m", Locale.ENGLISH);
+        Date formattedTimeString = dateFormat.parse(dateFromPicker);
+
         NEvent newJio = new NEvent();
         newJio.setName(newNameString);
-        assert time != null;
-        newJio.setTime(time);
+        newJio.setTime(formattedTimeString);
         newJio.setOrgUser(mModel.getUser().getValue().getEmail());
+        newJio.setPlace(newPlaceString);
         mModel.addEvent(newJio, "jios");
         dismiss();
     }

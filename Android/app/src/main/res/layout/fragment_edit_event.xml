@@ -43,9 +43,10 @@
 
         <EditText
             android:id="@+id/newEventName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:ems="10"
             android:hint="@string/newEventName"
             android:importantForAutofill="no"
@@ -63,9 +64,10 @@
 
         <EditText
             android:id="@+id/newEventPlace"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:ems="10"
             android:hint="@string/newEventPlace"
             android:importantForAutofill="no"
@@ -83,8 +85,9 @@
 
         <EditText
             android:id="@+id/newEventCat"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:ems="10"
             android:hint="@string/newEventCat"
@@ -101,15 +104,36 @@
             android:textColor="#000000" />
 
 
-        <EditText
-            android:id="@+id/newEventTime"
-            android:layout_width="wrap_content"
+        <!--        <EditText-->
+        <!--            android:id="@+id/newEventTime"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="16dp"-->
+        <!--            android:ems="10"-->
+        <!--            android:hint="@string/time"-->
+        <!--            android:importantForAutofill="no"-->
+        <!--            android:inputType="textPersonName" />-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:ems="10"
-            android:hint="@string/time"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName" />
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <DatePicker
+                android:id="@+id/datePicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:calendarViewShown="false"
+                android:datePickerMode="spinner" />
+
+            <TimePicker
+                android:id="@+id/timePicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:timePickerMode="spinner" />
+
+        </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
@@ -122,7 +146,7 @@
 
         <EditText
             android:id="@+id/newEventUrl"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:ems="10"
