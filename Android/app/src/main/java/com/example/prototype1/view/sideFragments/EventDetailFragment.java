@@ -229,4 +229,12 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment(mPost.getKey(), mEvent, mPost.getValue()));
     }
 
+    @Override
+    public void deleteItemSelected(@NotNull Map.Entry<String, ? extends ArrayList<String>> mPost, @NotNull View view) {
+        Map<String, ArrayList<String>> existingUpdates = mEvent.getUpdates();
+        existingUpdates.remove(mPost.getKey());
+        mEvent.setUpdates(existingUpdates);
+        mModel.updateEvent(mEvent, "events");
+    }
+
 }

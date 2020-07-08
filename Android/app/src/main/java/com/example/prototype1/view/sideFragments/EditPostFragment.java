@@ -1,5 +1,7 @@
 package com.example.prototype1.view.sideFragments;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +34,8 @@ public class EditPostFragment extends Fragment {
     private ArrayList captionToEdit;
     private String postDate;
     private NEvent updatedEvent;
+    private Uri photoURI;
+    private int changePhotoFlag = 0;
 
     private NEvent mEvent;
     private String eventType;
@@ -64,8 +68,10 @@ public class EditPostFragment extends Fragment {
         EditText captionBox = editEventView.findViewById(R.id.postCaption);
         TextView captionTitle = editEventView.findViewById(R.id.postDate);
         captionTitle.setText(postDate);
-        captionBox.setText(captionToEdit.get(0).toString());
 
+        if (captionToEdit.size() != 0) {
+            captionBox.setText(captionToEdit.get(0).toString());
+        }
         updatedEvent = mEvent;
         existingUpdates = updatedEvent.getUpdates();
 
@@ -75,10 +81,22 @@ public class EditPostFragment extends Fragment {
             String newCaption = captionBox.getText().toString();
             ArrayList<String> newUpdate = new ArrayList<>();
             newUpdate.add(newCaption);
-            newUpdate.add("");
+
+            if (changePhotoFlag == 0) {
+                if (captionToEdit.size() != 0) {
+                    newUpdate.add(captionToEdit.get(1).toString());
+                }
+            } else {
+                newUpdate.add(mEvent.getID() + "/" + postDate);
+            }
+
             existingUpdates.put(postDate, newUpdate);
             updatedEvent.setUpdates(existingUpdates);
             mModel.updateEvent(updatedEvent, "events");
+
+            if (photoURI != null) {
+                mModel.uploadPic("updates", mEvent.getID() + "/" + postDate, photoURI);
+            }
             NavController navController = Navigation.findNavController(editEventView);
             navController.popBackStack();
         });
@@ -89,6 +107,24 @@ public class EditPostFragment extends Fragment {
             navController.popBackStack();
         });
 
+
+        Button photoButton = editEventView.findViewById(R.id.photoBtn);
+        photoButton.setOnClickListener(v -> {
+            changePhotoFlag = 1;
+            Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(pickPhoto, 1);//one can be replaced with any action code
+        });
+
         return editEventView;
     }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == getActivity().RESULT_OK) {
+            photoURI = data.getData();
+        }
+    }
+
 }

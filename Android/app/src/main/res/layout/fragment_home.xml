@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -22,11 +23,19 @@
             app:titleMarginStart="24dp"
             app:titleTextColor="@android:color/white" />
 
+        <Button
+            android:id="@+id/setProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar"
+            android:text="Add Profile Pic" />
+
+
         <TextView
             android:id="@+id/homepage_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/toolbar"
+            android:layout_below="@id/setProfile"
             android:paddingLeft="16dp"
             android:paddingTop="16dp"
             android:text="My Events Feed"

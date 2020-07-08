@@ -1,7 +1,9 @@
 package com.example.prototype1.viewmodel;
 
 import android.app.Application;
+import android.net.Uri;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -12,12 +14,17 @@ import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.model.NUser;
 import com.example.prototype1.repository.EventClubRepository;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -277,6 +284,25 @@ public class TitleFragmentViewModel extends AndroidViewModel {
                 .getHttpsCallable("subscribeToClub")
                 .call(data)
                 .continueWith(task -> null);
+    }
+
+    public void uploadPic(String collection, String fileName, Uri file) {
+        StorageReference imageRef = FirebaseStorage.getInstance().getReference().child(collection + "/" + fileName + ".jpg");
+        UploadTask uploadTask = imageRef.putFile(file);
+
+// Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
+            }
+        });
     }
 
 //    public LiveData<ArrayList<NUser>> getUsersAttending() {

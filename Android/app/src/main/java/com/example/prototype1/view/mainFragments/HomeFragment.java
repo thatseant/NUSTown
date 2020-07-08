@@ -1,9 +1,12 @@
 package com.example.prototype1.view.mainFragments;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -24,6 +27,8 @@ import com.example.prototype1.view.dialogs.FollowingDialogFragment;
 import com.example.prototype1.view.dialogs.InfoDialogFragment;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -31,6 +36,9 @@ import org.jetbrains.annotations.NotNull;
 public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener, EventListAdapter.OnItemSelectedListener, JioGridAdapter.OnItemSelectedListener {
     private InfoDialogFragment mInfoDialog;
     private FollowingDialogFragment mClubDialog;
+    String currentPhotoPath;
+    TitleFragmentViewModel mModel;
+    View rootView;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -46,14 +54,14 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        rootView = inflater.inflate(R.layout.fragment_home, container, false);
         Toolbar mToolbar = rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbar);
         mInfoDialog = new InfoDialogFragment();
         mClubDialog = new FollowingDialogFragment();
 
         //Events ViewModel
-        TitleFragmentViewModel mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
+        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
 
         //Link Events Recycler View to Adapter
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_rsvp_events);
@@ -82,7 +90,25 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
             mClubDialog.show(requireActivity().getSupportFragmentManager(), FollowingDialogFragment.TAG);
         });
 
+        Button profileButton = rootView.findViewById(R.id.setProfile);
+        profileButton.setOnClickListener(v -> {
+            Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(pickPhoto, 1);//one can be replaced with any action code
+        });
+
         return rootView;
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == getActivity().RESULT_OK) {
+            Uri file = data.getData();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            mModel.uploadPic("profile", user.getUid(), file);
+
+        }
     }
 
     @Override

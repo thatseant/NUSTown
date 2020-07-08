@@ -32,6 +32,14 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textStyle="bold" />
 
+        <Button
+            android:id="@+id/photoBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/postDate"
+            android:layout_marginStart="16dp"
+            android:text="Change Photo" />
+
         <EditText
             android:id="@+id/postCaption"
             android:layout_width="match_parent"
