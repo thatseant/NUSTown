@@ -2,15 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:orientation="vertical">
 
     <TextView
         style="@style/AppTheme.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-
+        android:layout_margin="16dp"
         android:text="Open Jio!" />
 
     <TextView
@@ -37,21 +35,61 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="Activity Time: (DD/MM/YYYY HH:MM)"
+        android:layout_marginTop="16dp"
+        android:text="Activity Place:"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="#000000" />
+        android:textColor="@android:color/black" />
 
 
     <EditText
-        android:id="@+id/newJioTime"
+        android:id="@+id/newJioPlace"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:ems="10"
-        android:hint="@string/time"
+        android:hint="Place"
         android:importantForAutofill="no"
         android:inputType="textPersonName" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Activity Time:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <DatePicker
+            android:id="@+id/datePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-20dp"
+            android:layout_marginRight="-20dp"
+            android:calendarViewShown="false"
+            android:datePickerMode="spinner"
+            android:scaleX="0.9"
+            android:scaleY="0.9" />
+
+        <TimePicker
+            android:id="@+id/timePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-20dp"
+            android:layout_marginRight="-20dp"
+            android:scaleX="0.9"
+            android:scaleY="0.9"
+            android:timePickerMode="spinner" />
+
+    </LinearLayout>
 
     <!-- Cancel and apply buttons -->
     <LinearLayout

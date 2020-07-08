@@ -68,6 +68,12 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
 
         });
 
+        if (mEvent.getPlace() != "") {
+            TextView eventPlace = mRootView.findViewById(R.id.jioDialogPlace);
+            eventPlace.setText(mEvent.getPlace());
+            eventPlace.setVisibility(View.VISIBLE);
+        }
+
         TextView jioAttendees = mRootView.findViewById(R.id.jioDialogAttendees);
         mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), updatedEvent -> jioAttendees.setText(updatedEvent.getNumberAttending() + " Attending"));
         user = FirebaseAuth.getInstance().getCurrentUser();
