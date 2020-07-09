@@ -16,6 +16,11 @@
             android:text="Edit"
             android:visibility="gone" />
 
+        <ImageView
+            android:id="@+id/postImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <TextView
             android:id="@+id/postStatus"
             style="@style/TextAppearance.AppCompat.Headline"
@@ -26,6 +31,13 @@
             android:autoLink="web"
             android:text="@string/statusCellPlaceholder"
             android:textSize="17sp" />
+
+        <Button
+            android:id="@+id/delete_post_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:visibility="gone" />
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

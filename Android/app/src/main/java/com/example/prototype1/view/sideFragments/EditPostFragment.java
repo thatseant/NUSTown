@@ -1,5 +1,7 @@
 package com.example.prototype1.view.sideFragments;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,7 @@ import com.example.prototype1.model.NEvent;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -28,13 +31,15 @@ import java.util.Map;
  */
 public class EditPostFragment extends Fragment {
     private TitleFragmentViewModel mModel;
-    private String captionToEdit;
+    private ArrayList captionToEdit;
     private String postDate;
     private NEvent updatedEvent;
+    private Uri photoURI;
+    private int changePhotoFlag = 0;
 
     private NEvent mEvent;
     private String eventType;
-    private Map<String, String> existingUpdates;
+    private Map<String, ArrayList<String>> existingUpdates;
 
     public EditPostFragment() {
         // Required empty public constructor
@@ -63,8 +68,10 @@ public class EditPostFragment extends Fragment {
         EditText captionBox = editEventView.findViewById(R.id.postCaption);
         TextView captionTitle = editEventView.findViewById(R.id.postDate);
         captionTitle.setText(postDate);
-        captionBox.setText(captionToEdit);
 
+        if (captionToEdit.size() != 0) {
+            captionBox.setText(captionToEdit.get(0).toString());
+        }
         updatedEvent = mEvent;
         existingUpdates = updatedEvent.getUpdates();
 
@@ -72,9 +79,24 @@ public class EditPostFragment extends Fragment {
 
         submitButton.setOnClickListener(v -> {
             String newCaption = captionBox.getText().toString();
-            existingUpdates.put(postDate, newCaption);
+            ArrayList<String> newUpdate = new ArrayList<>();
+            newUpdate.add(newCaption);
+
+            if (changePhotoFlag == 0) {
+                if (captionToEdit.size() != 0) {
+                    newUpdate.add(captionToEdit.get(1).toString());
+                }
+            } else {
+                newUpdate.add(mEvent.getID() + "/" + postDate);
+            }
+
+            existingUpdates.put(postDate, newUpdate);
             updatedEvent.setUpdates(existingUpdates);
             mModel.updateEvent(updatedEvent, "events");
+
+            if (photoURI != null) {
+                mModel.uploadPic("updates", mEvent.getID() + "/" + postDate, photoURI);
+            }
             NavController navController = Navigation.findNavController(editEventView);
             navController.popBackStack();
         });
@@ -85,6 +107,24 @@ public class EditPostFragment extends Fragment {
             navController.popBackStack();
         });
 
+
+        Button photoButton = editEventView.findViewById(R.id.photoBtn);
+        photoButton.setOnClickListener(v -> {
+            changePhotoFlag = 1;
+            Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(pickPhoto, 1);//one can be replaced with any action code
+        });
+
         return editEventView;
     }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == getActivity().RESULT_OK) {
+            photoURI = data.getData();
+        }
+    }
+
 }

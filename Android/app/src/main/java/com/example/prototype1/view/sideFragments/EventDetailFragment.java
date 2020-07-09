@@ -104,7 +104,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         //ViewPager Tabs for posts updates
         ViewPager2 updatesViewPager = rootView.findViewById(R.id.updatesViewPager);
         if (mEvent.getUpdates() != null) {
-            ArrayList<Map.Entry<? extends String, ? extends String>> allUpdates = new ArrayList<>(mEvent.getUpdates().entrySet());
+            ArrayList<Map.Entry<? extends String, ? extends ArrayList<String>>> allUpdates = new ArrayList<>(mEvent.getUpdates().entrySet());
             final UpdatesPagerAdapter mAdapter = new UpdatesPagerAdapter(this);
             mAdapter.submitList(allUpdates);
             updatesViewPager.setAdapter(mAdapter);
@@ -203,9 +203,8 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         createNewPost.setVisibility(View.VISIBLE);//TODO: Visible only to organisers
         createNewPost.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
-            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", "", mEvent));
+            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", mEvent, new ArrayList()));
         });
-
 
         return rootView;
 
@@ -225,9 +224,17 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
     }
 
     @Override
-    public void onItemSelected(@NotNull Map.Entry<String, String> mPost, @NotNull View view) {
+    public void onItemSelected(@NotNull Map.Entry<String, ? extends ArrayList<String>> mPost, @NotNull View view) {
         NavController navController = Navigation.findNavController(view);
-        navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment(mPost.getValue(), mPost.getKey(), mEvent));
+        navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment(mPost.getKey(), mEvent, mPost.getValue()));
+    }
+
+    @Override
+    public void deleteItemSelected(@NotNull Map.Entry<String, ? extends ArrayList<String>> mPost, @NotNull View view) {
+        Map<String, ArrayList<String>> existingUpdates = mEvent.getUpdates();
+        existingUpdates.remove(mPost.getKey());
+        mEvent.setUpdates(existingUpdates);
+        mModel.updateEvent(mEvent, "events");
     }
 
 }
