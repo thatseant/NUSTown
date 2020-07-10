@@ -9,7 +9,7 @@ const fs = require("fs");
 var allSettled = require('promise.allsettled');
 
 
-const serviceAccount = require("./NUSTown-ffc8c62cae11");
+const serviceAccount = require("./NUSTown-ffc8c62cae11.json");
 
 const { v4: uuidv4 } = require('uuid');
 admin.initializeApp({
@@ -147,6 +147,8 @@ exports.allInsta = functions.https.onRequest(async (req, res) => {
         let numberOfPosts = "5"
         let promises = []
         for (let i=0; i<numberOfClubs.length; i++) {
+            console.log("In the for loop");
+            console.log(i);
             let clubData = JSONData.data.items[i]
             /* eslint-disable no-await-in-loop */
             await(getInstaFromUsername(clubData, numberOfPosts))
@@ -160,58 +162,44 @@ exports.allInsta = functions.https.onRequest(async (req, res) => {
     }
 })
 
-async function allInsta() { //Run Locally
-    try {
-        let apiURL = "https://nus.campuslabs.com/engage/api/discovery/organization?take=500"
-        const JSONData = await axios.get(apiURL)
-        let numberOfClubs = JSONData.data.items
-        let numberOfPosts = "5"
-        let promises = []
-        for (let i=0; i<numberOfClubs.length; i++) {
-            let clubData = JSONData.data.items[i]
-            /* eslint-disable no-await-in-loop */
-            await(getInstaFromUsername(clubData, numberOfPosts))
-            /* eslint-enable no-await-in-loop */
-        }
-        // await Promise.all(promises)
-    } catch (err) {
-        console.log(err);
-    }
-}
+//async function allInsta() { //Run Locally
+//    try {
+//        let apiURL = "https://nus.campuslabs.com/engage/api/discovery/organization?take=500"
+//        const JSONData = await axios.get(apiURL)
+//        let numberOfClubs = JSONData.data.items
+//        let numberOfPosts = "5"
+//        let promises = []
+//        for (let i=0; i<numberOfClubs.length; i++) {
+//            let clubData = JSONData.data.items[i]
+//            /* eslint-disable no-await-in-loop */
+//            await(getInstaFromUsername(clubData, numberOfPosts))
+//            /* eslint-enable no-await-in-loop */
+//        }
+//        // await Promise.all(promises)
+//    } catch (err) {
+//        console.log(err);
+//    }
+//}
 
 async function getInstaFromUsername(clubData, numberOfPosts) {
 
-    let instaUrl = clubData.socialMedia.InstagramUrl
     let orgName = clubData.name
-    if (instaUrl) {
-        let instaUsernamePre = instaUrl.split(".com/")[1]
-        let instaUsername = instaUsernamePre.split("/")[0]
-
-
-        var options = {
-            url: 'https://www.instagram.com/web/search/topsearch/?query=' + instaUsername,
-            method: 'GET',
-            headers: {
-                'x-requested-with' : 'XMLHttpRequest',
-                'accept-language'  : 'en-US,en;q=0.8,pt;q=0.6,hi;q=0.4',
-                'User-Agent'       : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-                'referer'          : 'https://www.instagram.com/dress_blouse_designer/',
-                'Cookie'           : '',
-                'Accept'           : '*/*',
-                'Connection'       : 'keep-alive',
-                'authority'        : 'www.instagram.com'
-            }
-        };
-
-
-
-        let instaJSON = await axios.get('https://www.instagram.com/web/search/topsearch/?query=' + instaUsername)
-        if (instaJSON.data.users[0]) {
-            instaID = instaJSON.data.users[0].user.pk
-            await createInstaEvents(orgName, instaID, numberOfPosts)
-        }
-
-    }
+    console.log(orgName);
+    const insta = admin.firestore().collection('Clubs Instagram ID').doc(orgName);
+    const doc = await insta.get();
+    if (doc.exists) {
+        let instaID = doc.data().instagram_ID
+        await createInstaEvents(orgName, instaID, numberOfPosts)
+        //return admin.firestore().collection('testing1').doc(orgName).set(
+        //    {instagram_ID : doc.data().instagram_ID}
+        //);
+      } else {
+        console.log("This organisation doesn't have instagram ID");
+        //return admin.firestore().collection('testing1').doc(orgName).set(
+        //    {instagram_ID:orgName}
+        //);
+      }
+    //await createInstaEvents(orgName, instaID, numberOfPosts)
 }
 
 async function createNSync(URL, type) {
@@ -518,10 +506,10 @@ function InstaToDatabase(orgName, allMedia, i, userID) {
 }
 
 async function uploadEventFirestore(id, newDoc) {
-    await admin.firestore().collection('events').doc(id).get().then(
+    await admin.firestore().collection('events3').doc(id).get().then(
         async (doc) => {
             if (!doc.exists) {
-                await admin.firestore().collection('events').doc(id).set(newDoc)
+                await admin.firestore().collection('events3').doc(id).set(newDoc)
             } else if (doc.exists) {
                 if (doc.data().lastUpdate) {
                     if (newDoc.lastUpdate < doc.data().lastUpdate.toDate()) {
@@ -529,7 +517,7 @@ async function uploadEventFirestore(id, newDoc) {
                         newDoc.lastUpdate = doc.data().lastUpdate.toDate()
                     }
                 }
-                await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: [newDoc.info, newDoc.imgUrl], "org": newDoc.org, "lastUpdate": newDoc.lastUpdate})
+                await admin.firestore().collection('events3').doc(id).update({["updates." + newDoc.postDate]: [newDoc.info, newDoc.imgUrl], "org": newDoc.org, "lastUpdate": newDoc.lastUpdate})
             }
             return null;
         }
@@ -730,3 +718,14 @@ async function download (newURL, downloadPath) {
         writer.on('error', reject)
     })
 }
+
+
+exports.testingforinsta = functions.https.onRequest(async (request, response) => {
+
+    const insta = admin.firestore().collection('Clubs Instagram ID').doc('Kent Ridge Hall');
+    const doc = await insta.get();
+    response.send("Done");
+    return admin.firestore().collection('testing').doc('testingforjioevent2').set(
+        {instagram_ID : doc.data().instagram_ID}
+    );
+})
