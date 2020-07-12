@@ -145,16 +145,17 @@ exports.allInsta = functions.https.onRequest(async (req, res) => {
         const JSONData = await axios.get(apiURL)
         let numberOfClubs = JSONData.data.items
         let numberOfPosts = "5"
-        let promises = []
+        promises = []
         for (let i=0; i<numberOfClubs.length; i++) {
             console.log("In the for loop");
             console.log(i);
             let clubData = JSONData.data.items[i]
             /* eslint-disable no-await-in-loop */
-            await(getInstaFromUsername(clubData, numberOfPosts))
+            promises.push(getInstaFromUsername(clubData, numberOfPosts))
             /* eslint-enable no-await-in-loop */
         }
-        // await Promise.all(promises)
+        await allSettled(promises)
+        allSettled.shim()
         res.status(200).json({ result: `Success` });
     } catch (err) {
         console.log(err);
@@ -186,20 +187,18 @@ async function getInstaFromUsername(clubData, numberOfPosts) {
     let orgName = clubData.name
     console.log(orgName);
     const insta = admin.firestore().collection('Clubs Instagram ID').doc(orgName);
-    const doc = await insta.get();
-    if (doc.exists) {
-        let instaID = doc.data().instagram_ID
-        await createInstaEvents(orgName, instaID, numberOfPosts)
-        //return admin.firestore().collection('testing1').doc(orgName).set(
-        //    {instagram_ID : doc.data().instagram_ID}
-        //);
-      } else {
-        console.log("This organisation doesn't have instagram ID");
-        //return admin.firestore().collection('testing1').doc(orgName).set(
-        //    {instagram_ID:orgName}
-        //);
-      }
-    //await createInstaEvents(orgName, instaID, numberOfPosts)
+    await insta.get().then(
+        async (doc) => {
+            if (doc.exists) {
+                console.log("exists");
+                let instaID = doc.data().instagram_ID
+                await createInstaEvents(orgName, instaID, numberOfPosts)
+            } else {
+                console.log("This organisation doesn't have instagram ID");
+            }
+            return null;
+        }
+    );
 }
 
 async function createNSync(URL, type) {
