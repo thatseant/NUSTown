@@ -22,16 +22,12 @@ import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.UsersAttendingAdapter;
 import com.example.prototype1.view.mainFragments.JioListFragmentDirections;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.functions.FirebaseFunctions;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 public class InfoDialogFragment extends DialogFragment implements View.OnClickListener {
@@ -39,7 +35,6 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
     static public final String TAG = "InfoDialog";
 
     final UsersAttendingAdapter mUserAdapter = new UsersAttendingAdapter();
-    private FirebaseFunctions mFunctions;
     FirebaseUser user;
     private TitleFragmentViewModel mModel;
     Button rsvpButton;
@@ -67,7 +62,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         TextView jioAttendees = mRootView.findViewById(R.id.jioDialogAttendees);
         mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), updatedEvent -> jioAttendees.setText(updatedEvent.getNumberAttending() + " Attending"));
 
-        if (mEvent.getPlace() != "") {
+        if (!mEvent.getPlace().equals("")) {
             TextView eventPlace = mRootView.findViewById(R.id.jioDialogPlace);
             eventPlace.setText(mEvent.getPlace());
             eventPlace.setVisibility(View.VISIBLE);
@@ -99,20 +94,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
             mRootView.findViewById(R.id.edit_jio_button).setOnClickListener(this);
         }
 
-        mFunctions = FirebaseFunctions.getInstance();
         return mRootView;
-    }
-
-    private Task<String> rsvpJioFunction(String email, String ID) {
-        // Provides current user's email and event to cloud function when user RSVP
-        Map<String, Object> data = new HashMap<>();
-        data.put("email", email);
-        data.put("event_id", ID);
-
-        return mFunctions
-                .getHttpsCallable("rsvpJioFunction")
-                .call(data)
-                .continueWith(task -> null);
     }
 
     @Override
@@ -127,7 +109,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_jio_rsvp:
-                rsvpJioFunction(user.getUid(), mEvent.getID());
+                mModel.rsvpJioFunction(mEvent.getID());
                 break;
             case R.id.button_cancel:
                 dismiss();

@@ -54,7 +54,7 @@ public class JioListFragment extends Fragment implements JioListAdapter.OnItemSe
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mModel.getJiosData().observe(getViewLifecycleOwner(),
-                list -> mAdapter.submitList(list));   //Link Adapter to getJiosData() in ViewModel; getJiosData() returns jioList
+                mAdapter::submitList);   //Link Adapter to getJiosData() in ViewModel; getJiosData() returns jioList
 
         //Shows search dialog when searchBox clicked
         mSearchDialog = new SearchDialogFragment();

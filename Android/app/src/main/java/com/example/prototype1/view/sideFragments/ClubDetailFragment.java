@@ -23,14 +23,10 @@ import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.ClubEventsAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.functions.FirebaseFunctions;
 
 import org.jetbrains.annotations.NotNull;
 
 public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener{
-    private FirebaseFunctions mFunctions;
     private TitleFragmentViewModel mModel; //Events ViewModel
 
 
@@ -43,8 +39,6 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
-        mFunctions = FirebaseFunctions.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         // Retrieve NClub object clicked on in RecyclerView
         assert getArguments() != null;

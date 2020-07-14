@@ -36,7 +36,6 @@ import org.jetbrains.annotations.NotNull;
 public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener, EventListAdapter.OnItemSelectedListener, JioGridAdapter.OnItemSelectedListener {
     private InfoDialogFragment mInfoDialog;
     private FollowingDialogFragment mClubDialog;
-    String currentPhotoPath;
     TitleFragmentViewModel mModel;
     View rootView;
 
@@ -87,9 +86,7 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         mModel.getUserFeed().observe(getViewLifecycleOwner(), mFeedAdapter::submitList);
 
         FloatingActionButton followingButton = rootView.findViewById(R.id.clubs_following_button);
-        followingButton.setOnClickListener(v -> {
-            mClubDialog.show(requireActivity().getSupportFragmentManager(), FollowingDialogFragment.TAG);
-        });
+        followingButton.setOnClickListener(v -> mClubDialog.show(requireActivity().getSupportFragmentManager(), FollowingDialogFragment.TAG));
 
         //Temporary Button for setting Profile Picture TODO: Change to ImageView
         Button profileButton = rootView.findViewById(R.id.setProfile);

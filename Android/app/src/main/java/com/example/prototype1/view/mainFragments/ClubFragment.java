@@ -36,7 +36,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSelectedListener {
     private boolean isScrolling = false;
-    private boolean isLastItemReached = false;
     private ClubsSearchDialogFragment mSearchDialog;
 
     @Override

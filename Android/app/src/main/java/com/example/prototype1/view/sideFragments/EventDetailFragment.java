@@ -28,7 +28,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -40,7 +39,6 @@ import java.util.Objects;
 
 public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter.OnItemSelectedListener {
     private ImageView mImage;
-    private FirebaseFunctions mFunctions;
     private TitleFragmentViewModel mModel;
     private String eventType;
     NEvent mEvent;
@@ -56,7 +54,6 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
-        mFunctions = FirebaseFunctions.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         //Retrieve NEvent object clicked on in RecyclerView: supplied by Nav Safe Args
@@ -70,9 +67,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         mImage = rootView.findViewById(R.id.event_image);
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(); //Get image reference from cloud storage
         StorageReference imageRef = storageReference.child("events/" + mEvent.getID() + ".png");
-        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-            Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(mImage);
-        }).addOnFailureListener(url -> mImage.setImageResource(R.drawable.nus)); //TODO: Figure out how to load image without needing URL
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(mImage)).addOnFailureListener(url -> mImage.setImageResource(R.drawable.nus)); //TODO: Figure out how to load image without needing URL
 
         //Sets text in TextView
         TextView orgClub = rootView.findViewById(R.id.event_club);
@@ -180,7 +175,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         createNewPost.setVisibility(View.VISIBLE);//TODO: Visible only to organisers
         createNewPost.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
-            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", mEvent, new ArrayList()));
+            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", mEvent, new ArrayList<String>()));
         });
 
         //Close EventDetailFragment on buttonClose clicked

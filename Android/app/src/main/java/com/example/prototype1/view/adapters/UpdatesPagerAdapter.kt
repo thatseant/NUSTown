@@ -41,7 +41,7 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
         private val postImage: ImageView = itemView.findViewById(R.id.postImage)
 
         fun bind(item: Map.Entry<String, ArrayList<String>>, holder: ViewHolder, listener: OnItemSelectedListener) {
-            postCaption.text = item.value.get(0)
+            postCaption.text = item.value[0]
             editButton.visibility = VISIBLE //TODO: Organisers only
             editButton.setOnClickListener { view ->
                 listener.onItemSelected(item, view)
@@ -51,7 +51,7 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
                 listener.deleteItemSelected(item, view)
             }
             val storageReference = FirebaseStorage.getInstance().reference
-            val imageRef = storageReference.child("updates/" + item.value.get(1) + ".jpg")
+            val imageRef = storageReference.child("updates/" + item.value[1] + ".jpg")
 
             imageRef.downloadUrl.addOnSuccessListener {
                 Glide.with(holder.postImage.context).load(it).into(postImage)

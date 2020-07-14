@@ -94,12 +94,7 @@ public class ClubsSearchDialogFragment extends DialogFragment implements View.On
     //The following get functions retrieves Spinner selections and are called in getFilters()
     @Nullable
     private int getSelectedCategory() {
-        int selected = mCategorySpinner.getSelectedItemPosition();
-        if (getString(R.string.value_any_club_category).equals(selected)) {
-            return 0;
-        } else {
-            return selected;
-        }
+        return mCategorySpinner.getSelectedItemPosition();
     }
 
     @Nullable

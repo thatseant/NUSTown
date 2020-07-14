@@ -37,8 +37,6 @@ public class EventListFragment extends Fragment implements EventListAdapter.OnIt
     private TitleFragmentViewModel mModel;
     private SearchDialogFragment mSearchDialog;
     private boolean isScrolling = false;
-    private boolean isLastItemReached = false;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

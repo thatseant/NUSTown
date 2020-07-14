@@ -12,7 +12,6 @@ import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.model.NUser;
 import com.example.prototype1.repository.EventClubRepository;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -65,7 +64,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
 
     private DocumentSnapshot lastEventVisible = null;
     private boolean isEventsLastItemReached = false;
-    private int limit = 15;
+    private final int limit = 15;
 
 
     public TitleFragmentViewModel(Application application) {
@@ -256,25 +255,38 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mResults;
     }
 
-    public Task<String> rsvpFunction(String eventID) {
+    public void rsvpFunction(String eventID) {
         // Provides current user's email and event to cloud function when user RSVP
         Map<String, Object> data = new HashMap<>();
         data.put("email", mUserLiveData.getValue().getUid());
         data.put("event_id", eventID);
 
-        return mFunctions
+        mFunctions
                 .getHttpsCallable("rsvpFunction")
                 .call(data)
                 .continueWith(task -> null);
     }
 
-    public Task<String> subscribeToClub(String clubName) {
+    public void rsvpJioFunction(String eventID) {
+        // Provides current user's email and event to cloud function when user RSVP
+        Map<String, Object> data = new HashMap<>();
+        data.put("email", mUserLiveData.getValue().getUid());
+        data.put("event_id", eventID);
+
+        mFunctions
+                .getHttpsCallable("rsvpJioFunction")
+                .call(data)
+                .continueWith(task -> null);
+    }
+
+
+    public void subscribeToClub(String clubName) {
         //create the arguments to the callable function.
         Map<String, Object> data = new HashMap<>();
         data.put("email", mUserLiveData.getValue().getUid());
         data.put("club_name", clubName);
 
-        return mFunctions
+        mFunctions
                 .getHttpsCallable("subscribeToClub")
                 .call(data)
                 .continueWith(task -> null);
