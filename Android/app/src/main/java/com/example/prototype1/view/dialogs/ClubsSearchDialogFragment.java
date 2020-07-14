@@ -71,7 +71,6 @@ public class ClubsSearchDialogFragment extends DialogFragment implements View.On
     private void onSearchClicked() {
         mModel.changeClubFilter(getFilters()); //Filters saved in ViewModel and getClubsData applies same filters until changed
         mModel.mClubSearchCat.setValue(getFilters().getClubSearchDescription(requireContext())); //Updates search box text (stored in ViewModel)
-        mModel.clearClubLiveData();
         dismiss();
     }
 

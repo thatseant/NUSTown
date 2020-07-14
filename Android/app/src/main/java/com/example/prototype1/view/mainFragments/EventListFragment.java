@@ -98,7 +98,6 @@ public class EventListFragment extends Fragment implements EventListAdapter.OnIt
             mModel.changeEventFilter(new Filters()); //Reset mFilter in ViewModel as mFilter is parameter of getData()
             mModel.mEventSearchCat.setValue("<b> All Events <b>");
             mModel.mEventSearchSort.setValue("sorted by date");
-            mModel.clearEventLiveData(); //Clears Pagination variables so that old list markers does not affect new list
             mModel.getEventsData();
         });
 
@@ -108,7 +107,7 @@ public class EventListFragment extends Fragment implements EventListAdapter.OnIt
         TextView mSearchSort = rootView.findViewById(R.id.text_current_sort_by);
         final Observer<String> searchCatObserver = searchCat -> {
             // Update the UI, in this case, a TextView.
-            mSearchCat.setText(HtmlCompat.fromHtml(searchCat, HtmlCompat.FROM_HTML_MODE_LEGACY)); //TODO: Can be done in lambda
+            mSearchCat.setText(HtmlCompat.fromHtml(searchCat, HtmlCompat.FROM_HTML_MODE_LEGACY));
         };
         mModel.mEventSearchCat.observe(getViewLifecycleOwner(), searchCatObserver);
 

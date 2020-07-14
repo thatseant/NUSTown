@@ -93,7 +93,6 @@ public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSele
             mSearchDialog.resetFlag = 1; //Flag needed due to bug where resetting spinner setSelection is not saved; reset later onResume
             mModel.changeClubFilter(new Filters(true)); //Reset mFilter in ViewModel as mFilter is parameter of getData()
             mModel.mClubSearchCat.setValue("<b> All Clubs <b>");
-            mModel.clearClubLiveData();
             mModel.getClubsData();
         });
 

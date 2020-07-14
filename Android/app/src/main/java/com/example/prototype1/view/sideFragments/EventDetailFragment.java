@@ -24,7 +24,6 @@ import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.UpdatesPagerAdapter;
 import com.example.prototype1.view.adapters.UsersAttendingAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,7 +35,6 @@ import com.google.firebase.storage.StorageReference;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -103,7 +101,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
 
         //RSVP Button passes user email and event ID to cloud function
         rsvpButton.setOnClickListener(v ->
-                rsvpFunction(user.getUid(), mEvent.getID())
+                mModel.rsvpFunction(mEvent.getID())
         );
 
         //Club/Organiser name and image displayed; navigates to club when clicked
@@ -195,18 +193,6 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         return rootView;
 
 
-    }
-
-    private Task<String> rsvpFunction(String email, String ID) {
-        // Provides current user's email and event to cloud function when user RSVP
-        Map<String, Object> data = new HashMap<>();
-        data.put("email", email);
-        data.put("event_id", ID);
-
-        return mFunctions
-                .getHttpsCallable("rsvpFunction")
-                .call(data)
-                .continueWith(task -> null);
     }
 
     //Navigates to EditPostFragment when organisers click on edit button within post page.

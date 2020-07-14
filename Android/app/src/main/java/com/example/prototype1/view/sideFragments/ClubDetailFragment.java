@@ -23,15 +23,11 @@ import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.ClubEventsAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.functions.FirebaseFunctions;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener{
     private FirebaseFunctions mFunctions;
@@ -95,7 +91,7 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
             }
         });
 
-        subscribeButton.setOnClickListener(v -> subscribeToClub(user.getUid(), mClub.getName()));
+        subscribeButton.setOnClickListener(v -> mModel.subscribeToClub(mClub.getName()));
 
         //Close EventDetailFragment on buttonClose clicked
         ImageView buttonClose = rootView.findViewById(R.id.club_button_back);
@@ -107,18 +103,6 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         return rootView;
 
 
-    }
-
-    private Task<String> subscribeToClub(String email, String Id) {
-        //Provides user's email and club name to cloud function
-        Map<String, Object> data = new HashMap<>();
-        data.put("email",email);
-        data.put("club_name", Id);
-
-        return mFunctions
-                .getHttpsCallable("subscribeToClub")
-                .call(data)
-                .continueWith(task -> null);
     }
 
     //Navigate to event when clicked

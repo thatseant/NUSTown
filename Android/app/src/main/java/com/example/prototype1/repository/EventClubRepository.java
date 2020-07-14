@@ -53,8 +53,6 @@ public class EventClubRepository {
             query = query.limit(15);
         }
 
-        //TODO: Add DisplayPast to query
-
         query.get().addOnCompleteListener(task -> { //Performs query
             if (task.isSuccessful()) {
                 //Adds to list of NEvent objects that matches query

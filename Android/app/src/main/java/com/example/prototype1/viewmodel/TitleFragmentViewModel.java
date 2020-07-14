@@ -6,7 +6,6 @@ import android.net.Uri;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.SavedStateHandle;
 
 import com.example.prototype1.model.Filters;
 import com.example.prototype1.model.NClub;
@@ -14,8 +13,6 @@ import com.example.prototype1.model.NEvent;
 import com.example.prototype1.model.NUser;
 import com.example.prototype1.repository.EventClubRepository;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.functions.FirebaseFunctions;
@@ -38,7 +35,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     public final MutableLiveData<String> mJioSearchSort = new MutableLiveData<>();
     public final MutableLiveData<String> mClubSearchCat = new MutableLiveData<>();
     private final EventClubRepository mRepository;
-    private final MutableLiveData<ArrayList<NEvent>> mEventLiveData = new MutableLiveData<>(); //TODO: change name to mEventLiveData
+    private final MutableLiveData<ArrayList<NEvent>> mEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NClub>> mClubLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mClubEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mJioLiveData = new MutableLiveData<>();
@@ -71,17 +68,13 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private int limit = 15;
 
 
-    public TitleFragmentViewModel(Application application, SavedStateHandle savedStateHandle) {
+    public TitleFragmentViewModel(Application application) {
         super(application);
         mRepository = new EventClubRepository();
 
+        //For Home Page
         getUserEvents();
         getUserJios();
-
-        mRepository.searchDocuments(new Filters(), "jios", 0, null, resultList -> //Get All Jios
-                mJioLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)))
-        );
-//        mState = savedStateHandle; //Planned to be used to save scroll position, still resolving
     }
 
     //IsSigningFunctions used to check Sign-In status during Firebase Auth
@@ -93,7 +86,11 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         this.mIsSigningIn = mIsSigningIn;
     }
 
-    public void changeEventFilter(Filters filters) {//Called whenever a query is performed
+    //changeFilter Functions called whenever a new query is performed; resets pagination variables
+    public void changeEventFilter(Filters filters) {
+        mEventLiveData.setValue(null);
+        isEventsLastItemReached = false;
+        lastEventVisible = null;
         mEventFilters = filters;
     }
 
@@ -101,24 +98,29 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mJioFilters = filters;
     }
 
-    public void changeClubFilter(Filters filters) {//Called whenever a query is performed
+    public void changeClubFilter(Filters filters) {
+        mClubLiveData.setValue(null);
+        isClubsLastItemReached = false;
+        lastClubVisible = null;
         mClubFilters = filters;
     }
 
     //Get Collections
     public MutableLiveData<ArrayList<NEvent>> getEventsData() {//Called when EventListFragment first launches and whenever a query is performed
-        if (!isEventsLastItemReached) {
+        //For pagination of firestore results
+        if (!isEventsLastItemReached) { //As long as last item in query not reached yet
             mRepository.searchDocuments(mEventFilters, "events", limit, lastEventVisible, resultList -> {
-                        if (resultList.size() != 0) {
-                            if (resultList.size() < limit) {
-                                isEventsLastItemReached = true;
-                            }
-                            lastEventVisible = resultList.get(resultList.size() - 1);
+                if (resultList.size() != 0) {
+                    if (resultList.size() < limit) {
+                        isEventsLastItemReached = true; //Last item in query reached when final fetch smaller than limit
+                    }
+                    lastEventVisible = resultList.get(resultList.size() - 1); //Last item of previous fetch, to know which item to start from
 
-                            ArrayList<NEvent> fullList = new ArrayList<>();
-                            if (mEventLiveData.getValue() != null) {
-                                fullList.addAll(mEventLiveData.getValue());
+                    ArrayList<NEvent> fullList = new ArrayList<>();
+                    if (mEventLiveData.getValue() != null) {
+                        fullList.addAll(mEventLiveData.getValue()); //Add items from previous fetch
                             }
+                    //Add items from current fetch
                             fullList.addAll(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)));
                             mEventLiveData.setValue(fullList);
                         }
@@ -126,18 +128,6 @@ public class TitleFragmentViewModel extends AndroidViewModel {
             );
         }
         return mEventLiveData;
-    }
-
-    public void clearEventLiveData() {//TODO: Possible to do this automatically in getEventsData?
-        mEventLiveData.setValue(null);
-        isEventsLastItemReached = false;
-        lastEventVisible = null;
-    }
-
-    public void clearClubLiveData() { //Clears Clubs Live Data on New Search
-        mClubLiveData.setValue(null);
-        isClubsLastItemReached = false;
-        lastClubVisible = null;
     }
 
     public MutableLiveData<ArrayList<NEvent>> getJiosData() {//Called when JioListFragment first launches and whenever a query is performed
@@ -193,7 +183,8 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     }
 
 
-    public LiveData<NEvent> getUpdatedEvent(String eventID, String type) {
+    //Following methods are for document queries
+    public LiveData<NEvent> getUpdatedEvent(String eventID, String type) {//For getting single document which is always updated as results is attached with SnapshotListener
         if (eventListener != null) {
             eventListener.remove();
         }
@@ -238,7 +229,8 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mUserFeedLiveData;
     }
 
-    public ArrayList<NEvent> documentsToEvents(ArrayList<DocumentSnapshot> documents) {
+    //Helper Methods
+    public ArrayList<NEvent> documentsToEvents(ArrayList<DocumentSnapshot> documents) { //Converting querySnapshot to events in chronological order
         ArrayList<NEvent> mResults = new ArrayList<>();
         for (DocumentSnapshot document : documents) {
             int newEventIndex = -1;
@@ -264,11 +256,22 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mResults;
     }
 
+    public Task<String> rsvpFunction(String eventID) {
+        // Provides current user's email and event to cloud function when user RSVP
+        Map<String, Object> data = new HashMap<>();
+        data.put("email", mUserLiveData.getValue().getUid());
+        data.put("event_id", eventID);
+
+        return mFunctions
+                .getHttpsCallable("rsvpFunction")
+                .call(data)
+                .continueWith(task -> null);
+    }
+
     public Task<String> subscribeToClub(String clubName) {
         //create the arguments to the callable function.
         Map<String, Object> data = new HashMap<>();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        data.put("email", user.getUid());
+        data.put("email", mUserLiveData.getValue().getUid());
         data.put("club_name", clubName);
 
         return mFunctions
