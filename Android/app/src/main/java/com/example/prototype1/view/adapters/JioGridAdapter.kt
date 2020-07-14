@@ -43,16 +43,6 @@ class JioGridAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, Ji
             eventDate.text = dateFormat.format(item.time)
 
             //Sets ImageView
-//            val storageReference = FirebaseStorage.getInstance().reference
-//            val imageRef = storageReference.child("events/" + item.image)
-//
-//            imageRef.downloadUrl.addOnSuccessListener {
-//                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
-//                        .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
-//
-//            }
-
-            //Sets ImageView
             if (item.imgUrl != "") {
                 Glide.with(holder.eventImage.context).load(item.imgUrl).apply(RequestOptions()
                         .placeholder(R.drawable.nus)

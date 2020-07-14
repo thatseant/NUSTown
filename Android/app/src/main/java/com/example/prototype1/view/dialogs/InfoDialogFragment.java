@@ -34,9 +34,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Dialog Fragment containing filter form.
- */
 public class InfoDialogFragment extends DialogFragment implements View.OnClickListener {
 
     static public final String TAG = "InfoDialog";
@@ -57,27 +54,8 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         mRootView = inflater.inflate(R.layout.fragment_info_dialog, container, false);
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
         mEvent = getArguments().getParcelable("mEvent");
-        rsvpButton = mRootView.findViewById(R.id.button_jio_rsvp);
-        mModel.getUser().observe(getViewLifecycleOwner(), mUser -> {
-            if (mUser.getJioEventAttending().contains(mEvent.getID())) {
-                rsvpButton.setText("Attending");
-            } else {
-                rsvpButton.setText("RSVP");
-            }
 
-
-        });
-
-        if (mEvent.getPlace() != "") {
-            TextView eventPlace = mRootView.findViewById(R.id.jioDialogPlace);
-            eventPlace.setText(mEvent.getPlace());
-            eventPlace.setVisibility(View.VISIBLE);
-        }
-
-        TextView jioAttendees = mRootView.findViewById(R.id.jioDialogAttendees);
-        mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), updatedEvent -> jioAttendees.setText(updatedEvent.getNumberAttending() + " Attending"));
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        mFunctions = FirebaseFunctions.getInstance();
+        //Sets text in TextView
         TextView jioName = mRootView.findViewById(R.id.jioDialogName);
         jioName.setText(mEvent.getName());
         TextView jioInfo = mRootView.findViewById(R.id.jioDialogInfo);
@@ -86,26 +64,47 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
         jioTime.setText(dateFormat.format(mEvent.getTime()));
 
+        TextView jioAttendees = mRootView.findViewById(R.id.jioDialogAttendees);
+        mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), updatedEvent -> jioAttendees.setText(updatedEvent.getNumberAttending() + " Attending"));
 
+        if (mEvent.getPlace() != "") {
+            TextView eventPlace = mRootView.findViewById(R.id.jioDialogPlace);
+            eventPlace.setText(mEvent.getPlace());
+            eventPlace.setVisibility(View.VISIBLE);
+        }
+
+        //RSVP Button text reflects whether event is part of current user's attending list.
+        rsvpButton = mRootView.findViewById(R.id.button_jio_rsvp);
+        mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Attendance status is always updated as fetch from repository attaches SnapshotListener
+            if (mUser.getJioEventAttending().contains(mEvent.getID())) {
+                rsvpButton.setText("Attending");
+            } else {
+                rsvpButton.setText("RSVP");
+            }
+        });
+
+        //Displays profilePic and username of users attending
+        RecyclerView recyclerView = mRootView.findViewById(R.id.recycler_jio_users_attending);
+        recyclerView.setAdapter(mUserAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
+
+
+        //RSVP/Edit/Cancel onClickListeners
         mRootView.findViewById(R.id.button_jio_rsvp).setOnClickListener(this);
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
-
-        if (Objects.equals(user.getEmail(), mEvent.getOrgUser())) {
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        if (Objects.equals(user.getEmail(), mEvent.getOrgUser())) { //Allows organisers to edit events
             mRootView.findViewById(R.id.edit_jio_button).setVisibility(View.VISIBLE);
             mRootView.findViewById(R.id.edit_jio_button).setOnClickListener(this);
         }
 
-        //Link Users Recycler View to Adapter
-        RecyclerView recyclerView = mRootView.findViewById(R.id.recycler_jio_users_attending);
-        recyclerView.setAdapter(mUserAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-//        mUserAdapter.submitList(mEvent.getUsersAttending());
-        mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
+        mFunctions = FirebaseFunctions.getInstance();
         return mRootView;
     }
 
-    private Task<String> rsvpJioFunction(String email, String ID) { //----this
-        // Create the arguments to the callable function.
+    private Task<String> rsvpJioFunction(String email, String ID) {
+        // Provides current user's email and event to cloud function when user RSVP
         Map<String, Object> data = new HashMap<>();
         data.put("email", email);
         data.put("event_id", ID);
@@ -128,7 +127,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_jio_rsvp:
-                onRSVPClicked();
+                rsvpJioFunction(user.getUid(), mEvent.getID());
                 break;
             case R.id.button_cancel:
                 dismiss();
@@ -139,16 +138,6 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
                 dismiss();
         }
     }
-
-    private void onRSVPClicked() {
-        rsvpJioFunction(user.getUid(), mEvent.getID()).addOnSuccessListener(result -> {
-//            mModel.setUser(user.getEmail());
-//            if (getView() != null) {
-//                mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), jio -> mUserAdapter.submitList(jio.getUsersAttending()));
-//            }
-        });
-    }
-
 
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {

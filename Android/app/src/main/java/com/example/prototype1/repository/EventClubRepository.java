@@ -1,15 +1,11 @@
 package com.example.prototype1.repository;
 
 
-import androidx.annotation.Nullable;
-
 import com.example.prototype1.model.Filters;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -103,33 +99,19 @@ public class EventClubRepository {
     public void getDoc(String fieldName, String fieldType, String collection, final MyDocumentCallback myDocumentCallback, final MyListenerCallback myListenerCallback) {
 
         if (fieldType.equals("id")) {
-//            FirebaseFirestore.getInstance().collection(collection).document(fieldName).get().addOnSuccessListener(myDocumentCallback::onCallback);
-            ListenerRegistration docListener = FirebaseFirestore.getInstance().collection(collection).document(fieldName).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-
-                @Override
-                public void onEvent(@Nullable DocumentSnapshot snapshot,
-                                    @Nullable FirebaseFirestoreException e) {
-                    if (snapshot != null && snapshot.exists()) {
-                        myDocumentCallback.onCallback(snapshot);
-                    }
+            ListenerRegistration docListener = FirebaseFirestore.getInstance().collection(collection).document(fieldName).addSnapshotListener((snapshot, e) -> {
+                if (snapshot != null && snapshot.exists()) {
+                    myDocumentCallback.onCallback(snapshot);
                 }
             });
 
             myListenerCallback.onCallback(docListener);
         } else {
-            FirebaseFirestore.getInstance().collection(collection).whereEqualTo(fieldType, fieldName).addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot snapshot,
-                                    @Nullable FirebaseFirestoreException e) {
-                    if (snapshot.getDocuments().size() != 0) {
-                        myDocumentCallback.onCallback(snapshot.getDocuments().get(0));
-                    }
+            FirebaseFirestore.getInstance().collection(collection).whereEqualTo(fieldType, fieldName).addSnapshotListener((snapshot, e) -> {
+                if (snapshot.getDocuments().size() != 0) {
+                    myDocumentCallback.onCallback(snapshot.getDocuments().get(0));
                 }
             });
-
-//            FirebaseFirestore.getInstance().collection(collection).whereEqualTo(fieldType, fieldName).get().addOnSuccessListener(querySnapshot -> {
-//                myDocumentCallback.onCallback(querySnapshot.getDocuments().get(0));
-//            });
         }
     }
 
@@ -148,7 +130,6 @@ public class EventClubRepository {
 
 
     //Callbacks
-
     public interface MyDocumentCallback {
         void onCallback(DocumentSnapshot mDocument);
     }

@@ -18,7 +18,6 @@ import java.util.*
 class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, ClubEventsAdapter.ViewHolder>(NEventDiffCallback()) {
     private val newListener: OnItemSelectedListener = mListener
 
-
     interface OnItemSelectedListener {
         fun onItemSelected(mEvent: NEvent, view: View)
     }
@@ -52,16 +51,6 @@ class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent,
                         .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
 
             }.addOnFailureListener { eventImage.setImageResource(R.drawable.nus); }
-
-//            //Sets ImageView
-//            if (item.imgUrl != "") {
-//                Glide.with(holder.eventImage.context).load(item.imgUrl).apply(RequestOptions()
-//                        .placeholder(R.drawable.nus)
-//                ).thumbnail(0.02f).into(eventImage)
-//            } else {
-//                eventImage.visibility = View.GONE;
-//            }
-
 
             itemView.setOnClickListener { view ->
                 listener.onItemSelected(item, view)

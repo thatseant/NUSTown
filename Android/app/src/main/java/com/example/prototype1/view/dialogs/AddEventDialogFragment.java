@@ -25,9 +25,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
-/**
- * Dialog Fragment containing filter form.
- */
 public class AddEventDialogFragment extends DialogFragment implements View.OnClickListener {
 
     static public final String TAG = "AddDialog";
@@ -85,12 +82,10 @@ public class AddEventDialogFragment extends DialogFragment implements View.OnCli
     private void onApplyClicked() throws ParseException {
         EditText newEventName = mRootView.findViewById(R.id.newJioName);
         EditText newEventPlace = mRootView.findViewById(R.id.newJioPlace);
-
-
         String newNameString = newEventName.getText().toString();
         String newPlaceString = newEventPlace.getText().toString();
 
-        String dateFromPicker = Integer.toString(datePicker.getDayOfMonth()) + "/" + (datePicker.getMonth() + 1) + "/" + datePicker.getYear() + " " + timePicker.getHour() + ":" + timePicker.getMinute();
+        String dateFromPicker = datePicker.getDayOfMonth() + "/" + (datePicker.getMonth() + 1) + "/" + datePicker.getYear() + " " + timePicker.getHour() + ":" + timePicker.getMinute();
         DateFormat dateFormat = new SimpleDateFormat("d/M/yyyy H:m", Locale.ENGLISH);
         Date formattedTimeString = dateFormat.parse(dateFromPicker);
 

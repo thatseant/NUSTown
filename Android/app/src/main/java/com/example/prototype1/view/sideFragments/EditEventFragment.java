@@ -27,13 +27,9 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class EditEventFragment extends Fragment {
     private TitleFragmentViewModel mModel;
     private NEvent eventToEdit;
-    private NEvent updatedEvent;
     private String eventType;
 
     public EditEventFragment() {
@@ -55,72 +51,61 @@ public class EditEventFragment extends Fragment {
 
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
 
-        //Uses existing event properties as default in EditText
+        //Sets EditTexts to existing event properties
         EditText newEventName = EditEventView.findViewById(R.id.newEventName);
         newEventName.setText(eventToEdit.getName());
         EditText newEventPlace = EditEventView.findViewById(R.id.newEventPlace);
         newEventPlace.setText(eventToEdit.getPlace());
         EditText newEventCat = EditEventView.findViewById(R.id.newEventCat);
         newEventCat.setText(eventToEdit.getCategory());
-        DatePicker datePicker = EditEventView.findViewById(R.id.datePicker);
-        TimePicker timePicker = EditEventView.findViewById(R.id.timePicker);
-
-        LocalDateTime existingDate = eventToEdit.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-
-
-        datePicker.updateDate(existingDate.getYear(), existingDate.getMonthValue() - 1, existingDate.getDayOfMonth());
-        timePicker.setHour(existingDate.getHour());
-        timePicker.setMinute(existingDate.getMinute());
-        timePicker.setIs24HourView(true);
-//        newEventTime.setText(dateFormat.format(eventToEdit.getTime()));
         EditText newEventURL = EditEventView.findViewById(R.id.newEventUrl);
         newEventURL.setText(eventToEdit.getUrl());
         EditText newEventInfo = EditEventView.findViewById(R.id.newEventDescription);
         newEventInfo.setText(eventToEdit.getInfo());
 
+        //Sets DatePicker and TimePicker
+        DatePicker datePicker = EditEventView.findViewById(R.id.datePicker);
+        TimePicker timePicker = EditEventView.findViewById(R.id.timePicker);
+        LocalDateTime existingDate = eventToEdit.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        datePicker.updateDate(existingDate.getYear(), existingDate.getMonthValue() - 1, existingDate.getDayOfMonth());
+        timePicker.setHour(existingDate.getHour());
+        timePicker.setMinute(existingDate.getMinute());
+        timePicker.setIs24HourView(true);
+
         Button confirmEditButton = EditEventView.findViewById(R.id.confirmEditButton);
         confirmEditButton.setOnClickListener(v -> {
+            //Sets new properties from EditText inputs
             String newNameString = newEventName.getText().toString();
             String newPlaceString = newEventPlace.getText().toString();
             String newCatString = newEventCat.getText().toString();
+            String newURLString = newEventURL.getText().toString();
+            String newInfoString = newEventInfo.getText().toString();
 
             Date formattedTimeString = new Date();
             try {
-                String dateFromPicker = Integer.toString(datePicker.getDayOfMonth()) + "/" + (datePicker.getMonth() + 1) + "/" + datePicker.getYear() + " " + timePicker.getHour() + ":" + timePicker.getMinute();
+                String dateFromPicker = datePicker.getDayOfMonth() + "/" + (datePicker.getMonth() + 1) + "/" + datePicker.getYear() + " " + timePicker.getHour() + ":" + timePicker.getMinute();
                 DateFormat dateFormat = new SimpleDateFormat("d/M/yyyy H:m", Locale.ENGLISH);
                 formattedTimeString = dateFormat.parse(dateFromPicker);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
+            //Updates eventToEdit with new properties
+            eventToEdit.setTime(formattedTimeString);
+            eventToEdit.setName(newNameString);
+            eventToEdit.setCategory(newCatString);
+            eventToEdit.setPlace(newPlaceString);
+            eventToEdit.setUrl(newURLString);
+            eventToEdit.setInfo(newInfoString);
 
-            String newURLString = newEventURL.getText().toString();
-            String newInfoString = newEventInfo.getText().toString();
-
-            updatedEvent = eventToEdit; //Changes name, place, category
-
-            updatedEvent.setTime(formattedTimeString);
-            updatedEvent.setName(newNameString);
-            updatedEvent.setCategory(newCatString);
-            updatedEvent.setPlace(newPlaceString);
-            updatedEvent.setUrl(newURLString);
-            updatedEvent.setInfo(newInfoString);
-
-            mModel.updateEvent(updatedEvent, eventType); //Updates Repository via ViewModel
+            mModel.updateEvent(eventToEdit, eventType); //Updates Repository via ViewModel
             mModel.getEventsData();
 
-//            if (eventType=="jios") {
-//                NavController navController = Navigation.findNavController(EditEventView);
-//                navController.navigate(EditEventFragmentDirections.actionEditEventToJioListFragment());
-//            } else {
-//                NavController navController = Navigation.findNavController(EditEventView);
-//                navController.navigate(EditEventFragmentDirections.actionEditEventToEventDetailFragment(updatedEvent, eventType));
-//            }
             NavController navController = Navigation.findNavController(EditEventView);
             navController.popBackStack();
         });
 
-        //Close EventDetailFragment on buttonClose clicked
+        //Close EditEventFragment on buttonClose clicked
         ImageView buttonClose = EditEventView.findViewById(R.id.edit_button_back);
         buttonClose.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(EditEventView);

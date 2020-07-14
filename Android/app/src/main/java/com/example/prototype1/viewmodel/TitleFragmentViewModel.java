@@ -3,7 +3,6 @@ package com.example.prototype1.viewmodel;
 import android.app.Application;
 import android.net.Uri;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -14,8 +13,6 @@ import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.model.NUser;
 import com.example.prototype1.repository.EventClubRepository;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -81,12 +78,6 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         getUserEvents();
         getUserJios();
 
-//        mRepository.searchDocuments(new Filters(), "events", 0, null, resultList -> //Get All Events
-//                mEventLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)))
-//        );
-//        mRepository.searchDocuments(new Filters(), "clubs",3, null, resultList -> //Get All Clubs
-//                mClubLiveData.setValue(resultList.stream().map(document -> document.toObject(NClub.class)).collect(Collectors.toCollection(ArrayList::new)))
-//        );
         mRepository.searchDocuments(new Filters(), "jios", 0, null, resultList -> //Get All Jios
                 mJioLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new)))
         );
@@ -134,12 +125,10 @@ public class TitleFragmentViewModel extends AndroidViewModel {
                     }
             );
         }
-//        mRepository.searchDocuments(mEventFilters, "events", 0, null, resultList ->
-//                mEventLiveData.setValue(resultList.stream().map(document -> document.toObject(NEvent.class)).collect(Collectors.toCollection(ArrayList::new))));
         return mEventLiveData;
     }
 
-    public void clearEventLiveData() {
+    public void clearEventLiveData() {//TODO: Possible to do this automatically in getEventsData?
         mEventLiveData.setValue(null);
         isEventsLastItemReached = false;
         lastEventVisible = null;
@@ -254,6 +243,8 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         for (DocumentSnapshot document : documents) {
             int newEventIndex = -1;
             NEvent newEvent = document.toObject(NEvent.class);
+
+            //Ensures Events are in Chronological Order
             if (newEvent != null) {
                 for (int i = 0; i < mResults.size(); i++) {
                     Date prevEventTime = mResults.get(i).getTime();
@@ -291,17 +282,10 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         UploadTask uploadTask = imageRef.putFile(file);
 
 // Register observers to listen for when the download is done or if it fails
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                // ...
-            }
+        uploadTask.addOnFailureListener(exception -> {
+            // Handle unsuccessful uploads
+        }).addOnSuccessListener(taskSnapshot -> {
+
         });
     }
 

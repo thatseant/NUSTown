@@ -57,6 +57,8 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         rootView = inflater.inflate(R.layout.fragment_home, container, false);
         Toolbar mToolbar = rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbar);
+
+
         mInfoDialog = new InfoDialogFragment();
         mClubDialog = new FollowingDialogFragment();
 
@@ -85,11 +87,11 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         mModel.getUserFeed().observe(getViewLifecycleOwner(), mFeedAdapter::submitList);
 
         FloatingActionButton followingButton = rootView.findViewById(R.id.clubs_following_button);
-
         followingButton.setOnClickListener(v -> {
             mClubDialog.show(requireActivity().getSupportFragmentManager(), FollowingDialogFragment.TAG);
         });
 
+        //Temporary Button for setting Profile Picture TODO: Change to ImageView
         Button profileButton = rootView.findViewById(R.id.setProfile);
         profileButton.setOnClickListener(v -> {
             Intent pickPhoto = new Intent(Intent.ACTION_PICK,
@@ -100,23 +102,25 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         return rootView;
     }
 
-
+    //For Profile Picture
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == getActivity().RESULT_OK) {
             Uri file = data.getData();
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            mModel.uploadPic("profile", user.getUid(), file);
+            mModel.uploadPic("profile", user.getUid(), file); //Upload to Cloud Storage
 
         }
     }
 
+    //Navigate to EventDetail when event clicked
     @Override
     public void onItemSelected(@NotNull NEvent mEvent, @NotNull View view) {
         NavController navController = Navigation.findNavController(view);
         navController.navigate(HomeFragmentDirections.actionHomeFragmentToEventDetailFragment(mEvent, "events"));
     }
 
+    //Display Jio Dialog when Jio selected
     @Override
     public void onJioSelected(@NotNull NEvent mEvent, @NotNull View view) {
         Bundle infoBundle = new Bundle();

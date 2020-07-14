@@ -41,9 +41,8 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
         private val postImage: ImageView = itemView.findViewById(R.id.postImage)
 
         fun bind(item: Map.Entry<String, ArrayList<String>>, holder: ViewHolder, listener: OnItemSelectedListener) {
-//            postDate.text = item.key
             postCaption.text = item.value.get(0)
-            editButton.visibility = VISIBLE
+            editButton.visibility = VISIBLE //TODO: Organisers only
             editButton.setOnClickListener { view ->
                 listener.onItemSelected(item, view)
             }
@@ -51,10 +50,6 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
             deleteButton.setOnClickListener { view ->
                 listener.deleteItemSelected(item, view)
             }
-            //Sets ImageView
-//            Glide.with(holder.postImage.context).load(item.value.get(1))
-//                    .thumbnail(0.02f).into(postImage)
-
             val storageReference = FirebaseStorage.getInstance().reference
             val imageRef = storageReference.child("updates/" + item.value.get(1) + ".jpg")
 

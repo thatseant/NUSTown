@@ -20,9 +20,6 @@ import com.google.firebase.firestore.Query;
 
 import java.util.Objects;
 
-/**
- * Dialog Fragment containing filter form.
- */
 public class SearchDialogFragment extends DialogFragment implements View.OnClickListener {
 
     static public final String TAG = "FilterDialog";
@@ -52,7 +49,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
 
         if (getArguments() != null) {
-            eventType = getArguments().getString("eventType");
+            eventType = getArguments().getString("eventType"); //Allows for SearchDialog to be used for both events and jios
         }
 
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class); //returns same instance of ViewModel in TitleFragment
@@ -86,7 +83,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
 
     private void onSearchClicked() {
         if (eventType.equals("jios")) {
-            mModel.changeJioFilter(getFilters());
+            mModel.changeJioFilter(getFilters()); //Filters saved in ViewModel and getEventsData applies same filters until changed
             mModel.mJioSearchCat.setValue(getFilters().getSearchDescription(requireContext())); //Updates search box text (stored in ViewModel)
             mModel.mJioSearchSort.setValue(getFilters().getOrderDescription(requireContext()));
         } else {
@@ -108,7 +105,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         }
     }
 
-    private Filters getFilters() { //Used to update EventList in ViewModel
+    private Filters getFilters() { //SearchDocuments in repository retrieves filters properties through filters.get() and applies to queries.
         Filters filters = new Filters();
 
         if (mRootView != null) {
@@ -122,7 +119,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         return filters;
     }
 
-    //get functions retrieves Spinner selections and called in getFilters()
+    //The following get functions retrieves Spinner selections and are called in getFilters()
     @Nullable
     private String getSelectedCategory() {
         String selected = (String) mCategorySpinner.getSelectedItem();

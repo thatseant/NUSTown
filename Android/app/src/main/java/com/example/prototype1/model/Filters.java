@@ -6,9 +6,6 @@ import android.text.TextUtils;
 import com.example.prototype1.R;
 import com.google.firebase.firestore.Query;
 
-/**
- * Object for passing filters around.
- */
 public class Filters {
 
     private String category = null;
@@ -25,7 +22,7 @@ public class Filters {
         displayPast = true;
     }
 
-    public Filters(Boolean noFilter) {
+    public Filters(Boolean noFilter) {//For creating empty filters for non-events
     }
 
 
