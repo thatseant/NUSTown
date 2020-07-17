@@ -10,10 +10,12 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.prototype1.model.Filters;
 import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
+import com.example.prototype1.model.NMessage;
 import com.example.prototype1.model.NUser;
 import com.example.prototype1.repository.EventClubRepository;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -34,6 +36,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     public final MutableLiveData<String> mJioSearchSort = new MutableLiveData<>();
     public final MutableLiveData<String> mClubSearchCat = new MutableLiveData<>();
     private final EventClubRepository mRepository;
+    private final MutableLiveData<ArrayList<NMessage>> mMessageLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NClub>> mClubLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mClubEventLiveData = new MutableLiveData<>();
@@ -49,6 +52,8 @@ public class TitleFragmentViewModel extends AndroidViewModel {
 
     private final MutableLiveData<NEvent> mSingleEventLiveData = new MutableLiveData<>();
     private ListenerRegistration eventListener = null;
+
+    private ListenerRegistration messageListener = null;
 
 
     private final MutableLiveData<NClub> mSingleClubLiveData = new MutableLiveData<>();
@@ -157,9 +162,23 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mClubLiveData;
     }
 
+    public MutableLiveData<ArrayList<NMessage>> getMessages(String eventID) {
+
+        if (messageListener != null) {
+            messageListener.remove();
+        }
+
+        Filters chronoFilter = new Filters(true);
+        chronoFilter.setSortBy("timestamp");
+        chronoFilter.setSortDirection(Query.Direction.ASCENDING);
+        mRepository.searchDocumentsSnapshot(chronoFilter, "events/" + eventID + "/messages", 0, null, resultList ->
+                mMessageLiveData.setValue(resultList.stream().map(document -> document.toObject(NMessage.class)).collect(Collectors.toCollection(ArrayList::new))), queryListener -> messageListener = queryListener);
+        return mMessageLiveData;
+    }
+
 
     //Edit Documents
-    public void updateEvent(NEvent updatedEvent, String type) {
+    public void updateEvent(NEvent updatedEvent, String type) { //TODO: Rename to Doc instead of event
         mRepository.updateDoc(updatedEvent.getID(), updatedEvent, type);
     }
 
@@ -167,7 +186,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mRepository.deleteDoc(eventToDelete.getID(), "events");
     }
 
-    public void addEvent(NEvent newEvent, String type) {
+    public void addDoc(Object newEvent, String type) {
         mRepository.addDoc(newEvent, type);
     }
 

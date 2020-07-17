@@ -84,7 +84,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         mURL.setText(mEvent.getUrl());
         Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
 
-        //RSVP Button text reflects if user attendance status by checking mEvent against his list of attending events
+        //RSVP Button text reflects user attendance status by checking mEvent against his list of attending events
         rsvpButton = rootView.findViewById(R.id.rsvp_button);
         mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Attendance status is always updated as fetch from repository attaches SnapshotListener
             if (mUser.getEventAttending().contains(mEvent.getID())) {
@@ -98,6 +98,13 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         rsvpButton.setOnClickListener(v ->
                 mModel.rsvpFunction(mEvent.getID())
         );
+
+        //Chat Button
+        Button chatButton  = rootView.findViewById(R.id.chat_button);
+        chatButton.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(rootView);
+            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToChatFragment(mEvent));
+        });
 
         //Club/Organiser name and image displayed; navigates to club when clicked
         mModel.getClubFromEvent(mEvent).observe(getViewLifecycleOwner(), mClub -> {
@@ -175,7 +182,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         createNewPost.setVisibility(View.VISIBLE);//TODO: Visible only to organisers
         createNewPost.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
-            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", mEvent, new ArrayList<String>()));
+            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", mEvent, new ArrayList<String>(){{add(""); add("");}}));
         });
 
         //Close EventDetailFragment on buttonClose clicked
