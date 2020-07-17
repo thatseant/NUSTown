@@ -23,18 +23,10 @@ import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.ClubEventsAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.functions.FirebaseFunctions;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener{
-    private FirebaseFunctions mFunctions;
     private TitleFragmentViewModel mModel; //Events ViewModel
 
 
@@ -46,8 +38,7 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mFunctions = FirebaseFunctions.getInstance();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
 
         // Retrieve NClub object clicked on in RecyclerView
         assert getArguments() != null;
@@ -56,12 +47,8 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         View rootView = inflater.inflate(R.layout.fragment_club_detail, container, false);
 
 
-        //Get image reference from cloud storage
+        //Get image reference from cloud storage TODO: Store Image in Cloud Storage
         ImageView mImage = rootView.findViewById(R.id.club_image);
-//        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-//        StorageReference imageRef = storageReference.child("clubs/" + mEvent.getImage());
-//
-//        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).into(mImage)); //TODO: Figure out how to load image without needing URL
         if (!mClub.getImgUrl().equals("")) {
             Glide.with(requireContext()).load(mClub.getImgUrl()).apply(new RequestOptions()
                     .placeholder(R.drawable.nus)).thumbnail(0.02f).into(mImage);
@@ -70,7 +57,7 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         }
 
 
-        //Sets text in TextView
+        //TextViews displays clubs' info
         TextView mCat = rootView.findViewById(R.id.club_category);
         mCat.setText(mClub.getCatName());
         TextView mName = rootView.findViewById(R.id.club_name);
@@ -81,56 +68,38 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         mURL.setText(mClub.getUrl());
         Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
 
-        //Link Events Recycler View to Adapter
+        //Events by Club displayed in recyclerView
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_club_events);
         final ClubEventsAdapter mAdapter = new ClubEventsAdapter(this);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
         mModel.getClubEvents(mClub).observe(getViewLifecycleOwner(), mAdapter::submitList);
 
-        //Subscribe button
+        //Subscribe button reflects subscription status
         Button subscribeButton = rootView.findViewById(R.id.subscribe);
-        mModel.getUser().observe(getViewLifecycleOwner(), mUser -> {
+        mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Subscription status is always updated as fetch from repository attaches SnapshotListener
             if (mUser.getClubsSubscribedTo().contains(mClub.getName())) {
                 subscribeButton.setText("I'm Following");
             } else {
                 subscribeButton.setText("Follow Club");
             }
-
-
         });
+
+        subscribeButton.setOnClickListener(v -> mModel.subscribeToClub(mClub.getName()));
 
         //Close EventDetailFragment on buttonClose clicked
         ImageView buttonClose = rootView.findViewById(R.id.club_button_back);
         buttonClose.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
-//            navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToClubFragment());
             navController.popBackStack();
         });
-
-
-        subscribeButton.setOnClickListener(v -> subscribeToClub(user.getUid(), mClub.getName()).addOnSuccessListener(result -> {
-//            mModel.setUser(user.getEmail());
-        }));
 
         return rootView;
 
 
     }
 
-    private Task<String> subscribeToClub(String email, String Id) {
-        //create the arguments to the callable function.
-        Map<String, Object> data = new HashMap<>();
-        data.put("email",email);
-        data.put("club_name", Id);
-
-        return mFunctions
-                .getHttpsCallable("subscribeToClub")
-                .call(data)
-                .continueWith(task -> null);
-    }
-
+    //Navigate to event when clicked
     @Override
     public void onItemSelected(@NotNull NEvent mEvent, @NotNull View view) {
         NavController navController = Navigation.findNavController(view);

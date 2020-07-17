@@ -58,7 +58,6 @@ class ClubListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, Cl
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val view = layoutInflater.inflate(R.layout.event_cell, parent, false)
-
                 return ViewHolder(view)
             }
         }

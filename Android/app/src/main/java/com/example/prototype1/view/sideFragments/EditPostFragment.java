@@ -26,19 +26,15 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class EditPostFragment extends Fragment {
     private TitleFragmentViewModel mModel;
-    private ArrayList captionToEdit;
+    private ArrayList<String> captionToEdit;
     private String postDate;
     private NEvent updatedEvent;
     private Uri photoURI;
     private int changePhotoFlag = 0;
 
     private NEvent mEvent;
-    private String eventType;
     private Map<String, ArrayList<String>> existingUpdates;
 
     public EditPostFragment() {

@@ -36,30 +36,28 @@ import org.jetbrains.annotations.NotNull;
 
 public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSelectedListener {
     private boolean isScrolling = false;
-    private boolean isLastItemReached = false;
     private ClubsSearchDialogFragment mSearchDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_club, container, false);
         Toolbar mToolbar = rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbar);
 
-        //Link Recycler View to Adapter
+        //Main ViewModel
+        TitleFragmentViewModel mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
+
+        //Link Clubs List Recycler View to Adapter
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_restaurants);
         final ClubListAdapter mAdapter = new ClubListAdapter(this);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        mModel.getClubsData().observe(getViewLifecycleOwner(), mAdapter::submitList);  //Link Adapter to getClubsData() in ViewModel; getClubsData() returns clubList
 
-
-        //Main ViewModel
-        TitleFragmentViewModel mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
-        //Link Adapter to getData() in ViewModel; getData() returns clubList
-        mModel.getClubsData().observe(getViewLifecycleOwner(), mAdapter::submitList);
-
-
+        // Allows for pagination of Firestore Data
         RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -68,7 +66,6 @@ public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSele
                     isScrolling = true;
                 }
             }
-
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -83,9 +80,20 @@ public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSele
                 }
             }
         };
-
-
         recyclerView.addOnScrollListener(onScrollListener);
+
+        //Shows search dialog when searchBox clicked
+        mSearchDialog = new ClubsSearchDialogFragment();
+        RelativeLayout searchBox = rootView.findViewById(R.id.searchBox);
+        searchBox.setOnClickListener(v -> mSearchDialog.show(requireActivity().getSupportFragmentManager(), SearchDialogFragment.TAG));
+
+        ImageView clearFilter = rootView.findViewById(R.id.button_clear_filter);
+        clearFilter.setOnClickListener(v -> {
+            mSearchDialog.resetFlag = 1; //Flag needed due to bug where resetting spinner setSelection is not saved; reset later onResume
+            mModel.changeClubFilter(new Filters(true)); //Reset mFilter in ViewModel as mFilter is parameter of getData()
+            mModel.mClubSearchCat.setValue("<b> All Clubs <b>");
+            mModel.getClubsData();
+        });
 
         //Automatically changes text to in search box to reflect current filter
         TextView mSearchCat = rootView.findViewById(R.id.text_current_search);
@@ -96,21 +104,6 @@ public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSele
         };
         mModel.mClubSearchCat.observe(getViewLifecycleOwner(), searchCatObserver);
 
-        mSearchDialog = new ClubsSearchDialogFragment();
-
-        //Shows search dialog when searchBox clicked
-        RelativeLayout searchBox = rootView.findViewById(R.id.searchBox);
-        searchBox.setOnClickListener(v -> mSearchDialog.show(requireActivity().getSupportFragmentManager(), SearchDialogFragment.TAG));
-
-        ImageView clearFilter = rootView.findViewById(R.id.button_clear_filter);
-        clearFilter.setOnClickListener(v -> {
-            mSearchDialog.resetFlag = 1; //Flag needed due to bug where resetting spinner setSelection is not saved; reset later onResume
-            mModel.changeClubFilter(new Filters(true)); //Reset mFilter in ViewModel as mFilter is parameter of getData()
-            mModel.mClubSearchCat.setValue("<b> All Clubs <b>");
-            mModel.clearClubLiveData();
-            mModel.getClubsData();
-        });
-
 
         return rootView;
     }
@@ -120,6 +113,7 @@ public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSele
         super.onCreate(savedInstanceState);
     }
 
+    //Navigate to ClubDetail when club clicked
     @Override
     public void onItemSelected(@NotNull NClub mClub, @NotNull View view) {
         NavController navController = Navigation.findNavController(view);

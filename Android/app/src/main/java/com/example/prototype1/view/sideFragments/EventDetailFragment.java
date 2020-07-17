@@ -24,25 +24,21 @@ import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.UpdatesPagerAdapter;
 import com.example.prototype1.view.adapters.UsersAttendingAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter.OnItemSelectedListener {
     private ImageView mImage;
-    private FirebaseFunctions mFunctions;
     private TitleFragmentViewModel mModel;
     private String eventType;
     NEvent mEvent;
@@ -58,27 +54,52 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
-        mFunctions = FirebaseFunctions.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        // Retrieve NEvent object clicked on in RecyclerView
+
+        //Retrieve NEvent object clicked on in RecyclerView: supplied by Nav Safe Args
         assert getArguments() != null;
         mEvent = EventDetailFragmentArgs.fromBundle(getArguments()).getMEvent();
 //        mModel.getUpdatedEvent(mEvent.getID(), "events");
 
         View rootView = inflater.inflate(R.layout.fragment_event_detail, container, false);
 
+        //Uses Glide library for loading image from Firebase Cloud Storage
+        mImage = rootView.findViewById(R.id.event_image);
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference(); //Get image reference from cloud storage
+        StorageReference imageRef = storageReference.child("events/" + mEvent.getID() + ".png");
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(mImage)).addOnFailureListener(url -> mImage.setImageResource(R.drawable.nus)); //TODO: Figure out how to load image without needing URL
+
+        //Sets text in TextView
+        TextView orgClub = rootView.findViewById(R.id.event_club);
+        orgClub.setText(mEvent.getOrg());
+        TextView mTime = rootView.findViewById(R.id.event_time);
+        mTime.setText(mEvent.getTime().toString());
+        TextView mPlace = rootView.findViewById(R.id.event_city);
+        mPlace.setText(mEvent.getPlace());
+        TextView mName = rootView.findViewById(R.id.event_name);
+        mName.setText(mEvent.getName());
+        TextView mNum = rootView.findViewById(R.id.event_number_attend);
+        mNum.setText("NUSync Signups: " + mEvent.getNumberAttending());
+        TextView mURL = rootView.findViewById(R.id.event_url_text);
+        mURL.setText(mEvent.getUrl());
+        Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
+
+        //RSVP Button text reflects if user attendance status by checking mEvent against his list of attending events
         rsvpButton = rootView.findViewById(R.id.rsvp_button);
-        mModel.getUser().observe(getViewLifecycleOwner(), mUser -> {
+        mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Attendance status is always updated as fetch from repository attaches SnapshotListener
             if (mUser.getEventAttending().contains(mEvent.getID())) {
                 rsvpButton.setText("Attending");
             } else {
                 rsvpButton.setText("RSVP");
             }
-
-
         });
 
-        //Info and Navigate to event's organiser
+        //RSVP Button passes user email and event ID to cloud function
+        rsvpButton.setOnClickListener(v ->
+                mModel.rsvpFunction(mEvent.getID())
+        );
+
+        //Club/Organiser name and image displayed; navigates to club when clicked
         mModel.getClubFromEvent(mEvent).observe(getViewLifecycleOwner(), mClub -> {
             if (mClub != null) {
                 TextView clubTitle = rootView.findViewById(R.id.clubTitle);
@@ -98,69 +119,64 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
                 });
             }
         });
-        eventType = EventDetailFragmentArgs.fromBundle(getArguments()).getType();
 
 
-        //ViewPager Tabs for posts updates
+        //ViewPager2 Tabs for posts updates
         ViewPager2 updatesViewPager = rootView.findViewById(R.id.updatesViewPager);
-        if (mEvent.getUpdates() != null) {
-            ArrayList<Map.Entry<? extends String, ? extends ArrayList<String>>> allUpdates = new ArrayList<>(mEvent.getUpdates().entrySet());
-            final UpdatesPagerAdapter mAdapter = new UpdatesPagerAdapter(this);
-            mAdapter.submitList(allUpdates);
-            updatesViewPager.setAdapter(mAdapter);
-            TabLayout tabLayout = rootView.findViewById(R.id.posts_tab_layout);
-            new TabLayoutMediator(tabLayout, updatesViewPager,
-                    (tab, position) -> tab.setText(allUpdates.get(position).getKey())
-            ).attach();
-            updatesViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() { //ensures tab dynamically resize to fit content
-                @Override
-                public void onPageSelected(int position) {
-                    mAdapter.notifyDataSetChanged();
-                }
-            });
-        }
+        final UpdatesPagerAdapter mAdapter = new UpdatesPagerAdapter(this);
+        ArrayList<Map.Entry<? extends String, ? extends ArrayList<String>>> //Map of postDateString as key and ArrayList of captions and imgURL as values
+                allUpdates = new ArrayList<>(mEvent.getUpdates().entrySet());
+        mAdapter.submitList(allUpdates);
+        updatesViewPager.setAdapter(mAdapter);
+
+        TabLayout tabLayout = rootView.findViewById(R.id.posts_tab_layout);
+        new TabLayoutMediator(tabLayout, updatesViewPager, //Creates tabs for individual posts where title is post date (stored as key).
+                (tab, position) -> tab.setText(allUpdates.get(position).getKey())
+        ).attach();
+
+        updatesViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() { //ensures tab dynamically resize to fit content
+            @Override
+            public void onPageSelected(int position) {
+                mAdapter.notifyDataSetChanged();
+            }
+        });
 
 
-        //Link Users Recycler View to Adapter
+        //Displays profilePic and username of users attending
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_users_attending);
         final UsersAttendingAdapter mUserAdapter = new UsersAttendingAdapter();
         recyclerView.setAdapter(mUserAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-//        mUserAdapter.submitList(mEvent.getUsersAttending());
-        mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
+        mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> //List always updated as repository's getDoc() is called.
+                mUserAdapter.submitList(event.getUsersAttending()));
 
 
-        //Get image reference from cloud storage
-        mImage = rootView.findViewById(R.id.event_image);
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference();
-        StorageReference imageRef = storageReference.child("events/" + mEvent.getID() + ".png");
+        //Allows organisers to delete events
+        if (Objects.equals(user.getEmail(), "sean@tan.com")) {//TODO: Change Email to Event Organiser
+            Button deleteButton = rootView.findViewById(R.id.delete_button);
+            deleteButton.setVisibility(View.VISIBLE);
+            deleteButton.setOnClickListener(v -> mModel.deleteEvent(mEvent));
+        }
 
-        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-            Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(mImage);
-        }).addOnFailureListener(url -> mImage.setImageResource(R.drawable.nus)); //TODO: Figure out how to load image without needing URL
 
-//        if (mEvent.getImgUrl() != "") {
-//            Glide.with(requireContext()).load(mEvent.getImgUrl()).apply(new RequestOptions()
-//                    .placeholder(R.drawable.nus)
-//            ).thumbnail(0.02f).into(mImage);
-//        } else {
-//            mImage.setImageResource(R.drawable.nus);
-//        }
+        //Allows organisers to edit events
+        if (Objects.equals(user.getEmail(), "sean@tan.com")) {//TODO: Change Email to Event Organiser
+            View editButton = rootView.findViewById(R.id.edit_event_button);
+            editButton.setVisibility(View.VISIBLE);
+            editButton.setOnClickListener(v -> { //Navigate to EditEventFragment
+                NavController navController = Navigation.findNavController(rootView);
+                eventType = EventDetailFragmentArgs.fromBundle(getArguments()).getType();
+                navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditEvent(mEvent, eventType));
+            });
+        }
 
-        //Sets text in TextView
-        TextView mClub = rootView.findViewById(R.id.event_club);
-        mClub.setText(mEvent.getOrg());
-        TextView mTime = rootView.findViewById(R.id.event_time);
-        mTime.setText(mEvent.getTime().toString());
-        TextView mPlace = rootView.findViewById(R.id.event_city);
-        mPlace.setText(mEvent.getPlace());
-        TextView mName = rootView.findViewById(R.id.event_name);
-        mName.setText(mEvent.getName());
-        TextView mNum = rootView.findViewById(R.id.event_number_attend);
-        mNum.setText("NUSync Signups: " + mEvent.getNumberAttending());
-        TextView mURL = rootView.findViewById(R.id.event_url_text);
-        mURL.setText(mEvent.getUrl());
-        Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
+        //Allows Organisers to create new posts
+        Button createNewPost = rootView.findViewById(R.id.new_post_button);
+        createNewPost.setVisibility(View.VISIBLE);//TODO: Visible only to organisers
+        createNewPost.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(rootView);
+            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", mEvent, new ArrayList<String>()));
+        });
 
         //Close EventDetailFragment on buttonClose clicked
         ImageView buttonClose = rootView.findViewById(R.id.event_button_back);
@@ -169,66 +185,19 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
             navController.popBackStack();
         });
 
-        //RSVP Button invokes cloud function --- this
-        rsvpButton.setOnClickListener(v -> {
-            rsvpFunction(user.getUid(), mEvent.getID()).addOnSuccessListener(result -> {
-//                mModel.setUser(user.getEmail());
-//                if (getView() != null) {
-//                    mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
-//                }
-            });
-        });
-
-        //Delete Button deletes event
-        if (Objects.equals(user.getEmail(), "sean@tan.com")) {
-        Button deleteButton = rootView.findViewById(R.id.delete_button);
-            deleteButton.setVisibility(View.VISIBLE);
-            deleteButton.setOnClickListener(v -> mModel.deleteEvent(mEvent));
-        }
-
-
-        //Allows organisers to edit events
-        assert user != null;
-        if (Objects.equals(user.getEmail(), "sean@tan.com")) {
-            View editButton = rootView.findViewById(R.id.edit_event_button);
-            editButton.setVisibility(View.VISIBLE);
-            //Displays dialog for organisers to edit event
-            editButton.setOnClickListener(v -> {
-                NavController navController = Navigation.findNavController(rootView);
-                navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditEvent(mEvent, eventType));
-            });
-        }
-
-        Button createNewPost = rootView.findViewById(R.id.new_post_button);
-        createNewPost.setVisibility(View.VISIBLE);//TODO: Visible only to organisers
-        createNewPost.setOnClickListener(v -> {
-            NavController navController = Navigation.findNavController(rootView);
-            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", mEvent, new ArrayList()));
-        });
-
         return rootView;
 
 
     }
 
-    private Task<String> rsvpFunction(String email, String ID) { //----this
-        // Create the arguments to the callable function.
-        Map<String, Object> data = new HashMap<>();
-        data.put("email", email);
-        data.put("event_id", ID);
-
-        return mFunctions
-                .getHttpsCallable("rsvpFunction")
-                .call(data)
-                .continueWith(task -> null);
-    }
-
+    //Navigates to EditPostFragment when organisers click on edit button within post page.
     @Override
     public void onItemSelected(@NotNull Map.Entry<String, ? extends ArrayList<String>> mPost, @NotNull View view) {
         NavController navController = Navigation.findNavController(view);
         navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment(mPost.getKey(), mEvent, mPost.getValue()));
     }
 
+    //Deletes post when organisers click on delete button within post page.
     @Override
     public void deleteItemSelected(@NotNull Map.Entry<String, ? extends ArrayList<String>> mPost, @NotNull View view) {
         Map<String, ArrayList<String>> existingUpdates = mEvent.getUpdates();

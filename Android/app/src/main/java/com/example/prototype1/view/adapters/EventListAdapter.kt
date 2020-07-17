@@ -19,14 +19,13 @@ import java.util.*
 class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, EventListAdapter.ViewHolder>(NEventDiffCallback()) {
     private val newListener: OnItemSelectedListener = mListener
 
-
     interface OnItemSelectedListener {
         fun onItemSelected(mEvent: NEvent, view: View)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {//Called for every item in RecyclerView when it becomes visible
         val item = getItem(position)
-        holder.bind(item, holder, newListener) //bind function in ViewHolder sets Views within it
+        holder.bind(item, holder, newListener) //bind function within ViewHolder sets views within it
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -53,16 +52,6 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
                         .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
 
             }.addOnFailureListener { eventImage.setImageResource(R.drawable.nus); }
-
-//            //Sets ImageView
-//            if (item.imgUrl != "") {
-//                Glide.with(holder.eventImage.context).load(item.imgUrl).apply(RequestOptions()
-//                        .placeholder(R.drawable.nus)
-//                ).thumbnail(0.02f).into(eventImage)
-//            } else {
-//                eventImage.setImageResource(R.drawable.nus)
-//            }
-
 
             itemView.setOnClickListener { view ->
                 listener.onItemSelected(item, view)

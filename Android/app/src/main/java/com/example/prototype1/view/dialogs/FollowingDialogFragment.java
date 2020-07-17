@@ -37,15 +37,13 @@ public class FollowingDialogFragment extends DialogFragment implements UserClubs
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_following_dialog, container, false);
-
-
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class); //returns same instance of ViewModel in TitleFragment
 
-        //Link Events Recycler View to Adapter
-        RecyclerView recyclerView = mRootView.findViewById(R.id.recycler_followed_clubs);
+        //Provides list of clubs followed with unfollow button
+        RecyclerView clubFollowedRecycler = mRootView.findViewById(R.id.recycler_followed_clubs);
         final UserClubsAdapter mAdapter = new UserClubsAdapter(this);
-        recyclerView.setAdapter(mAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        clubFollowedRecycler.setAdapter(mAdapter);
+        clubFollowedRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mModel.getUser().observe(getViewLifecycleOwner(), user -> mAdapter.submitList(user.getClubsSubscribedTo()));
 
         return mRootView;

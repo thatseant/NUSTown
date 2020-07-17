@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.prototype1.R
 
 class UserClubsAdapter(mListener: ClickListener) : ListAdapter<String, UserClubsAdapter.ViewHolder>(StringDiffCallback()) {
-    private val newListener: UserClubsAdapter.ClickListener = mListener
+    private val newListener: ClickListener = mListener
 
     interface ClickListener {
         fun onUnfollow(clubName: String)

@@ -18,9 +18,6 @@ import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 
 import java.util.Objects;
 
-/**
- * Dialog Fragment containing filter form.
- */
 public class ClubsSearchDialogFragment extends DialogFragment implements View.OnClickListener {
 
     static public final String TAG = "FilterDialog";
@@ -72,9 +69,8 @@ public class ClubsSearchDialogFragment extends DialogFragment implements View.On
     }
 
     private void onSearchClicked() {
-        mModel.changeClubFilter(getFilters());
+        mModel.changeClubFilter(getFilters()); //Filters saved in ViewModel and getClubsData applies same filters until changed
         mModel.mClubSearchCat.setValue(getFilters().getClubSearchDescription(requireContext())); //Updates search box text (stored in ViewModel)
-        mModel.clearClubLiveData();
         dismiss();
     }
 
@@ -84,7 +80,7 @@ public class ClubsSearchDialogFragment extends DialogFragment implements View.On
         mModel.getClubsData();
     }
 
-    private Filters getFilters() { //Used to update EventList in ViewModel
+    private Filters getFilters() { //SearchDocuments in repository retrieves filters properties through filters.get() and applies to queries.
         Filters filters = new Filters(true);
 
         if (mRootView != null) {
@@ -95,15 +91,10 @@ public class ClubsSearchDialogFragment extends DialogFragment implements View.On
         return filters;
     }
 
-    //get functions retrieves Spinner selections and called in getFilters()
+    //The following get functions retrieves Spinner selections and are called in getFilters()
     @Nullable
     private int getSelectedCategory() {
-        int selected = mCategorySpinner.getSelectedItemPosition();
-        if (getString(R.string.value_any_club_category).equals(selected)) {
-            return 0;
-        } else {
-            return selected;
-        }
+        return mCategorySpinner.getSelectedItemPosition();
     }
 
     @Nullable
