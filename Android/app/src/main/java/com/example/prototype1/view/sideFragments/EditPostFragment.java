@@ -81,7 +81,7 @@ public class EditPostFragment extends Fragment {
             mModel.updateEvent(mEvent, "events");
 
             if (photoURI != null) {
-                mModel.uploadPic("updates", mEvent.getID() + "/" + postDate, photoURI);
+                mModel.uploadPic("updates", mEvent.getID() + "/" + postDate, photoURI, () -> {});
             }
             NavController navController = Navigation.findNavController(editEventView);
             navController.popBackStack();

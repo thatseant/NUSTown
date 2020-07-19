@@ -163,6 +163,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     }
 
     public MutableLiveData<ArrayList<NMessage>> getMessages(String eventID) {
+        mMessageLiveData.setValue(new ArrayList<>());
 
         if (messageListener != null) {
             messageListener.remove();
@@ -206,6 +207,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         if (eventListener != null) {
             eventListener.remove();
         }
+        mSingleEventLiveData.setValue(new NEvent());
         mRepository.getDoc(eventID, "id", type, document -> mSingleEventLiveData.setValue(document.toObject(NEvent.class)), docListener -> eventListener = docListener);
         return mSingleEventLiveData;
     }
@@ -311,7 +313,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
                 .continueWith(task -> null);
     }
 
-    public void uploadPic(String collection, String fileName, Uri file) {
+    public void uploadPic(String collection, String fileName, Uri file, MyPhotoCallback myPhotoCallback) {
         StorageReference imageRef = FirebaseStorage.getInstance().getReference().child(collection + "/" + fileName + ".jpg");
         UploadTask uploadTask = imageRef.putFile(file);
 
@@ -319,8 +321,13 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         uploadTask.addOnFailureListener(exception -> {
             // Handle unsuccessful uploads
         }).addOnSuccessListener(taskSnapshot -> {
-
+            myPhotoCallback.onCallback();
         });
+    }
+
+    //Callbacks
+    public interface MyPhotoCallback {
+        void onCallback();
     }
 
 //    public LiveData<ArrayList<NUser>> getUsersAttending() {

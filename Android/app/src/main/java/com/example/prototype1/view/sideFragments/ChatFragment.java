@@ -2,8 +2,14 @@ package com.example.prototype1.view.sideFragments;
 
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,9 +30,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.auth.User;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ChatFragment extends Fragment {
+    TitleFragmentViewModel mModel;
 
     public ChatFragment() {
         // Required empty public constructor
@@ -42,8 +50,14 @@ public class ChatFragment extends Fragment {
         //Retrieve NEvent object clicked on in RecyclerView: supplied by Nav Safe Args
         NEvent mEvent = ChatFragmentArgs.fromBundle(getArguments()).getMEvent();
 
+        //Toolbar displays event name
+        Toolbar mToolbar = rootView.findViewById(R.id.toolbar);
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbar);
+        NavigationUI.setupWithNavController(mToolbar, NavHostFragment.findNavController(this));
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(mEvent.getName());
+
         //Events ViewModel
-        TitleFragmentViewModel mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
+        mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
 
         RecyclerView chatRecycler = rootView.findViewById(R.id.list_chat);
         ChatAdapter chatAdapter = new ChatAdapter();
@@ -65,4 +79,5 @@ public class ChatFragment extends Fragment {
 
         return rootView;
     }
+
 }
