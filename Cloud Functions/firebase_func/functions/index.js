@@ -294,6 +294,8 @@ async function NSyncEventToDatabase(allEvents, i) {
     let description = event.description
     let description_text = description.replace(/(<([^>]+)>)/ig, '', "")
     const JSONAttendees = await axios.get("https://nus.campuslabs.com/engage/api/discovery/event/"+ event.id +"/rsvpstatistics?")
+    var updates = {}
+    updates["NUSync"] = [description_text, ""]
     let newDoc = {
         // org: event.organizationName,
         // syncEventID: event.id,
@@ -310,18 +312,19 @@ async function NSyncEventToDatabase(allEvents, i) {
         // id: id,
         // imgUrl: imageURL
 
-            org: event.organizationName,
-            syncEventID: event.id,
-            syncOrgID: event.organizationId,
-            info: description_text,
-            time: admin.firestore.Timestamp.fromDate(new Date(event.startsOn)),
-            numberAttending: JSONAttendees.data.yesUserCount,
-            name: event.name,
-            place: event.location,
-            rating: 3,
-            url: "https://nus.campuslabs.com/engage/event/" + event.id,
-            id: id,
-            imgUrl: imageURL
+        org: event.organizationName,
+        syncEventID: event.id,
+        syncOrgID: event.organizationId,
+        info: description_text,
+        time: admin.firestore.Timestamp.fromDate(new Date(event.startsOn)),
+        numberAttending: JSONAttendees.data.yesUserCount,
+        name: event.name,
+        place: event.location,
+        url: "https://nus.campuslabs.com/engage/event/" + event.id,
+        id: id,
+        imgUrl: imageURL,
+        updates: updates,
+        lastUpdate: new Date()
     }
 
     await admin.firestore().collection('events').doc(id).get().then(
