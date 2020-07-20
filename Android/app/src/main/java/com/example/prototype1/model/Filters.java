@@ -34,6 +34,10 @@ public class Filters {
         return !(TextUtils.isEmpty(place));
     }
 
+    public boolean hasDisplayPast() {
+        return (displayPast!=null);
+    }
+
     public boolean hasClubCategory() {
         return !(TextUtils.isEmpty(Integer.toString(club_category)));
     }

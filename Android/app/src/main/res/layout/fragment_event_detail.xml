@@ -134,11 +134,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
                 <Button
                     android:id="@+id/rsvp_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="RSVP" />
+
+                <Button
+                    android:id="@+id/chat_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chat" />
+
+            </LinearLayout>
 
                 <TextView
                     android:id="@+id/public_users_text"

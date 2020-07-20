@@ -1,12 +1,14 @@
 package com.example.prototype1.view.mainFragments;
 
 import android.content.Intent;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.ClubEventsAdapter;
@@ -29,6 +32,8 @@ import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +42,8 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
     private InfoDialogFragment mInfoDialog;
     private FollowingDialogFragment mClubDialog;
     TitleFragmentViewModel mModel;
+    private ImageView profileButton;
+    StorageReference imageRef;
     View rootView;
 
     public HomeFragment() {
@@ -89,13 +96,17 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         followingButton.setOnClickListener(v -> mClubDialog.show(requireActivity().getSupportFragmentManager(), FollowingDialogFragment.TAG));
 
         //Temporary Button for setting Profile Picture TODO: Change to ImageView
-        Button profileButton = rootView.findViewById(R.id.setProfile);
+        profileButton = rootView.findViewById(R.id.setProfile);
         profileButton.setOnClickListener(v -> {
             Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(pickPhoto, 1);//one can be replaced with any action code
         });
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference(); //Get image reference from cloud storage
+        imageRef = storageReference.child("profile/" + user.getUid() + ".jpg");
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(profileButton));
         return rootView;
     }
 
@@ -105,8 +116,7 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         if (requestCode == 1 && resultCode == getActivity().RESULT_OK) {
             Uri file = data.getData();
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            mModel.uploadPic("profile", user.getUid(), file); //Upload to Cloud Storage
-
+            mModel.uploadPic("profile", user.getUid(), file, () -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(profileButton))); //Upload to Cloud Storage
         }
     }
 
