@@ -88,6 +88,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         //RSVP/Edit/Cancel onClickListeners
         mRootView.findViewById(R.id.button_jio_rsvp).setOnClickListener(this);
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
+        mRootView.findViewById(R.id.chat_jio_button).setOnClickListener(this);
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (Objects.equals(user.getEmail(), mEvent.getOrgUser())) { //Allows organisers to edit events
             mRootView.findViewById(R.id.edit_jio_button).setVisibility(View.VISIBLE);
@@ -118,6 +119,12 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
                 NavController navController = NavHostFragment.findNavController(this);
                 navController.navigate(JioListFragmentDirections.actionJioListFragmentToEditEvent(mEvent, "jios"));
                 dismiss();
+                break;
+            case R.id.chat_jio_button:
+                navController = NavHostFragment.findNavController(this);
+                navController.navigate(JioListFragmentDirections.actionJioListFragmentToChatFragment(mEvent));
+                dismiss();
+                break;
         }
     }
 
