@@ -48,34 +48,12 @@
                 style="@style/AppTheme.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/club_rating"
+                android:layout_above="@+id/club_category"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
                 tools:text="Some Club" />
-
-            <me.zhanghai.android.materialratingbar.MaterialRatingBar
-                android:id="@+id/club_rating"
-                style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/club_category"
-                android:layout_alignStart="@+id/club_name"
-                app:mrb_progressTint="@android:color/white"
-                app:mrb_secondaryProgressTint="@android:color/white" />
-
-            <TextView
-                style="@style/AppTheme.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/club_rating"
-                android:layout_alignBottom="@+id/club_rating"
-                android:layout_marginStart="4dp"
-                android:layout_toEndOf="@+id/club_rating"
-                android:gravity="center"
-                android:textColor="@android:color/white"
-                tools:text="(10)" />
 
             <TextView
                 android:id="@+id/club_category"

@@ -50,11 +50,14 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
             deleteButton.setOnClickListener { view ->
                 listener.deleteItemSelected(item, view)
             }
-            val storageReference = FirebaseStorage.getInstance().reference
-            val imageRef = storageReference.child("updates/" + item.value[1] + ".jpg")
 
-            imageRef.downloadUrl.addOnSuccessListener {
-                Glide.with(holder.postImage.context).load(it).into(postImage)
+            if (item.value.size>2) {
+                val storageReference = FirebaseStorage.getInstance().reference
+                val imageRef = storageReference.child("updates/" + item.value[2] + ".png")
+
+                imageRef.downloadUrl.addOnSuccessListener {
+                    Glide.with(holder.postImage.context).load(it).into(postImage)
+                }
             }
 
         }
