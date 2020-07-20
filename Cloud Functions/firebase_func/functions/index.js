@@ -295,7 +295,7 @@ async function NSyncEventToDatabase(allEvents, i) {
     let description_text = description.replace(/(<([^>]+)>)/ig, '', "")
     const JSONAttendees = await axios.get("https://nus.campuslabs.com/engage/api/discovery/event/"+ event.id +"/rsvpstatistics?")
     var updates = {}
-    updates["NUSync"] = [description_text, ""]
+    updates["NUSync"] = [description_text, "", ""]
     let newDoc = {
         // org: event.organizationName,
         // syncEventID: event.id,
@@ -355,7 +355,7 @@ async function createInstaEvents (orgName, userID, numberOfPosts) {
             if (newPost) {
                 if (allPosts[newPost.id]) {
                     var postToUpdate = allPosts[newPost.id]
-                    postToUpdate.updates[newPost.postDate] = [newPost.info, newPost.imgUrl] //add imgURL to update
+                    postToUpdate.updates[newPost.postDate] = [newPost.info, newPost.imgUrl, newPost.id + "_" + newPost.postDate] //add imgURL to update
                     if (newPost.lastUpdate > postToUpdate.lastUpdate) {
                         postToUpdate.lastUpdate = newPost.lastUpdate
                     }
@@ -478,7 +478,7 @@ function InstaToDatabase(orgName, allMedia, i, userID) {
                 var updates = {}
 
                 let postDateString = moment(post_date).format("DD MMM")
-                updates[postDateString] = [caption, imageURL]
+                updates[postDateString] = [caption, imageURL, orgName + "_" + stringDate + "_" + postDateString]
 
                 let newDoc = {
                     image: orgName + "_" + stringDate + ".png",
@@ -508,10 +508,10 @@ function InstaToDatabase(orgName, allMedia, i, userID) {
 }
 
 async function uploadEventFirestore(id, newDoc) {
-    await admin.firestore().collection('events3').doc(id).get().then(
+    await admin.firestore().collection('events').doc(id).get().then(
         async (doc) => {
             if (!doc.exists) {
-                await admin.firestore().collection('events3').doc(id).set(newDoc)
+                await admin.firestore().collection('events').doc(id).set(newDoc)
             } else if (doc.exists) {
                 if (doc.data().lastUpdate) {
                     if (newDoc.lastUpdate < doc.data().lastUpdate.toDate()) {
@@ -519,7 +519,7 @@ async function uploadEventFirestore(id, newDoc) {
                         newDoc.lastUpdate = doc.data().lastUpdate.toDate()
                     }
                 }
-                await admin.firestore().collection('events3').doc(id).update({["updates." + newDoc.postDate]: [newDoc.info, newDoc.imgUrl], "org": newDoc.org, "lastUpdate": newDoc.lastUpdate})
+                await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: [newDoc.info, newDoc.imgUrl, newDoc.id + "_" + newDoc.postDate], "org": newDoc.org, "lastUpdate": newDoc.lastUpdate})
             }
             return null;
         }
@@ -668,7 +668,7 @@ exports.downloadEventsPhoto = functions.https.onRequest(async (req, res) => {
 
             for (const doc of querySnapshot.docs) {
                 promises.push(
-                    downloadToCloud(doc.data().id, doc.data().imgUrl)
+                    downloadToCloud(doc.data().id, doc.data().imgUrl, "events")
                 )
             }
 
@@ -687,12 +687,41 @@ exports.downloadEventsPhoto = functions.https.onRequest(async (req, res) => {
     }
 })
 
-async function downloadToCloud(id, imageURL) {
+exports.downloadUpdatesPhoto = functions.https.onRequest(async (req, res) => {
+    try {
+        promises = []
+        await admin.firestore().collection("events").get().then(async (querySnapshot) => {
+
+            for (const doc of querySnapshot.docs) {
+
+                for (let [key, value] of Object.entries(doc.data().updates)) {
+                    promises.push(
+                        downloadToCloud(doc.data().id + "_" + key, value[1], "updates")
+                    )
+                }
+            }
+
+            await allSettled(promises)
+            allSettled.shim()
+
+
+            return null;
+        });
+
+
+        res.status(200).json({result: `Success`});
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+})
+
+async function downloadToCloud(id, imageURL, collection) {
       if (imageURL!== "") {
           const picName = id + ".png";
           const tempFilePath = path.join(os.tmpdir(), picName);
           await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
-              {destination: "events/"+ picName,  metadata: {metadata :{
+              {destination: collection + "/" + picName,  metadata: {metadata :{
                           firebaseStorageDownloadTokens: uuidv4(),
                       }
                   },}))
