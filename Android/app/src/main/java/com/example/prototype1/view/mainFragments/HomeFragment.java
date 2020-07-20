@@ -105,8 +105,8 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(); //Get image reference from cloud storage
-        imageRef = storageReference.child("profile/" + user.getUid() + ".jpg");
-        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(profileButton));
+        mModel.getUser().observe(getViewLifecycleOwner(), v -> {        imageRef = storageReference.child("profile/" + user.getUid() + ".jpg");
+            imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(profileButton));});
         return rootView;
     }
 
