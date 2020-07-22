@@ -20,6 +20,7 @@ class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent,
 
     interface OnItemSelectedListener {
         fun onItemSelected(mEvent: NEvent, view: View)
+        fun onJioSelected(mEvent: NEvent, view: View)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {//Called for every item in RecyclerView when it becomes visible
@@ -53,7 +54,11 @@ class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent,
             }.addOnFailureListener { eventImage.setImageResource(R.drawable.nus); }
 
             itemView.setOnClickListener { view ->
-                listener.onItemSelected(item, view)
+                if (item.rating == 0) { //TODO: Temporary Solution
+                    listener.onJioSelected(item, view)
+                } else {
+                    listener.onItemSelected(item, view)
+                }
             }
         }
 

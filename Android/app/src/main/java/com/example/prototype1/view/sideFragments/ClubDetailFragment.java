@@ -111,5 +111,9 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToEventDetailFragment(mEvent, "events"));
     }
 
+    @Override
+    public void onJioSelected(@NotNull NEvent mEvent, @NotNull View view) {
+
+    }
 }
 

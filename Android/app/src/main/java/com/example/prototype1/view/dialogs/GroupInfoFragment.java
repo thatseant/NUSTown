@@ -139,6 +139,10 @@ public class GroupInfoFragment extends DialogFragment implements View.OnClickLis
 
     @Override
     public void onItemSelected(@NotNull NEvent mEvent, @NotNull View view) {
+    }
+
+    @Override
+    public void onJioSelected(@NotNull NEvent mEvent, @NotNull View view) {
         dismiss();
         InfoDialogFragment mInfoDialog = new InfoDialogFragment(); //For displaying InfoDialog about jio when clicked
         Bundle infoBundle = new Bundle();
