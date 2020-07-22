@@ -538,7 +538,8 @@ exports.newUserSignUp = functions.auth.user().onCreate(user => {
       displayname : user.email,
       eventAttending: [],
       jioEventAttending: [],
-      clubsSubscribedTo : []
+      clubsSubscribedTo : [],
+      groupsSubscribedTo : []
     });
   });
 

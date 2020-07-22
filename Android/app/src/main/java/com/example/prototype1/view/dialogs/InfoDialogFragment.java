@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.UsersAttendingAdapter;
+import com.example.prototype1.view.mainFragments.HomeFragmentDirections;
+import com.example.prototype1.view.mainFragments.JioListFragment;
 import com.example.prototype1.view.mainFragments.JioListFragmentDirections;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -108,6 +110,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
+        NavController navController = NavHostFragment.findNavController(this);
         switch (v.getId()) {
             case R.id.button_jio_rsvp:
                 mModel.rsvpJioFunction(mEvent.getID());
@@ -116,13 +119,21 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
                 dismiss();
                 break;
             case R.id.edit_jio_button:
-                NavController navController = NavHostFragment.findNavController(this);
+                if (navController.getCurrentDestination().getId() == R.id.homeFragment) {
+                    navController.navigate(HomeFragmentDirections.actionHomeFragmentToEditEvent(mEvent, "jios"));
+                } else if (navController.getCurrentDestination().getId() == R.id.jioListFragment) {
                 navController.navigate(JioListFragmentDirections.actionJioListFragmentToEditEvent(mEvent, "jios"));
+                }
                 dismiss();
                 break;
-            case R.id.chat_jio_button:
-                navController = NavHostFragment.findNavController(this);
-                navController.navigate(JioListFragmentDirections.actionJioListFragmentToChatFragment(mEvent.getID(), mEvent.getName(), "jios"));
+
+                case R.id.chat_jio_button:
+
+                if (navController.getCurrentDestination().getId() == R.id.homeFragment) {
+                    navController.navigate(HomeFragmentDirections.actionHomeFragmentToChatFragment(mEvent.getID(), mEvent.getName(), "jios"));
+                } else if (navController.getCurrentDestination().getId() == R.id.jioListFragment) {
+                    navController.navigate(JioListFragmentDirections.actionJioListFragmentToChatFragment(mEvent.getID(), mEvent.getName(), "jios"));
+                }
                 dismiss();
                 break;
         }

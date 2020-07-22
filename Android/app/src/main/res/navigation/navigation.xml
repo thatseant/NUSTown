@@ -115,6 +115,12 @@
         <action
             android:id="@+id/action_homeFragment_to_eventDetailFragment"
             app:destination="@id/eventDetailFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_editEvent"
+            app:destination="@id/editEvent" />
     </fragment>
     <fragment
         android:id="@+id/editPostFragment"
