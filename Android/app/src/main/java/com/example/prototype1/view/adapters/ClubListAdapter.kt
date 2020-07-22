@@ -69,7 +69,7 @@ class ClubListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, Cl
 class NClubDiffCallback : DiffUtil.ItemCallback<NClub>() {
 
     override fun areItemsTheSame(oldItem: NClub, newItem: NClub): Boolean {
-        return oldItem.id == newItem.id
+        return oldItem.ID == newItem.ID
     }
 
     override fun areContentsTheSame(oldItem: NClub, newItem: NClub): Boolean {

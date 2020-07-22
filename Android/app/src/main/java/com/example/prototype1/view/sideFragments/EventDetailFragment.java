@@ -103,7 +103,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         Button chatButton  = rootView.findViewById(R.id.chat_button);
         chatButton.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
-            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToChatFragment(mEvent));
+            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToChatFragment(mEvent.getID(), mEvent.getName(), "events"));
         });
 
         //Club/Organiser name and image displayed; navigates to club when clicked

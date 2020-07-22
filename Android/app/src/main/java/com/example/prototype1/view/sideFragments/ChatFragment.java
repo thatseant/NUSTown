@@ -47,14 +47,17 @@ public class ChatFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_chat, container, false);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        //Retrieve NEvent object clicked on in RecyclerView: supplied by Nav Safe Args
-        NEvent mEvent = ChatFragmentArgs.fromBundle(getArguments()).getMEvent();
+        //Retrieve Nav Safe Args
+        String collection = ChatFragmentArgs.fromBundle(getArguments()).getCollection();
+        String docID = ChatFragmentArgs.fromBundle(getArguments()).getDocid();
+        String docName = ChatFragmentArgs.fromBundle(getArguments()).getDocname();
+
 
         //Toolbar displays event name
         Toolbar mToolbar = rootView.findViewById(R.id.toolbar);
         ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbar);
         NavigationUI.setupWithNavController(mToolbar, NavHostFragment.findNavController(this));
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(mEvent.getName());
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(docName);
 
         //Events ViewModel
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
@@ -63,7 +66,7 @@ public class ChatFragment extends Fragment {
         ChatAdapter chatAdapter = new ChatAdapter();
         chatRecycler.setAdapter(chatAdapter);
         chatRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        mModel.getMessages(mEvent.getID()).observe(getViewLifecycleOwner(), chatAdapter::submitList);
+        mModel.getMessages(docID, collection).observe(getViewLifecycleOwner(), chatAdapter::submitList);
 
         //Send message when button press
         ImageView sendButton = rootView.findViewById(R.id.button_send);
@@ -74,7 +77,7 @@ public class ChatFragment extends Fragment {
             String username = user.getEmail();
             Date date = new Date();
             NMessage newMessage = new NMessage(chatText, username, date);
-            mModel.addDoc(newMessage, "events/" + mEvent.getID() + "/messages" );
+            mModel.addDoc(newMessage, collection + "/" + docID + "/messages");
         });
 
         return rootView;

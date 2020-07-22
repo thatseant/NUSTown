@@ -87,6 +87,9 @@ public class JiosFragmentForPager extends Fragment implements JioListAdapter.OnI
         //Displays dialog for organisers to edit event
         View addEventButton = rootView.findViewById(R.id.add_group_button);
         mAddDialog = new AddEventDialogFragment();
+        Bundle infoBundle = new Bundle();
+        infoBundle.putString("group_name", "");
+        mAddDialog.setArguments(infoBundle);
         addEventButton.setOnClickListener(v -> mAddDialog.show(requireActivity().getSupportFragmentManager(), AddEventDialogFragment.TAG));
 
         mInfoDialog = new InfoDialogFragment(); //For displaying InfoDialog about jio when clicked

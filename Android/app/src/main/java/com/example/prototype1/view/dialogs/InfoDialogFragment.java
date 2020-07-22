@@ -122,7 +122,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
                 break;
             case R.id.chat_jio_button:
                 navController = NavHostFragment.findNavController(this);
-                navController.navigate(JioListFragmentDirections.actionJioListFragmentToChatFragment(mEvent));
+                navController.navigate(JioListFragmentDirections.actionJioListFragmentToChatFragment(mEvent.getID(), mEvent.getName(), "jios"));
                 dismiss();
                 break;
         }

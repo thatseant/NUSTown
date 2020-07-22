@@ -169,7 +169,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mGroupLiveData;
     }
 
-    public MutableLiveData<ArrayList<NMessage>> getMessages(String eventID) {
+    public MutableLiveData<ArrayList<NMessage>> getMessages(String eventID, String collection) {
         mMessageLiveData.setValue(new ArrayList<>());
 
         if (messageListener != null) {
@@ -179,7 +179,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         Filters chronoFilter = new Filters(true);
         chronoFilter.setSortBy("timestamp");
         chronoFilter.setSortDirection(Query.Direction.ASCENDING);
-        mRepository.searchDocumentsSnapshot(chronoFilter, "events/" + eventID + "/messages", 0, null, resultList ->
+        mRepository.searchDocumentsSnapshot(chronoFilter, collection + "/" + eventID + "/messages", 0, null, resultList ->
                 mMessageLiveData.setValue(resultList.stream().map(document -> document.toObject(NMessage.class)).collect(Collectors.toCollection(ArrayList::new))), queryListener -> messageListener = queryListener);
         return mMessageLiveData;
     }

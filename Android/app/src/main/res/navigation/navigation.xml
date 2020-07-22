@@ -88,6 +88,9 @@
         <argument
             android:name="clubType"
             app:argType="string" />
+        <action
+            android:id="@+id/action_clubDetailFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
     </fragment>
     <fragment
         android:id="@+id/jioListFragment"
@@ -137,8 +140,14 @@
         android:label="fragment_chat"
         tools:layout="@layout/fragment_chat" >
         <argument
-            android:name="mEvent"
-            app:argType="com.example.prototype1.model.NEvent" />
+            android:name="docid"
+            app:argType="string" />
+        <argument
+            android:name="docname"
+            app:argType="string" />
+        <argument
+            android:name="collection"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/addGroupFragment"

@@ -84,6 +84,7 @@ public class GroupInfoFragment extends DialogFragment implements View.OnClickLis
         mRootView.findViewById(R.id.button_group_follow).setOnClickListener(this);
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
         mRootView.findViewById(R.id.chat_jio_button).setOnClickListener(this);
+        mRootView.findViewById(R.id.add_jio_button).setOnClickListener(this);
         user = FirebaseAuth.getInstance().getCurrentUser();
 //        if (Objects.equals(user.getEmail(), mEvent.getOrgUser())) { //Allows organisers to edit events
 //            mRootView.findViewById(R.id.edit_jio_button).setVisibility(View.VISIBLE);
@@ -115,9 +116,17 @@ public class GroupInfoFragment extends DialogFragment implements View.OnClickLis
 //                navController.navigate(JioListFragmentDirections.actionJioListFragmentToEditEvent(mEvent, "jios"));
 //                dismiss();
 //                break;
+            case R.id.add_jio_button:
+                AddEventDialogFragment mAddDialog = new AddEventDialogFragment();
+                Bundle infoBundle = new Bundle();
+                infoBundle.putString("group_name", mGroup.getName());
+                mAddDialog.setArguments(infoBundle);
+                mAddDialog.show(requireActivity().getSupportFragmentManager(), AddEventDialogFragment.TAG);
+                break;
             case R.id.chat_jio_button:
-//                navController = NavHostFragment.findNavController(this);
-//                navController.navigate(JioListFragmentDirections.actionJioListFragmentToChatFragment(mEvent));
+                dismiss();
+                NavController navController = NavHostFragment.findNavController(this);
+                navController.navigate(JioListFragmentDirections.actionJioListFragmentToChatFragment(mGroup.getID(), mGroup.getName(), "groups"));
                 dismiss();
                 break;
         }

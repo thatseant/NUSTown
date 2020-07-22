@@ -23,6 +23,7 @@ import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.ClubEventsAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -84,6 +85,12 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         });
 
         subscribeButton.setOnClickListener(v -> mModel.subscribeToClub(mClub.getName()));
+
+        FloatingActionButton clubChatButton = rootView.findViewById(R.id.club_chat_button);
+        clubChatButton.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(rootView);
+            navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToChatFragment(mClub.getID(), mClub.getName(), "clubs"));
+        });
 
         //Close EventDetailFragment on buttonClose clicked
         ImageView buttonClose = rootView.findViewById(R.id.club_button_back);
