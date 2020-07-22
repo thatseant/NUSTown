@@ -39,6 +39,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<NMessage>> mMessageLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NClub>> mClubLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<NClub>> mGroupLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mClubEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mJioLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserEventLiveData = new MutableLiveData<>();
@@ -162,6 +163,12 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mClubLiveData;
     }
 
+    public MutableLiveData<ArrayList<NClub>> getGroups() {//Called when TitleFragment first launches and whenever a query is performed
+        mRepository.searchDocuments(new Filters(true), "groups", 0, null, resultList ->
+                mGroupLiveData.setValue(resultList.stream().map(document -> document.toObject(NClub.class)).collect(Collectors.toCollection(ArrayList::new))));
+        return mGroupLiveData;
+    }
+
     public MutableLiveData<ArrayList<NMessage>> getMessages(String eventID) {
         mMessageLiveData.setValue(new ArrayList<>());
 
@@ -221,8 +228,14 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mSingleClubLiveData;
     }
 
-    public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub) {
-        mRepository.multipleDocumentSearches(Collections.singletonList(mClub.getName()), "org", "events",
+    public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub, String clubType) {
+        String eventType = "";
+        if (clubType.equals("clubs")) {
+            eventType = "events";
+        } else if (clubType.equals("groups")) {
+            eventType = "jios";
+        }
+        mRepository.multipleDocumentSearches(Collections.singletonList(mClub.getName()), "org", eventType,
                 docs -> mClubEventLiveData.setValue(documentsToEvents(docs)));
         return mClubEventLiveData;
     }

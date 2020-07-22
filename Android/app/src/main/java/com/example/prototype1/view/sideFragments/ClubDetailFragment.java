@@ -43,9 +43,7 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         // Retrieve NClub object clicked on in RecyclerView
         assert getArguments() != null;
         NClub mClub = ClubDetailFragmentArgs.fromBundle(getArguments()).getMClub();
-
         View rootView = inflater.inflate(R.layout.fragment_club_detail, container, false);
-
 
         //Get image reference from cloud storage TODO: Store Image in Cloud Storage
         ImageView mImage = rootView.findViewById(R.id.club_image);
@@ -73,7 +71,7 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         final ClubEventsAdapter mAdapter = new ClubEventsAdapter(this);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mModel.getClubEvents(mClub).observe(getViewLifecycleOwner(), mAdapter::submitList);
+        mModel.getClubEvents(mClub, "clubs").observe(getViewLifecycleOwner(), mAdapter::submitList);
 
         //Subscribe button reflects subscription status
         Button subscribeButton = rootView.findViewById(R.id.subscribe);

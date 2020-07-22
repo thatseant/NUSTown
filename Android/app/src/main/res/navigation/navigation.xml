@@ -85,6 +85,9 @@
         <action
             android:id="@+id/action_clubDetailFragment_to_eventDetailFragment"
             app:destination="@id/eventDetailFragment" />
+        <argument
+            android:name="clubType"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/jioListFragment"
@@ -92,14 +95,14 @@
         android:label="JioListFragment"
         tools:layout="@layout/fragment_jio_list">
         <action
-            android:id="@+id/action_jioListFragment_to_eventDetailFragment"
-            app:destination="@id/eventDetailFragment" />
-        <action
             android:id="@+id/action_jioListFragment_to_editEvent"
             app:destination="@id/editEvent" />
         <action
             android:id="@+id/action_jioListFragment_to_chatFragment"
             app:destination="@id/chatFragment" />
+        <action
+            android:id="@+id/action_jioListFragment_to_addGroupFragment"
+            app:destination="@id/addGroupFragment" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
@@ -137,6 +140,10 @@
             android:name="mEvent"
             app:argType="com.example.prototype1.model.NEvent" />
     </fragment>
+    <fragment
+        android:id="@+id/addGroupFragment"
+        android:name="com.example.prototype1.view.sideFragments.AddGroupFragment"
+        android:label="AddGroupFragment" />
 
 
 </navigation>
