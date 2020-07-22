@@ -639,25 +639,45 @@ exports.rsvpJioFunction = functions.https.onCall(async (data, context) => {
       const user = await userdoc.get();
       const club = await clubdoc.get();
 
-      //checking if the user is already part of the club
-      if(user.data().clubsSubscribedTo.includes(data.club_name)){
-      return userdoc.update({
-        clubsSubscribedTo: admin.firestore.FieldValue.arrayRemove(data.club_name)
-      });
+      if (data.orgType==='clubs') {
+          //checking if the user is already part of the club
+          if (user.data().clubsSubscribedTo.includes(data.club_name)) {
+              return userdoc.update({
+                  clubsSubscribedTo: admin.firestore.FieldValue.arrayRemove(data.club_name)
+              });
 
-      //return clubdoc.update({
-      //  members: admin.firestore.FieldValue.arrayRemove(data.email)
-      //});
-      }
-      else {
-      return userdoc.update({
-        clubsSubscribedTo: admin.firestore.FieldValue.arrayUnion(data.club_name)
-      });
+              //return clubdoc.update({
+              //  members: admin.firestore.FieldValue.arrayRemove(data.email)
+              //});
+          } else {
+              return userdoc.update({
+                  clubsSubscribedTo: admin.firestore.FieldValue.arrayUnion(data.club_name)
+              });
 
-      //return clubdoc.update({
-      //  members: admin.firestore.FieldValue.arrayUnion(data.email)
-      //});
-   
+              //return clubdoc.update({
+              //  members: admin.firestore.FieldValue.arrayUnion(data.email)
+              //});
+
+          }
+      } else {
+          //checking if the user is already part of the club
+          if (user.data().groupsSubscribedTo.includes(data.club_name)) {
+              return userdoc.update({
+                  groupsSubscribedTo: admin.firestore.FieldValue.arrayRemove(data.club_name)
+              });
+
+              //return clubdoc.update({
+              //  members: admin.firestore.FieldValue.arrayRemove(data.email)
+              //});
+          } else {
+              return userdoc.update({
+                  groupsSubscribedTo: admin.firestore.FieldValue.arrayUnion(data.club_name)
+              });
+
+              //return clubdoc.update({
+              //  members: admin.firestore.FieldValue.arrayUnion(data.email)
+              //});
+          }
       }
   })
 

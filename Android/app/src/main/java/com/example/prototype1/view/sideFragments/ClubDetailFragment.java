@@ -84,7 +84,7 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
             }
         });
 
-        subscribeButton.setOnClickListener(v -> mModel.subscribeToClub(mClub.getName()));
+        subscribeButton.setOnClickListener(v -> mModel.subscribeToClub(mClub.getName(), "clubs"));
 
         FloatingActionButton clubChatButton = rootView.findViewById(R.id.club_chat_button);
         clubChatButton.setOnClickListener(v -> {

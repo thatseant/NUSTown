@@ -44,6 +44,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<NEvent>> mJioLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserFeedLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<NEvent>> mUserGroupFeedLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserJioLiveData = new MutableLiveData<>();
     private final FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
     //    private final MutableLiveData<ArrayList<NUser>> mAttendeesLiveData = new MutableLiveData<>();
@@ -262,6 +263,14 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mUserFeedLiveData;
     }
 
+    public LiveData<ArrayList<NEvent>> getUserGroupsFeed() {
+        mUserLiveData.observeForever(user ->
+                mRepository.multipleDocumentSearches(user.getGroupsSubscribedTo(), "org", "jios", docs ->
+                        mUserGroupFeedLiveData.setValue(documentsToEvents(docs))));
+        return mUserGroupFeedLiveData;
+    }
+
+
     //Helper Methods
     public ArrayList<NEvent> documentsToEvents(ArrayList<DocumentSnapshot> documents) { //Converting querySnapshot to events in chronological order
         ArrayList<NEvent> mResults = new ArrayList<>();
@@ -314,11 +323,12 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     }
 
 
-    public void subscribeToClub(String clubName) {
+    public void subscribeToClub(String clubName, String orgType) {
         //create the arguments to the callable function.
         Map<String, Object> data = new HashMap<>();
         data.put("email", mUserLiveData.getValue().getUid());
         data.put("club_name", clubName);
+        data.put("orgType", orgType);
 
         mFunctions
                 .getHttpsCallable("subscribeToClub")

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,8 @@ public class FollowingDialogFragment extends DialogFragment implements UserClubs
 
     static public final String TAG = "AddDialog";
 
+    String orgType;
+
     private View mRootView;
 
     private TitleFragmentViewModel mModel;
@@ -36,6 +39,7 @@ public class FollowingDialogFragment extends DialogFragment implements UserClubs
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        orgType = getArguments().getString("orgType");
         mRootView = inflater.inflate(R.layout.fragment_following_dialog, container, false);
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class); //returns same instance of ViewModel in TitleFragment
 
@@ -44,7 +48,14 @@ public class FollowingDialogFragment extends DialogFragment implements UserClubs
         final UserClubsAdapter mAdapter = new UserClubsAdapter(this);
         clubFollowedRecycler.setAdapter(mAdapter);
         clubFollowedRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        mModel.getUser().observe(getViewLifecycleOwner(), user -> mAdapter.submitList(user.getClubsSubscribedTo()));
+
+        if (orgType == "clubs") {
+            mModel.getUser().observe(getViewLifecycleOwner(), user -> mAdapter.submitList(user.getClubsSubscribedTo()));
+        } else {
+            TextView orgTypeTitle = mRootView.findViewById(R.id.org_type_title);
+            orgTypeTitle.setText("Groups Following");
+            mModel.getUser().observe(getViewLifecycleOwner(), user -> mAdapter.submitList(user.getGroupsSubscribedTo()));
+        }
 
         return mRootView;
     }
@@ -61,6 +72,6 @@ public class FollowingDialogFragment extends DialogFragment implements UserClubs
 
     @Override
     public void onUnfollow(@NotNull String clubName) {
-        mModel.subscribeToClub(clubName);
+        mModel.subscribeToClub(clubName, orgType);
     }
 }

@@ -65,7 +65,7 @@ public class GroupInfoFragment extends DialogFragment implements View.OnClickLis
         //RSVP Button text reflects whether event is part of current user's attending list.
         followButton = mRootView.findViewById(R.id.button_group_follow);
         mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Attendance status is always updated as fetch from repository attaches SnapshotListener
-            if (mUser.getClubsSubscribedTo().contains(mGroup.getName())) {//TODO: Change to groupsSubscribeTo?
+            if (mUser.getGroupsSubscribedTo().contains(mGroup.getName())) {//TODO: Change to groupsSubscribeTo?
                 followButton.setText("FOLLOWING");
             } else {
                 followButton.setText("FOLLOW");
@@ -106,7 +106,7 @@ public class GroupInfoFragment extends DialogFragment implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_group_follow:
-//                mModel.rsvpJioFunction(mEvent.getID());
+                mModel.subscribeToClub(mGroup.getName(), "groups");
                 break;
             case R.id.button_cancel:
                 dismiss();
