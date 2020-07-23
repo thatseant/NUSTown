@@ -92,17 +92,26 @@ public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSele
             mSearchDialog.resetFlag = 1; //Flag needed due to bug where resetting spinner setSelection is not saved; reset later onResume
             mModel.changeClubFilter(new Filters(true)); //Reset mFilter in ViewModel as mFilter is parameter of getData()
             mModel.mClubSearchCat.setValue("<b> All Clubs <b>");
+            mModel.mClubSearchSort.setValue("sorted by Name");
             mModel.getClubsData();
         });
 
         //Automatically changes text to in search box to reflect current filter
         TextView mSearchCat = rootView.findViewById(R.id.text_current_search);
+        TextView mSearchSort = rootView.findViewById(R.id.text_current_sort_by);
         mSearchCat.setText(HtmlCompat.fromHtml("<b>All Clubs<b>", HtmlCompat.FROM_HTML_MODE_LEGACY));
         final Observer<String> searchCatObserver = searchCat -> {
             // Update the UI, in this case, a TextView.
             mSearchCat.setText(HtmlCompat.fromHtml(searchCat, HtmlCompat.FROM_HTML_MODE_LEGACY));
         };
         mModel.mClubSearchCat.observe(getViewLifecycleOwner(), searchCatObserver);
+
+        // Update the UI, in this case, a TextView.
+        final Observer<String> searchSortObserver = searchSort -> {
+            // Update the UI, in this case, a TextView.
+            mSearchSort.setText(HtmlCompat.fromHtml(searchSort, HtmlCompat.FROM_HTML_MODE_LEGACY));
+        };
+        mModel.mClubSearchSort.observe(getViewLifecycleOwner(), searchSortObserver);
 
 
         return rootView;

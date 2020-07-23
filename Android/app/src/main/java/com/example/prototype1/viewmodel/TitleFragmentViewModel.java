@@ -37,6 +37,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     public final MutableLiveData<String> mJioSearchCat = new MutableLiveData<>();
     public final MutableLiveData<String> mJioSearchSort = new MutableLiveData<>();
     public final MutableLiveData<String> mClubSearchCat = new MutableLiveData<>();
+    public final MutableLiveData<String> mClubSearchSort = new MutableLiveData<>();
     private final EventClubRepository mRepository;
     private final MutableLiveData<ArrayList<NMessage>> mMessageLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mEventLiveData = new MutableLiveData<>();

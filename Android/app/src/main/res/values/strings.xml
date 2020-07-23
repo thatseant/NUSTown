@@ -12,6 +12,7 @@
     <string name="sort_by_rating">Sort by Rating</string>
     <string name="sort_by_post_date">Sort by Post Date</string>
     <string name="sort_by_name">Sort by Name</string>
+    <string name="sort_by_popularity">Sort by Popularity</string>
     <string name="sort_by_date">Sort by Date</string>
 
     <string name="sorted_by_rating">sorted by rating</string>
@@ -68,6 +69,12 @@
         <item>@string/sort_by_post_date</item>
         <item>@string/sort_by_name</item>
     </string-array>
+
+    <string-array name="clubs_sort_by">
+        <item>@string/sort_by_name</item>
+        <item>@string/sort_by_popularity</item>
+    </string-array>
+
     <string-array name="clubs_categories">
         <item>All Clubs</item>
         <item>industry preparation club</item>

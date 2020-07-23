@@ -36,6 +36,7 @@ import com.google.firebase.storage.StorageReference;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
@@ -90,26 +91,32 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         }
         Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
 
-        //RSVP Button text reflects user attendance status by checking mEvent against his list of attending events
-        rsvpButton = rootView.findViewById(R.id.rsvp_button);
-        mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Attendance status is always updated as fetch from repository attaches SnapshotListener
-            progress = rootView.findViewById(R.id.progressBar_cyclic);
-            progress.setVisibility(View.GONE);
-            rsvpButton.setEnabled(true);
-            if (mUser.getEventAttending().contains(mEvent.getID())) {
-                rsvpButton.setText("Attending");
-            } else {
-                rsvpButton.setText("RSVP");
-            }
-        });
+        if (mEvent.getTime().compareTo(new Date()) > 0) {
+            //RSVP Button text reflects user attendance status by checking mEvent against his list of attending events
+            rsvpButton = rootView.findViewById(R.id.rsvp_button);
+            mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Attendance status is always updated as fetch from repository attaches SnapshotListener
+                progress = rootView.findViewById(R.id.progressBar_cyclic);
+                progress.setVisibility(View.GONE);
+                rsvpButton.setEnabled(true);
+                if (mUser.getEventAttending().contains(mEvent.getID())) {
+                    rsvpButton.setText("Attending");
+                } else {
+                    rsvpButton.setText("RSVP");
+                }
+            });
 
-        //RSVP Button passes user email and event ID to cloud function
-        rsvpButton.setOnClickListener(v -> {
-            mModel.rsvpFunction(mEvent.getID());
-            progress.setVisibility(View.VISIBLE);
+            //RSVP Button passes user email and event ID to cloud function
+            rsvpButton.setOnClickListener(v -> {
+                        mModel.rsvpFunction(mEvent.getID());
+                        progress.setVisibility(View.VISIBLE);
+                        rsvpButton.setEnabled(false);
+                    }
+            );
+        } else {
+            rsvpButton = rootView.findViewById(R.id.rsvp_button);
             rsvpButton.setEnabled(false);
-            }
-        );
+            rsvpButton.setText("This is a Past Event");
+        }
 
         //Chat Button
         FloatingActionButton chatButton  = rootView.findViewById(R.id.chat_button);
