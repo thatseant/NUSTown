@@ -23,6 +23,7 @@ import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.ClubEventsAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -43,9 +44,7 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         // Retrieve NClub object clicked on in RecyclerView
         assert getArguments() != null;
         NClub mClub = ClubDetailFragmentArgs.fromBundle(getArguments()).getMClub();
-
         View rootView = inflater.inflate(R.layout.fragment_club_detail, container, false);
-
 
         //Get image reference from cloud storage TODO: Store Image in Cloud Storage
         ImageView mImage = rootView.findViewById(R.id.club_image);
@@ -73,7 +72,7 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         final ClubEventsAdapter mAdapter = new ClubEventsAdapter(this);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mModel.getClubEvents(mClub).observe(getViewLifecycleOwner(), mAdapter::submitList);
+        mModel.getClubEvents(mClub, "clubs").observe(getViewLifecycleOwner(), mAdapter::submitList);
 
         //Subscribe button reflects subscription status
         Button subscribeButton = rootView.findViewById(R.id.subscribe);
@@ -85,7 +84,13 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
             }
         });
 
-        subscribeButton.setOnClickListener(v -> mModel.subscribeToClub(mClub.getName()));
+        subscribeButton.setOnClickListener(v -> mModel.subscribeToClub(mClub.getName(), "clubs"));
+
+        FloatingActionButton clubChatButton = rootView.findViewById(R.id.club_chat_button);
+        clubChatButton.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(rootView);
+            navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToChatFragment(mClub.getID(), mClub.getName(), "clubs"));
+        });
 
         //Close EventDetailFragment on buttonClose clicked
         ImageView buttonClose = rootView.findViewById(R.id.club_button_back);
@@ -106,5 +111,9 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         navController.navigate(ClubDetailFragmentDirections.actionClubDetailFragmentToEventDetailFragment(mEvent, "events"));
     }
 
+    @Override
+    public void onJioSelected(@NotNull NEvent mEvent, @NotNull View view) {
+
+    }
 }
 

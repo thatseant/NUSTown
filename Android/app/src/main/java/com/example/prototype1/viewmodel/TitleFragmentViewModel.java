@@ -39,10 +39,12 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     private final MutableLiveData<ArrayList<NMessage>> mMessageLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NClub>> mClubLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<NClub>> mGroupLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mClubEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mJioLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserEventLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserFeedLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<NEvent>> mUserGroupFeedLiveData = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<NEvent>> mUserJioLiveData = new MutableLiveData<>();
     private final FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
     //    private final MutableLiveData<ArrayList<NUser>> mAttendeesLiveData = new MutableLiveData<>();
@@ -77,8 +79,8 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mRepository = new EventClubRepository();
 
         //For Home Page
-        getUserEvents();
-        getUserJios();
+//        getUserEvents();
+//        getUserJios();
     }
 
     //IsSigningFunctions used to check Sign-In status during Firebase Auth
@@ -162,7 +164,13 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mClubLiveData;
     }
 
-    public MutableLiveData<ArrayList<NMessage>> getMessages(String eventID) {
+    public MutableLiveData<ArrayList<NClub>> getGroups() {//Called when TitleFragment first launches and whenever a query is performed
+        mRepository.searchDocuments(new Filters(true), "groups", 0, null, resultList ->
+                mGroupLiveData.setValue(resultList.stream().map(document -> document.toObject(NClub.class)).collect(Collectors.toCollection(ArrayList::new))));
+        return mGroupLiveData;
+    }
+
+    public MutableLiveData<ArrayList<NMessage>> getMessages(String eventID, String collection) {
         mMessageLiveData.setValue(new ArrayList<>());
 
         if (messageListener != null) {
@@ -172,7 +180,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         Filters chronoFilter = new Filters(true);
         chronoFilter.setSortBy("timestamp");
         chronoFilter.setSortDirection(Query.Direction.ASCENDING);
-        mRepository.searchDocumentsSnapshot(chronoFilter, "events/" + eventID + "/messages", 0, null, resultList ->
+        mRepository.searchDocumentsSnapshot(chronoFilter, collection + "/" + eventID + "/messages", 0, null, resultList ->
                 mMessageLiveData.setValue(resultList.stream().map(document -> document.toObject(NMessage.class)).collect(Collectors.toCollection(ArrayList::new))), queryListener -> messageListener = queryListener);
         return mMessageLiveData;
     }
@@ -221,8 +229,14 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         return mSingleClubLiveData;
     }
 
-    public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub) {
-        mRepository.multipleDocumentSearches(Collections.singletonList(mClub.getName()), "org", "events",
+    public MutableLiveData<ArrayList<NEvent>> getClubEvents(NClub mClub, String clubType) {
+        String eventType = "";
+        if (clubType.equals("clubs")) {
+            eventType = "events";
+        } else if (clubType.equals("groups")) {
+            eventType = "jios";
+        }
+        mRepository.multipleDocumentSearches(Collections.singletonList(mClub.getName()), "org", eventType,
                 docs -> mClubEventLiveData.setValue(documentsToEvents(docs)));
         return mClubEventLiveData;
     }
@@ -248,6 +262,14 @@ public class TitleFragmentViewModel extends AndroidViewModel {
                         mUserFeedLiveData.setValue(documentsToEvents(docs))));
         return mUserFeedLiveData;
     }
+
+    public LiveData<ArrayList<NEvent>> getUserGroupsFeed() {
+        mUserLiveData.observeForever(user ->
+                mRepository.multipleDocumentSearches(user.getGroupsSubscribedTo(), "org", "jios", docs ->
+                        mUserGroupFeedLiveData.setValue(documentsToEvents(docs))));
+        return mUserGroupFeedLiveData;
+    }
+
 
     //Helper Methods
     public ArrayList<NEvent> documentsToEvents(ArrayList<DocumentSnapshot> documents) { //Converting querySnapshot to events in chronological order
@@ -301,11 +323,12 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     }
 
 
-    public void subscribeToClub(String clubName) {
+    public void subscribeToClub(String clubName, String orgType) {
         //create the arguments to the callable function.
         Map<String, Object> data = new HashMap<>();
         data.put("email", mUserLiveData.getValue().getUid());
         data.put("club_name", clubName);
+        data.put("orgType", orgType);
 
         mFunctions
                 .getHttpsCallable("subscribeToClub")

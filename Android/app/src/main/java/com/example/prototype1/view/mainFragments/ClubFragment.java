@@ -117,6 +117,6 @@ public class ClubFragment extends Fragment implements ClubListAdapter.OnItemSele
     @Override
     public void onItemSelected(@NotNull NClub mClub, @NotNull View view) {
         NavController navController = Navigation.findNavController(view);
-        navController.navigate(ClubFragmentDirections.actionClubFragmentToClubDetailFragment(mClub));
+        navController.navigate(ClubFragmentDirections.actionClubFragmentToClubDetailFragment(mClub, "clubs"));
     }
 }

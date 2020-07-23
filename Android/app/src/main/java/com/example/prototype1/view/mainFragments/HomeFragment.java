@@ -40,7 +40,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener, EventListAdapter.OnItemSelectedListener, JioGridAdapter.OnItemSelectedListener {
     private InfoDialogFragment mInfoDialog;
-    private FollowingDialogFragment mClubDialog;
+    private FollowingDialogFragment mClubDialog, mGroupDialog;
     TitleFragmentViewModel mModel;
     private ImageView profileButton;
     StorageReference imageRef;
@@ -66,7 +66,15 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
 
 
         mInfoDialog = new InfoDialogFragment();
+        Bundle clubsBundle = new Bundle();
+        clubsBundle.putString("orgType", "clubs");
         mClubDialog = new FollowingDialogFragment();
+        mClubDialog.setArguments(clubsBundle);
+
+        mGroupDialog = new FollowingDialogFragment();
+        Bundle infoBundle = new Bundle();
+        infoBundle.putString("orgType", "groups");
+        mGroupDialog.setArguments(infoBundle);
 
         //Events ViewModel
         mModel = new ViewModelProvider(requireActivity()).get(TitleFragmentViewModel.class);
@@ -84,6 +92,16 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         jioRecyclerView.setAdapter(mJioAdapter);
         jioRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         mModel.getUserJios().observe(getViewLifecycleOwner(), mJioAdapter::submitList);
+
+        //Link Groups Feed Recycler View to Adapter
+        RecyclerView feedGroupsRecycler = rootView.findViewById(R.id.recycler_group_feed);
+        final ClubEventsAdapter mGroupFeedAdapter = new ClubEventsAdapter(this);
+        feedGroupsRecycler.setAdapter(mGroupFeedAdapter);
+        feedGroupsRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        mModel.getUserGroupsFeed().observe(getViewLifecycleOwner(), mGroupFeedAdapter::submitList);
+
+        FloatingActionButton groupsFollowingButton = rootView.findViewById(R.id.groups_following_button);
+        groupsFollowingButton.setOnClickListener(v -> mGroupDialog.show(requireActivity().getSupportFragmentManager(), FollowingDialogFragment.TAG));
 
         //Link Events Feed Recycler View to Adapter
         RecyclerView feedRecyclerView = rootView.findViewById(R.id.recycler_events_feed);

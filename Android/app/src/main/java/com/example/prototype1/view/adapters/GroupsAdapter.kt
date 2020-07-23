@@ -13,7 +13,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.prototype1.R
 import com.example.prototype1.model.NClub
 
-class ClubListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, ClubListAdapter.ViewHolder>(NClubDiffCallback()) {
+class GroupsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, GroupsAdapter.ViewHolder>(NClubDiffCallback()) {
     private val newListener: OnItemSelectedListener = mListener
 
 
@@ -57,24 +57,10 @@ class ClubListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, Cl
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val view = layoutInflater.inflate(R.layout.event_cell, parent, false)
+                val view = layoutInflater.inflate(R.layout.club_event_cell, parent, false)
                 return ViewHolder(view)
             }
         }
     }
-
-}
-
-//Only refreshes items that changed in RecyclerView
-class NClubDiffCallback : DiffUtil.ItemCallback<NClub>() {
-
-    override fun areItemsTheSame(oldItem: NClub, newItem: NClub): Boolean {
-        return oldItem.ID == newItem.ID
-    }
-
-    override fun areContentsTheSame(oldItem: NClub, newItem: NClub): Boolean {
-        return oldItem == newItem
-    }
-
 
 }
