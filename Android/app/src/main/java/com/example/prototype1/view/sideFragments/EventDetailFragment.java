@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -44,6 +45,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
     private String eventType;
     NEvent mEvent;
     Button rsvpButton;
+    ProgressBar progress;
 
 
     @Override
@@ -91,6 +93,9 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         //RSVP Button text reflects user attendance status by checking mEvent against his list of attending events
         rsvpButton = rootView.findViewById(R.id.rsvp_button);
         mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Attendance status is always updated as fetch from repository attaches SnapshotListener
+            progress = rootView.findViewById(R.id.progressBar_cyclic);
+            progress.setVisibility(View.GONE);
+            rsvpButton.setEnabled(true);
             if (mUser.getEventAttending().contains(mEvent.getID())) {
                 rsvpButton.setText("Attending");
             } else {
@@ -99,8 +104,11 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         });
 
         //RSVP Button passes user email and event ID to cloud function
-        rsvpButton.setOnClickListener(v ->
-                mModel.rsvpFunction(mEvent.getID())
+        rsvpButton.setOnClickListener(v -> {
+            mModel.rsvpFunction(mEvent.getID());
+            progress.setVisibility(View.VISIBLE);
+            rsvpButton.setEnabled(false);
+            }
         );
 
         //Chat Button

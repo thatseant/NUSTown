@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -46,6 +47,7 @@ public class GroupInfoFragment extends DialogFragment implements View.OnClickLis
     Button followButton;
     private NClub mGroup;
     private View mRootView;
+    ProgressBar progress;
 
     @Nullable
     @Override
@@ -65,6 +67,9 @@ public class GroupInfoFragment extends DialogFragment implements View.OnClickLis
         //RSVP Button text reflects whether event is part of current user's attending list.
         followButton = mRootView.findViewById(R.id.button_group_follow);
         mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Attendance status is always updated as fetch from repository attaches SnapshotListener
+            progress = mRootView.findViewById(R.id.progressBar_cyclic);
+            progress.setVisibility(View.GONE);
+            followButton.setEnabled(true);
             if (mUser.getGroupsSubscribedTo().contains(mGroup.getName())) {//TODO: Change to groupsSubscribeTo?
                 followButton.setText("FOLLOWING");
             } else {
@@ -81,7 +86,7 @@ public class GroupInfoFragment extends DialogFragment implements View.OnClickLis
 
 
         //RSVP/Edit/Cancel onClickListeners
-        mRootView.findViewById(R.id.button_group_follow).setOnClickListener(this);
+        followButton.setOnClickListener(this);
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
         mRootView.findViewById(R.id.chat_jio_button).setOnClickListener(this);
         mRootView.findViewById(R.id.add_jio_button).setOnClickListener(this);
@@ -107,6 +112,8 @@ public class GroupInfoFragment extends DialogFragment implements View.OnClickLis
         switch (v.getId()) {
             case R.id.button_group_follow:
                 mModel.subscribeToClub(mGroup.getName(), "groups");
+                progress.setVisibility(View.VISIBLE);
+                followButton.setEnabled(false);
                 break;
             case R.id.button_cancel:
                 dismiss();
