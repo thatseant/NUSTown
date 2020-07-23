@@ -13,6 +13,8 @@ import com.example.prototype1.model.NEvent;
 import com.example.prototype1.model.NMessage;
 import com.example.prototype1.model.NUser;
 import com.example.prototype1.repository.EventClubRepository;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
@@ -301,7 +303,9 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     public void rsvpFunction(String eventID) {
         // Provides current user's email and event to cloud function when user RSVP
         Map<String, Object> data = new HashMap<>();
-        data.put("email", mUserLiveData.getValue().getUid());
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        data.put("display_name", user.getDisplayName());
+        data.put("user_id", user.getUid());
         data.put("event_id", eventID);
 
         mFunctions
@@ -313,7 +317,9 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     public void rsvpJioFunction(String eventID) {
         // Provides current user's email and event to cloud function when user RSVP
         Map<String, Object> data = new HashMap<>();
-        data.put("email", mUserLiveData.getValue().getUid());
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        data.put("display_name", user.getDisplayName());
+        data.put("user_id", user.getUid());
         data.put("event_id", eventID);
 
         mFunctions

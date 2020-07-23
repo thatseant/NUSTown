@@ -556,24 +556,24 @@ exports.userDeleted = functions.auth.user().onDelete(user => {
 
 exports.rsvpFunction = functions.https.onCall(async (data, context) => {
 
-  const userdoc = admin.firestore().collection('users').doc(data.email); 
+  const userdoc = admin.firestore().collection('users').doc(data.user_id);
   const eventdoc = admin.firestore().collection('events').doc(data.event_id);
   const event = await eventdoc.get();
   const user = await userdoc.get();
 
   //checking if the user is already attending
   if(user.data().eventAttending.includes(data.event_id)){ //if this is true, the user is attending
-  await userdoc.update({
-    eventAttending: admin.firestore.FieldValue.arrayRemove(data.event_id)
-  });
+      await userdoc.update({
+        eventAttending: admin.firestore.FieldValue.arrayRemove(data.event_id)
+      });
 
-  await eventdoc.update({
-    usersAttending: admin.firestore.FieldValue.arrayRemove(data.email)
-  });
-  
-  return eventdoc.update({
-    numberAttending: admin.firestore.FieldValue.increment(-1)
-  });
+      await eventdoc.update({
+        usersAttending: admin.firestore.FieldValue.arrayRemove(data.display_name + "_" + data.user_id)
+      });
+
+      return eventdoc.update({
+        numberAttending: admin.firestore.FieldValue.increment(-1)
+      });
   }
   else {
   await userdoc.update({
@@ -581,7 +581,7 @@ exports.rsvpFunction = functions.https.onCall(async (data, context) => {
   });
 
   await eventdoc.update({
-    usersAttending: admin.firestore.FieldValue.arrayUnion(data.email)
+    usersAttending: admin.firestore.FieldValue.arrayUnion(data.display_name + "_" + data.user_id)
   });
 
   return eventdoc.update({
@@ -594,7 +594,7 @@ exports.rsvpFunction = functions.https.onCall(async (data, context) => {
 
 exports.rsvpJioFunction = functions.https.onCall(async (data, context) => {
 
-    const userdoc = admin.firestore().collection('users').doc(data.email); 
+    const userdoc = admin.firestore().collection('users').doc(data.user_id);
     const eventdoc = admin.firestore().collection('jios').doc(data.event_id);
     const event = await eventdoc.get();
     const user = await userdoc.get();
@@ -606,7 +606,7 @@ exports.rsvpJioFunction = functions.https.onCall(async (data, context) => {
     });
   
     await eventdoc.update({
-      usersAttending: admin.firestore.FieldValue.arrayRemove(data.email)
+      usersAttending: admin.firestore.FieldValue.arrayRemove(data.display_name + "_" + data.user_id)
     });
     
     return eventdoc.update({
@@ -617,9 +617,9 @@ exports.rsvpJioFunction = functions.https.onCall(async (data, context) => {
     await userdoc.update({
       jioEventAttending: admin.firestore.FieldValue.arrayUnion(data.event_id)
     });
-  
+
     await eventdoc.update({
-      usersAttending: admin.firestore.FieldValue.arrayUnion(data.email)
+      usersAttending: admin.firestore.FieldValue.arrayUnion(data.display_name + "_" + data.user_id)
     });
   
     return eventdoc.update({
