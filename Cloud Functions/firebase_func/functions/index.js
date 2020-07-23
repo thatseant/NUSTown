@@ -3,12 +3,6 @@ const functions = require('firebase-functions');
 
 // The Firebase Admin SDK to access Cloud Firestore.
 const admin = require('firebase-admin');
-const path = require('path');
-const os = require('os');
-const fs = require("fs");
-var allSettled = require('promise.allsettled');
-
-
 const serviceAccount = require("./NUSTown-ffc8c62cae11.json");
 
 const { v4: uuidv4 } = require('uuid');
@@ -17,13 +11,6 @@ admin.initializeApp({
     storageBucket: "nustown.appspot.com"
 });
 
-const axios = require('axios').default;
-const bucket = admin.storage().bucket();
-const moment = require('moment');
-
-const { userRecordConstructor } = require('firebase-functions/lib/providers/auth');
-
-var chrono = require('chrono-node');
 
 exports.isPastEvent = functions.https.onRequest(async (req, res) => {
 
@@ -140,6 +127,8 @@ exports.nusClubs = functions.https.onRequest(async (req, res) => {
 })
 
 exports.allInsta = functions.https.onRequest(async (req, res) => {
+    var allSettled = require('promise.allsettled');
+    const axios = require('axios').default;
     try {
         let apiURL = "https://nus.campuslabs.com/engage/api/discovery/organization?take=500"
         const JSONData = await axios.get(apiURL)
@@ -202,6 +191,7 @@ async function getInstaFromUsername(clubData, numberOfPosts) {
 }
 
 async function createNSync(URL, type) {
+    const axios = require('axios').default;
     let promises = []
     const JSONData = await axios.get(URL)
     const numberResults = JSONData.data.value
@@ -280,6 +270,8 @@ async function NSyncClubToDatabase(allClubs, i) {
 }
 
 async function NSyncEventToDatabase(allEvents, i) {
+    const axios = require('axios').default;
+    const moment = require('moment');
     let event = allEvents[i]
     let eventStartDateTime = new Date(event.startsOn)
     let eventStartDate = moment(eventStartDateTime).format("YYMMDD")
@@ -340,6 +332,7 @@ async function NSyncEventToDatabase(allEvents, i) {
 }
 
 async function createInstaEvents (orgName, userID, numberOfPosts) {
+    const axios = require('axios').default;
     let promises = []
     let allPosts = {}
     let apiURL = "https://www.instagram.com/graphql/query/?query_hash=f2405b236d85e8296cf30347c9f08c2a&variables=%7B%22id%22%3A%22" + userID + "%22%2C%22first%22%3A" + numberOfPosts + "%2C%22after%22%3A%22%22%7D"
@@ -374,6 +367,8 @@ async function createInstaEvents (orgName, userID, numberOfPosts) {
 }
 
 function InstaToDatabase(orgName, allMedia, i, userID) {
+    const moment = require('moment');
+    var chrono = require('chrono-node');
     var id, cat, name, place, url;
     var firstDate, firstText;
     if (allMedia.edges[i]) {
@@ -683,6 +678,7 @@ exports.rsvpJioFunction = functions.https.onCall(async (data, context) => {
   })
 
 exports.downloadEventsPhoto = functions.https.onRequest(async (req, res) => {
+    var allSettled = require('promise.allsettled');
     try {
         promises = []
         await admin.firestore().collection("events").get().then(async (querySnapshot) => {
@@ -709,6 +705,7 @@ exports.downloadEventsPhoto = functions.https.onRequest(async (req, res) => {
 })
 
 exports.downloadUpdatesPhoto = functions.https.onRequest(async (req, res) => {
+    var allSettled = require('promise.allsettled');
     try {
         promises = []
         await admin.firestore().collection("events").get().then(async (querySnapshot) => {
@@ -738,6 +735,9 @@ exports.downloadUpdatesPhoto = functions.https.onRequest(async (req, res) => {
 })
 
 async function downloadToCloud(id, imageURL, collection) {
+    const path = require('path');
+    const os = require('os');
+    const bucket = admin.storage().bucket();
       if (imageURL!== "") {
           const picName = id + ".png";
           const tempFilePath = path.join(os.tmpdir(), picName);
@@ -751,6 +751,8 @@ async function downloadToCloud(id, imageURL, collection) {
 }
 
 async function download (newURL, downloadPath) {
+    const fs = require("fs");
+    const axios = require('axios').default;
     const url = newURL
     const path = downloadPath
     const writer = fs.createWriteStream(path)

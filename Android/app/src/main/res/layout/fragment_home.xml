@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/NestedScrollView"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,6 +8,7 @@
     tools:context="com.example.prototype1.view.mainFragments.HomeFragment">
 
     <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white">
@@ -97,7 +99,6 @@
             android:layout_below="@+id/jios_info"
             android:layout_marginTop="16dp"
             android:background="@android:color/white"
-            android:nestedScrollingEnabled="false"
             android:paddingLeft="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 

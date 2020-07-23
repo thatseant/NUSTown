@@ -79,8 +79,8 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         mRepository = new EventClubRepository();
 
         //For Home Page
-        getUserEvents();
-        getUserJios();
+//        getUserEvents();
+//        getUserJios();
     }
 
     //IsSigningFunctions used to check Sign-In status during Firebase Auth
