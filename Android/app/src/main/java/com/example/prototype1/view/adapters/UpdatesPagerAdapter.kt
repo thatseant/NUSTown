@@ -25,7 +25,7 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {//Called for every item in RecyclerView when it becomes visible
         val item = getItem(position)
-        holder.bind(item, holder, newListener) //bind function in ViewHolder sets Views within it
+        holder.bind(position, item, holder, newListener) //bind function in ViewHolder sets Views within it
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -40,7 +40,7 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
         private val deleteButton: Button = itemView.findViewById(R.id.delete_post_button)
         private val postImage: ImageView = itemView.findViewById(R.id.postImage)
 
-        fun bind(item: Map.Entry<String, ArrayList<String>>, holder: ViewHolder, listener: OnItemSelectedListener) {
+        fun bind(position: Int, item: Map.Entry<String, ArrayList<String>>, holder: ViewHolder, listener: OnItemSelectedListener) {
             postCaption.text = item.value[0]
             editButton.visibility = VISIBLE //TODO: Organisers only
             editButton.setOnClickListener { view ->
@@ -51,13 +51,15 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
                 listener.deleteItemSelected(item, view)
             }
 
-            if (item.value.size>2) {
+            if (item.value.size>2 && position!=0) {
                 val storageReference = FirebaseStorage.getInstance().reference
                 val imageRef = storageReference.child("updates/" + item.value[2] + ".png")
 
                 imageRef.downloadUrl.addOnSuccessListener {
                     Glide.with(holder.postImage.context).load(it).into(postImage)
                 }
+            } else if (position == 0) {
+                postImage.visibility = View.GONE
             }
 
         }

@@ -33,10 +33,12 @@ class UsersAttendingAdapter : ListAdapter<String, UsersAttendingAdapter.ViewHold
         private val userName: TextView = itemView.findViewById(R.id.username)
 
         fun bind(item: String, holder: ViewHolder) {
-            userName.text = "nusboi" //TODO: Placeholder Username
+            val splitList = item.split("_")
+                userName.text = splitList[0] //TODO: Placeholder Username
             //Sets ImageView
             val storageReference = FirebaseStorage.getInstance().reference
-            val imageRef = storageReference.child("profile/$item.jpg")
+            val uid = splitList[1]
+            val imageRef = storageReference.child("profile/$uid.jpg")
 
             imageRef.downloadUrl.addOnSuccessListener {
                 Glide.with(holder.userImage.context).load(it).into(userImage)

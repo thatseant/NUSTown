@@ -24,6 +24,7 @@ import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.UpdatesPagerAdapter;
 import com.example.prototype1.view.adapters.UsersAttendingAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
@@ -70,18 +71,21 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(mImage)).addOnFailureListener(url -> mImage.setImageResource(R.drawable.nus)); //TODO: Figure out how to load image without needing URL
 
         //Sets text in TextView
-        TextView orgClub = rootView.findViewById(R.id.event_club);
-        orgClub.setText(mEvent.getOrg());
-        TextView mTime = rootView.findViewById(R.id.event_time);
-        mTime.setText(mEvent.getTime().toString());
-        TextView mPlace = rootView.findViewById(R.id.event_city);
-        mPlace.setText(mEvent.getPlace());
-        TextView mName = rootView.findViewById(R.id.event_name);
-        mName.setText(mEvent.getName());
-        TextView mNum = rootView.findViewById(R.id.event_number_attend);
-        mNum.setText("NUSync Signups: " + mEvent.getNumberAttending());
+//        TextView orgClub = rootView.findViewById(R.id.event_club);
+//        orgClub.setText(mEvent.getOrg());
+//        TextView mTime = rootView.findViewById(R.id.event_time);
+//        mTime.setText(mEvent.getTime().toString());
+//        TextView mPlace = rootView.findViewById(R.id.event_city);
+//        mPlace.setText(mEvent.getPlace());
+//        TextView mName = rootView.findViewById(R.id.event_name);
+//        mName.setText(mEvent.getName());
+//        TextView mNum = rootView.findViewById(R.id.event_number_attend);
+//        mNum.setText("NUSync Signups: " + mEvent.getNumberAttending());
         TextView mURL = rootView.findViewById(R.id.event_url_text);
         mURL.setText(mEvent.getUrl());
+        if (mEvent.getUrl()=="") {
+            mURL.setVisibility(View.GONE);
+        }
         Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
 
         //RSVP Button text reflects user attendance status by checking mEvent against his list of attending events
@@ -100,7 +104,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         );
 
         //Chat Button
-        Button chatButton  = rootView.findViewById(R.id.chat_button);
+        FloatingActionButton chatButton  = rootView.findViewById(R.id.chat_button);
         chatButton.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
             navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToChatFragment(mEvent.getID(), mEvent.getName(), "events"));
@@ -154,8 +158,9 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         final UsersAttendingAdapter mUserAdapter = new UsersAttendingAdapter();
         recyclerView.setAdapter(mUserAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> //List always updated as repository's getDoc() is called.
-                mUserAdapter.submitList(event.getUsersAttending()));
+        mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> { //List always updated as repository's getDoc() is called.
+            mUserAdapter.submitList(event.getUsersAttending());
+        });
 
 
         //Allows organisers to delete events
