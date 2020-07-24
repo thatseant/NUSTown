@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -29,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.OnItemSelectedListener{
     private TitleFragmentViewModel mModel; //Events ViewModel
+    ProgressBar progress;
 
 
     @Override
@@ -62,7 +64,8 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         TextView mName = rootView.findViewById(R.id.club_name);
         mName.setText(mClub.getName());
         TextView mInfo = rootView.findViewById(R.id.club_info_text);
-        mInfo.setText(mClub.getInfo());
+        String cleaned_text = mClub.getInfo().replaceAll("&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});", " "); //Remove &...; html
+        mInfo.setText(cleaned_text);
         TextView mURL = rootView.findViewById(R.id.club_url_text);
         mURL.setText(mClub.getUrl());
         Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
@@ -77,6 +80,9 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         //Subscribe button reflects subscription status
         Button subscribeButton = rootView.findViewById(R.id.subscribe);
         mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Subscription status is always updated as fetch from repository attaches SnapshotListener
+            progress = rootView.findViewById(R.id.progressBar_cyclic);
+            progress.setVisibility(View.GONE);
+            subscribeButton.setEnabled(true);
             if (mUser.getClubsSubscribedTo().contains(mClub.getName())) {
                 subscribeButton.setText("I'm Following");
             } else {
@@ -84,7 +90,11 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
             }
         });
 
-        subscribeButton.setOnClickListener(v -> mModel.subscribeToClub(mClub.getName(), "clubs"));
+        subscribeButton.setOnClickListener(v -> {
+            mModel.subscribeToClub(mClub.getName(), "clubs");
+            progress.setVisibility(View.VISIBLE);
+            subscribeButton.setEnabled(false);
+        });
 
         FloatingActionButton clubChatButton = rootView.findViewById(R.id.club_chat_button);
         clubChatButton.setOnClickListener(v -> {

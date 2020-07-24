@@ -54,11 +54,11 @@ exports.isPastJio = functions.https.onRequest(async (req, res) => {
                 var data = doc.data()
                 if (data.time.toDate()  < new Date()) {
                     promises.push(doc.ref.update({
-                        "isPastEvent": true
+                        "pastEvent": true
                     }))
                 } else {
                     promises.push(doc.ref.update({
-                        "isPastEvent": false
+                        "pastEvent": false
                     }))
                 }
             }
@@ -151,6 +151,49 @@ exports.allInsta = functions.https.onRequest(async (req, res) => {
         res.status(500).send(err);
     }
 })
+
+async function instaFollowers() {
+    var allSettled = require('promise.allsettled');
+    const axios = require('axios').default;
+        let apiURL = "https://nus.campuslabs.com/engage/api/discovery/organization?take=500"
+        const JSONData = await axios.get(apiURL)
+        let numberOfClubs = JSONData.data.items
+        promises = []
+        for (let i=0; i<numberOfClubs.length; i++) {
+            let clubData = JSONData.data.items[i]
+            /* eslint-disable no-await-in-loop */
+            promises.push(getInsta(clubData))
+            /* eslint-enable no-await-in-loop */
+        }
+        await allSettled(promises)
+        allSettled.shim()
+}
+
+async function getInsta(clubData) {
+
+    try {
+        const axios = require('axios').default;
+        let instaUrl = clubData.socialMedia.InstagramUrl
+        let orgName = clubData.name
+        if (instaUrl) {
+            let instaUsernamePre = instaUrl.split(".com/")[1]
+            let instaUsername = instaUsernamePre.split("/")[0]
+            console.log(instaUsername)
+            let apiURL = "http://instagram.com/" + instaUsername + "?__a=1"
+            const JSONData = await axios.get(apiURL)
+            console.log(JSONData.data.graphql.user.edge_followed_by.count)
+            let followers = JSONData.data.graphql.user.edge_followed_by.count
+            const clubDoc = admin.firestore().collection('clubs').doc(orgName);
+            await clubDoc.update({
+                followers: followers
+            });
+        }
+    } catch (err) {
+       console.log(err);
+   }
+}
+
+    instaFollowers();
 
 //async function allInsta() { //Run Locally
 //    try {
@@ -783,3 +826,4 @@ exports.testingforinsta = functions.https.onRequest(async (request, response) =>
         {instagram_ID : doc.data().instagram_ID}
     );
 })
+

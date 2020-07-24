@@ -60,6 +60,11 @@
         </RelativeLayout>
 
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@+id/topBar">
         <TextView
             android:id="@+id/rsvp_event_info"
             android:layout_width="match_parent"
@@ -70,6 +75,32 @@
             android:text="Events I'm Attending"
             android:textSize="24sp" />
 
+            <LinearLayout
+                android:id="@+id/no_attend_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="200dp"
+                android:visibility="gone"
+                android:orientation="vertical"
+                android:gravity="center_vertical|center">
+
+                <ImageView
+                    android:id="@+id/no_attend_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_event_50">
+                </ImageView>
+
+                    <TextView
+                        android:id="@+id/no_attend_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_horizontal"
+                        android:text="Add Events from Events Tab!"
+                        android:textColor="#63000000"
+                        android:textSize="18sp" />
+            </LinearLayout>
 
 
 
@@ -77,26 +108,49 @@
             android:id="@+id/recycler_rsvp_events"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/rsvp_event_info"
             android:background="@android:color/white"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
 
         <TextView
             android:id="@+id/jios_info"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/recycler_rsvp_events"
             android:paddingLeft="16dp"
             android:paddingTop="16dp"
             android:text="Jios I'm Attending"
             android:textSize="24sp" />
 
+            <LinearLayout
+                android:id="@+id/no_jio_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="200dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:gravity="center_vertical|center">
+
+                <ImageView
+                    android:id="@+id/no_jio_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_deck_50">
+                </ImageView>
+
+                <TextView
+                    android:id="@+id/no_jio_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_horizontal"
+                    android:text="Add Jios from Casuals Tab!"
+                    android:textColor="#63000000"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_casual_jios"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/jios_info"
             android:layout_marginTop="16dp"
             android:background="@android:color/white"
             android:paddingLeft="8dp"
@@ -106,7 +160,6 @@
             android:id="@+id/groups_following"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/recycler_casual_jios"
             android:orientation="horizontal"
             android:paddingLeft="16dp"
             android:paddingTop="16dp">
@@ -132,11 +185,35 @@
                 android:src="@drawable/ic_baseline_list_alt_24" />
         </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/no_groups_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="200dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:gravity="center_vertical|center">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_deck_50">
+                </ImageView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_horizontal"
+                    android:text="Follow Groups from Casuals Tab!"
+                    android:textColor="#63000000"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_group_feed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/groups_following"
             android:layout_marginTop="8dp"
             android:background="@android:color/white"
             android:paddingLeft="8dp"
@@ -146,7 +223,6 @@
             android:id="@+id/clubs_following"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/recycler_group_feed"
             android:orientation="horizontal"
             android:paddingLeft="16dp"
             android:paddingTop="16dp">
@@ -172,16 +248,41 @@
                 android:src="@drawable/ic_baseline_list_alt_24" />
         </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/no_clubs_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="200dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:gravity="center_vertical|center">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_emoji_people_50">
+                </ImageView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_horizontal"
+                    android:text="Follow Clubs from Clubs Tab!"
+                    android:textColor="#63000000"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_events_feed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/clubs_following"
             android:layout_marginTop="8dp"
             android:background="@android:color/white"
             android:paddingLeft="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
+        </LinearLayout>
 
     </RelativeLayout>
 </androidx.core.widget.NestedScrollView>

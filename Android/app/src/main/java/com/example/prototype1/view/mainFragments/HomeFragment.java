@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -84,21 +85,45 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         final ClubEventsAdapter mAdapter = new ClubEventsAdapter(this);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mModel.getUserEvents().observe(getViewLifecycleOwner(), mAdapter::submitList);
+        mModel.getUserEvents().observe(getViewLifecycleOwner(), list -> {
+            View noAttendHolder = rootView.findViewById(R.id.no_attend_holder);
+            if (list.size()==0) {
+                noAttendHolder.setVisibility(View.VISIBLE);
+            } else {
+                noAttendHolder.setVisibility(View.GONE);
+            }
+            mAdapter.submitList(list);
+        });
 
         //Link Jio Recycler View to Adapter
         RecyclerView jioRecyclerView = rootView.findViewById(R.id.recycler_casual_jios);
         final JioGridAdapter mJioAdapter = new JioGridAdapter(this);
         jioRecyclerView.setAdapter(mJioAdapter);
         jioRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mModel.getUserJios().observe(getViewLifecycleOwner(), mJioAdapter::submitList);
+        mModel.getUserJios().observe(getViewLifecycleOwner(), list -> {
+            View noJioHolder = rootView.findViewById(R.id.no_jio_holder);
+            if (list.size()==0) {
+                noJioHolder.setVisibility(View.VISIBLE);
+            } else {
+                noJioHolder.setVisibility(View.GONE);
+            }
+            mJioAdapter.submitList(list);
+        });
 
         //Link Groups Feed Recycler View to Adapter
         RecyclerView feedGroupsRecycler = rootView.findViewById(R.id.recycler_group_feed);
         final ClubEventsAdapter mGroupFeedAdapter = new ClubEventsAdapter(this);
         feedGroupsRecycler.setAdapter(mGroupFeedAdapter);
         feedGroupsRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mModel.getUserGroupsFeed().observe(getViewLifecycleOwner(), mGroupFeedAdapter::submitList);
+        mModel.getUserGroupsFeed().observe(getViewLifecycleOwner(), list -> {
+            View noGroupsHolder = rootView.findViewById(R.id.no_groups_holder);
+            if (list.size()==0) {
+                noGroupsHolder.setVisibility(View.VISIBLE);
+            } else {
+                noGroupsHolder.setVisibility(View.GONE);
+            }
+            mGroupFeedAdapter.submitList(list);
+        });
 
         FloatingActionButton groupsFollowingButton = rootView.findViewById(R.id.groups_following_button);
         groupsFollowingButton.setOnClickListener(v -> mGroupDialog.show(requireActivity().getSupportFragmentManager(), FollowingDialogFragment.TAG));
@@ -108,7 +133,15 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
         final EventListAdapter mFeedAdapter = new EventListAdapter(this);
         feedRecyclerView.setAdapter(mFeedAdapter);
         feedRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        mModel.getUserFeed().observe(getViewLifecycleOwner(), mFeedAdapter::submitList);
+        mModel.getUserFeed().observe(getViewLifecycleOwner(), list -> {
+            View noClubsHolder = rootView.findViewById(R.id.no_clubs_holder);
+            if (list.size()==0) {
+                noClubsHolder.setVisibility(View.VISIBLE);
+            } else {
+                noClubsHolder.setVisibility(View.GONE);
+            }
+            mFeedAdapter.submitList(list);
+        });
 
         FloatingActionButton followingButton = rootView.findViewById(R.id.clubs_following_button);
         followingButton.setOnClickListener(v -> mClubDialog.show(requireActivity().getSupportFragmentManager(), FollowingDialogFragment.TAG));

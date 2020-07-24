@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -42,6 +43,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
     Button rsvpButton;
     private NEvent mEvent;
     private View mRootView;
+    ProgressBar progress;
 
     @Nullable
     @Override
@@ -73,6 +75,9 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         //RSVP Button text reflects whether event is part of current user's attending list.
         rsvpButton = mRootView.findViewById(R.id.button_jio_rsvp);
         mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Attendance status is always updated as fetch from repository attaches SnapshotListener
+            progress = mRootView.findViewById(R.id.progressBar_cyclic);
+            progress.setVisibility(View.GONE);
+            rsvpButton.setEnabled(true);
             if (mUser.getJioEventAttending().contains(mEvent.getID())) {
                 rsvpButton.setText("Attending");
             } else {
@@ -114,6 +119,8 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         switch (v.getId()) {
             case R.id.button_jio_rsvp:
                 mModel.rsvpJioFunction(mEvent.getID());
+                progress.setVisibility(View.VISIBLE);
+                rsvpButton.setEnabled(false);
                 break;
             case R.id.button_cancel:
                 dismiss();

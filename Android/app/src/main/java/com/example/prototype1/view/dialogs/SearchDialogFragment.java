@@ -180,6 +180,7 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
             mCategorySpinner.setSelection(0, true);
 //            mPlaceSpinner.setSelection(0, true);
             mSortSpinner.setSelection(0, true);
+            mPastSwitch.setChecked(false);
         }
 
         if (eventType.equals("jios")) {

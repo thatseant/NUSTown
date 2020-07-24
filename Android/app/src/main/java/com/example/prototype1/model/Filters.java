@@ -19,7 +19,7 @@ public class Filters {
     public Filters() {
         sortBy = "time";
         sortDirection = Query.Direction.ASCENDING;
-        displayPast = true;
+        displayPast = false;
     }
 
     public Filters(Boolean noFilter) {//For creating empty filters for non-events
@@ -142,7 +142,11 @@ public class Filters {
             return context.getString(R.string.sorted_by_name);
         } else if (sortBy.equals("lastUpdate")) {
             return "sorted by post date";
-        } else {
+        } else if (sortBy.equals("followers")) {
+            return "sorted by popularity";
+        }
+
+        else {
             return context.getString(R.string.sorted_by_date);
         }
     }

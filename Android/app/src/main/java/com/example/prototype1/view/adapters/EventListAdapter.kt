@@ -48,7 +48,7 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
             val imageRef = storageReference.child("events/" + item.ID + ".png")
 
             imageRef.downloadUrl.addOnSuccessListener {
-                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
+                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions().centerCrop()
                         .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
 
             }.addOnFailureListener { eventImage.setImageResource(R.drawable.nus); }

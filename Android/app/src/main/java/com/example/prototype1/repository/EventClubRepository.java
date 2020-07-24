@@ -35,7 +35,11 @@ public class EventClubRepository {
         if (filters.hasSortBy()) {
             if (filters.hasDisplayPast()) {
                 if (!filters.getDisplayPast()) {
-                    query = query.whereEqualTo("isPastEvent", false);
+                    if (collection == "events") {
+                        query = query.whereEqualTo("isPastEvent", false);
+                    } else if (collection == "jios"){
+                        query = query.whereEqualTo("pastEvent", false);
+                    }
                 }
             }
             query = query.orderBy(filters.getSortBy(), filters.getSortDirection());

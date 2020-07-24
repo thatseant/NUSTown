@@ -41,12 +41,13 @@ class UpdatesPagerAdapter(mListener: OnItemSelectedListener) : ListAdapter<Map.E
         private val postImage: ImageView = itemView.findViewById(R.id.postImage)
 
         fun bind(position: Int, item: Map.Entry<String, ArrayList<String>>, holder: ViewHolder, listener: OnItemSelectedListener) {
-            postCaption.text = item.value[0]
-            editButton.visibility = VISIBLE //TODO: Organisers only
+            var cleaned_text = item.value[0].replace("&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});".toRegex(), " ") //Remove &...; html
+            postCaption.text = cleaned_text
+//            editButton.visibility = VISIBLE //TODO: Organisers only
             editButton.setOnClickListener { view ->
                 listener.onItemSelected(item, view)
             }
-            deleteButton.visibility = VISIBLE
+//            deleteButton.visibility = VISIBLE
             deleteButton.setOnClickListener { view ->
                 listener.deleteItemSelected(item, view)
             }
