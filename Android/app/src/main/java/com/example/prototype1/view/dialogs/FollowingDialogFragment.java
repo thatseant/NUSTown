@@ -50,11 +50,27 @@ public class FollowingDialogFragment extends DialogFragment implements UserClubs
         clubFollowedRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
         if (orgType == "clubs") {
-            mModel.getUser().observe(getViewLifecycleOwner(), user -> mAdapter.submitList(user.getClubsSubscribedTo()));
+            mModel.getUser().observe(getViewLifecycleOwner(), user -> {
+                mAdapter.submitList(user.getClubsSubscribedTo());
+                TextView emptyHolder = mRootView.findViewById(R.id.no_clubs_placeholder);
+                if (user.getClubsSubscribedTo().size()==0) {
+                    emptyHolder.setVisibility(View.VISIBLE);
+                } else {
+                    emptyHolder.setVisibility(View.GONE);
+                }
+            });
         } else {
             TextView orgTypeTitle = mRootView.findViewById(R.id.org_type_title);
             orgTypeTitle.setText("Groups Following");
-            mModel.getUser().observe(getViewLifecycleOwner(), user -> mAdapter.submitList(user.getGroupsSubscribedTo()));
+            mModel.getUser().observe(getViewLifecycleOwner(), user -> {
+                mAdapter.submitList(user.getGroupsSubscribedTo());
+                TextView emptyHolder = mRootView.findViewById(R.id.no_groups_placeholder);
+                if (user.getGroupsSubscribedTo().size()==0) {
+                    emptyHolder.setVisibility(View.VISIBLE);
+                } else {
+                    emptyHolder.setVisibility(View.GONE);
+                }
+            });
         }
 
         return mRootView;
