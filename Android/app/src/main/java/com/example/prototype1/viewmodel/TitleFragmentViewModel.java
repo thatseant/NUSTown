@@ -240,7 +240,7 @@ public class TitleFragmentViewModel extends AndroidViewModel {
             eventType = "jios";
         }
         mRepository.multipleDocumentSearches(Collections.singletonList(mClub.getName()), "org", eventType,
-                docs -> mClubEventLiveData.setValue(documentsToEvents(docs)));
+                docs -> mClubEventLiveData.setValue(documentsToEvents(docs, true)));
         return mClubEventLiveData;
     }
 
@@ -248,55 +248,59 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     public LiveData<ArrayList<NEvent>> getUserEvents() {
         mUserLiveData.observeForever(user ->
                 mRepository.multipleDocumentSearches(user.getEventAttending(), "id", "events", docs ->
-                        mUserEventLiveData.setValue(documentsToEvents(docs))));
+                        mUserEventLiveData.setValue(documentsToEvents(docs, false))));
         return mUserEventLiveData;
     }
 
     public LiveData<ArrayList<NEvent>> getUserJios() {
         mUserLiveData.observeForever(user ->
                 mRepository.multipleDocumentSearches(user.getJioEventAttending(), "id", "jios", docs ->
-                        mUserJioLiveData.setValue(documentsToEvents(docs))));
+                        mUserJioLiveData.setValue(documentsToEvents(docs, false))));
         return mUserJioLiveData;
     }
 
     public LiveData<ArrayList<NEvent>> getUserFeed() {
         mUserLiveData.observeForever(user ->
                 mRepository.multipleDocumentSearches(user.getClubsSubscribedTo(), "org", "events", docs ->
-                        mUserFeedLiveData.setValue(documentsToEvents(docs))));
+                        mUserFeedLiveData.setValue(documentsToEvents(docs, false))));
         return mUserFeedLiveData;
     }
 
     public LiveData<ArrayList<NEvent>> getUserGroupsFeed() {
         mUserLiveData.observeForever(user ->
                 mRepository.multipleDocumentSearches(user.getGroupsSubscribedTo(), "org", "jios", docs ->
-                        mUserGroupFeedLiveData.setValue(documentsToEvents(docs))));
+                        mUserGroupFeedLiveData.setValue(documentsToEvents(docs, false))));
         return mUserGroupFeedLiveData;
     }
 
 
     //Helper Methods
-    public ArrayList<NEvent> documentsToEvents(ArrayList<DocumentSnapshot> documents) { //Converting querySnapshot to events in chronological order
+    public ArrayList<NEvent> documentsToEvents(ArrayList<DocumentSnapshot> documents, Boolean displayPast) { //Converting querySnapshot to events in chronological order
         ArrayList<NEvent> mResults = new ArrayList<>();
         for (DocumentSnapshot document : documents) {
             int newEventIndex = -1;
             NEvent newEvent = document.toObject(NEvent.class);
+            if ((newEvent.getTime().compareTo(new Date()) < 0) && displayPast==false) {//newEvent is past event
+            }
+            else {
+                //Ensures Events are in Chronological Order
+                if (newEvent != null) {
+                    for (int i = 0; i < mResults.size(); i++) {
+                        Date prevEventTime = mResults.get(i).getTime();
+                        if (prevEventTime.compareTo(newEvent.getTime()) > 0) {//prevEvent is after newEvent
+                            newEventIndex = i;
+                            break;
+                        }
+                    }
 
-            //Ensures Events are in Chronological Order
-            if (newEvent != null) {
-                for (int i = 0; i < mResults.size(); i++) {
-                    Date prevEventTime = mResults.get(i).getTime();
-                    if (prevEventTime.compareTo(newEvent.getTime()) > 0) {//newEvent is before prevEvent
-                        newEventIndex = i;
-                        break;
+                    if (newEventIndex != -1) {
+                        mResults.add(newEventIndex, newEvent);
+                    } else {
+                        mResults.add(newEvent);
                     }
                 }
-
-                if (newEventIndex != -1) {
-                    mResults.add(newEventIndex, newEvent);
-                } else {
-                    mResults.add(newEvent);
-                }
             }
+
         }
         return mResults;
     }

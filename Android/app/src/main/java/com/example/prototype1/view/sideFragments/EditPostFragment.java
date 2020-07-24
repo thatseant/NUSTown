@@ -64,7 +64,8 @@ public class EditPostFragment extends Fragment {
         TextView captionTitle = editEventView.findViewById(R.id.postDate);
         captionTitle.setText(postDate);
 
-            captionBox.setText(captionToEdit.get(0));
+        String cleaned_text = captionToEdit.get(0).replaceAll("&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});", " "); //Remove &...; html
+            captionBox.setText(cleaned_text);
 
         existingUpdates = mEvent.getUpdates();
 

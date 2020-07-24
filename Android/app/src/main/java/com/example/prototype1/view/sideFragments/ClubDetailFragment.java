@@ -64,7 +64,8 @@ public class ClubDetailFragment extends Fragment implements ClubEventsAdapter.On
         TextView mName = rootView.findViewById(R.id.club_name);
         mName.setText(mClub.getName());
         TextView mInfo = rootView.findViewById(R.id.club_info_text);
-        mInfo.setText(mClub.getInfo());
+        String cleaned_text = mClub.getInfo().replaceAll("&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});", " "); //Remove &...; html
+        mInfo.setText(cleaned_text);
         TextView mURL = rootView.findViewById(R.id.club_url_text);
         mURL.setText(mClub.getUrl());
         Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable

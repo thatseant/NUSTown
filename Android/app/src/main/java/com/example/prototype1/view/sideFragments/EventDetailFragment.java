@@ -72,7 +72,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(); //Get image reference from cloud storage
         StorageReference imageRef = storageReference.child("events/" + mEvent.getID() + ".png");
         imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(mImage)).addOnFailureListener(url -> mImage.setImageResource(R.drawable.nus)); //TODO: Figure out how to load image without needing URL
-
+        mImage.setAdjustViewBounds(true);
         //Sets text in TextView
 //        TextView orgClub = rootView.findViewById(R.id.event_club);
 //        orgClub.setText(mEvent.getOrg());

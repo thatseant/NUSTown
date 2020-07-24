@@ -54,10 +54,10 @@ class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent,
             }.addOnFailureListener { eventImage.setImageResource(R.drawable.nus); }
 
             itemView.setOnClickListener { view ->
-                if (item.rating == 0) { //TODO: Temporary Solution
-                    listener.onJioSelected(item, view)
-                } else {
+                if (item.ID.contains("_") || item.ID.contains(" ")) { //TODO: Temporary Solution
                     listener.onItemSelected(item, view)
+                } else {
+                    listener.onJioSelected(item, view)
                 }
             }
         }

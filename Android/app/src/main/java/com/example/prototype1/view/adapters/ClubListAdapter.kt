@@ -38,7 +38,7 @@ class ClubListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, Cl
 
         fun bind(item: NClub, holder: ViewHolder, listener: OnItemSelectedListener) {
             clubName.text = item.name
-            clubCat.text = item.catName
+            clubCat.visibility = View.GONE
 
             //Sets ImageView
             if (item.imgUrl != "") {

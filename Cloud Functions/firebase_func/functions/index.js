@@ -54,11 +54,11 @@ exports.isPastJio = functions.https.onRequest(async (req, res) => {
                 var data = doc.data()
                 if (data.time.toDate()  < new Date()) {
                     promises.push(doc.ref.update({
-                        "isPastEvent": true
+                        "pastEvent": true
                     }))
                 } else {
                     promises.push(doc.ref.update({
-                        "isPastEvent": false
+                        "pastEvent": false
                     }))
                 }
             }

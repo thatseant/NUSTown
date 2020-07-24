@@ -19,7 +19,7 @@ public class Filters {
     public Filters() {
         sortBy = "time";
         sortDirection = Query.Direction.ASCENDING;
-        displayPast = true;
+        displayPast = false;
     }
 
     public Filters(Boolean noFilter) {//For creating empty filters for non-events
