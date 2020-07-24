@@ -199,7 +199,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
 
         //Allows Organisers to create new posts
         Button createNewPost = rootView.findViewById(R.id.new_post_button);
-        createNewPost.setVisibility(View.VISIBLE);//TODO: Visible only to organisers
+//        createNewPost.setVisibility(View.VISIBLE);//TODO: Visible only to organisers
         createNewPost.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
             navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", mEvent, new ArrayList<String>(){{add(""); add("");}}));
