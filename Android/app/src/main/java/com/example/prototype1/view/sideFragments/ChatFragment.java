@@ -74,7 +74,7 @@ public class ChatFragment extends Fragment {
             EditText chatTextBox = rootView.findViewById(R.id.edittext_chat);
             String chatText = chatTextBox.getText().toString();
             chatTextBox.getText().clear();
-            String username = user.getEmail();
+            String username = user.getDisplayName() + "_" + user.getUid();
             Date date = new Date();
             NMessage newMessage = new NMessage(chatText, username, date);
             mModel.addDoc(newMessage, collection + "/" + docID + "/messages");

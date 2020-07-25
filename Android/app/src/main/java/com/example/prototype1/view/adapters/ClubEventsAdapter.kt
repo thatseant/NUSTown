@@ -45,7 +45,12 @@ class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent,
 
             //Sets ImageView
             val storageReference = FirebaseStorage.getInstance().reference
-            val imageRef = storageReference.child("events/" + item.ID + ".png")
+            var imageRef = storageReference.child("events/" + item.ID + ".png")
+            if (item.ID.contains("_") || item.ID.contains(" ")) { //TODO: Temporary Solution
+                imageRef = storageReference.child("events/" + item.ID + ".png")
+            } else {
+                imageRef = storageReference.child("jios/" + item.name + ".jpg")
+            }
 
             imageRef.downloadUrl.addOnSuccessListener {
                 Glide.with(holder.eventImage.context).load(it).apply(RequestOptions().centerCrop()

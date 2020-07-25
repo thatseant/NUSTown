@@ -35,33 +35,35 @@ class ChatAdapter : ListAdapter<NMessage, ChatAdapter.ViewHolder>(NMessageDiffCa
 
     class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val receivedBubble: LinearLayout = itemView.findViewById(R.id.bubble_chat_received)
-        private val sentBubble: LinearLayout = itemView.findViewById(R.id.bubble_chat_sent)
         private val receivedText: TextView = itemView.findViewById(R.id.textview_chat_received)
         private val sentText: TextView = itemView.findViewById(R.id.textview_chat_sent)
         private val userPic: CircularImageView = itemView.findViewById(R.id.userPic)
-        private val username_sent: TextView = itemView.findViewById(R.id.username_sent)
         private val username_received: TextView = itemView.findViewById(R.id.username_received)
 
         fun bind(chatMessage: NMessage, holder: ViewHolder) {
 
-            val userEmail = FirebaseAuth.getInstance().currentUser?.email
+            val userEmail = FirebaseAuth.getInstance().currentUser?.displayName
             //Sets ImageView
             val storageReference = FirebaseStorage.getInstance().reference
             val username = chatMessage.user
-            val imageRef = storageReference.child("profile/$username.jpg")
+            val splitList = username.split("_")
+            val userID = splitList[1]
+            val imageRef = storageReference.child("profile/$userID.jpg")
 
             imageRef.downloadUrl.addOnSuccessListener {
                 Glide.with(holder.userPic.context).load(it).into(userPic)
             }
 
-            if (chatMessage.user == userEmail) { //TODO: Change to current user
+            if (splitList[0] == userEmail) { //TODO: Change to current user
                 sentText.text = chatMessage.text
                 receivedBubble.visibility = View.GONE
-                username_sent.text = chatMessage.user
+                userPic.visibility = View.GONE
             } else {
                 receivedText.text = chatMessage.text
-                sentBubble.visibility = View.GONE
-                username_received.text = chatMessage.user
+                userPic.visibility = View.VISIBLE
+                receivedBubble.visibility = View.VISIBLE
+                sentText.visibility = View.GONE
+                username_received.text = splitList[0]
             }
 
         }
