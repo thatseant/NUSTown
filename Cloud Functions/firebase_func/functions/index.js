@@ -24,6 +24,7 @@ const moment = require('moment');
 const { userRecordConstructor } = require('firebase-functions/lib/providers/auth');
 
 var chrono = require('chrono-node');
+const { unix } = require('moment');
 
 exports.isPastEvent = functions.https.onRequest(async (req, res) => {
 
@@ -697,6 +698,7 @@ async function downloadToCloud(id, imageURL) {
 
 }
 
+
 async function download (newURL, downloadPath) {
     const url = newURL
     const path = downloadPath
@@ -721,10 +723,185 @@ async function download (newURL, downloadPath) {
 
 exports.testingforinsta = functions.https.onRequest(async (request, response) => {
 
-    const insta = admin.firestore().collection('Clubs Instagram ID').doc('Kent Ridge Hall');
-    const doc = await insta.get();
-    response.send("Done");
-    return admin.firestore().collection('testing').doc('testingforjioevent2').set(
-        {instagram_ID : doc.data().instagram_ID}
+    const insta = 1590321279;
+    let post_date = moment.unix(insta).toDate()
+    let caption = 'I have an appointment tomorrow from 10 to 11 AM'
+    //const doc = await insta.get();
+    let results = chrono.strict.parse(caption, post_date)
+    let casualResults = chrono.parse(caption, post_date)
+    await admin.firestore().collection('testing').doc('testingrun').set(
+        {run:true}
     );
+    await admin.firestore().collection('testing').doc('testingforjioevent3').set(
+        {first: results[0].index,
+         second: results[0].text,
+         third : results[0].ref
+        }
+    );
+    console.log("Before done")
+    response.send("Done");
+    //return response.send("Doneded")
 })
+
+exports.updateTelegram = functions.firestore.document('Telegram_data/{Telegram_group}/{Sub_Tele_Group}/{messageId}').onCreate((snap,context) => {
+    const newValue = snap.data()
+    return admin.firestore().collection('testing').doc('testrun').set(
+        {
+            "First" : context.params.Telegram_group,
+            "Second": context.params.Sub_Tele_Group,
+            "Third": context.params.messageId,
+            "Content type": newValue["Content type"],
+            "Message id": newValue["Message id"],
+            "Name of the sender": newValue["Name of the sender"],
+            "Sender ID": newValue["Sender ID"],
+            "Date": newValue["Date"],
+            "Time": newValue["Time"],
+            "Group Title": newValue["Group Title"],
+            "Chat/Group ID": newValue["Chat/Group ID"]
+        }
+    )
+});
+
+exports.createTeleEvents = functions.firestore.document('Telegram_data/{Telegram_group}/{Sub_Tele_Group}/{messageId}').onCreate((snap,context) => {
+    const newValue = snap.data()
+    let allPosts = {}
+    let TeleToDatabase_input = {
+        Chat_Group_ID : newValue["Chat/Group ID"],
+        Date_posted : newValue["Date"],
+        Group_Title : newValue["Group Title"],
+        Photo_Caption : newValue["Photo Caption"],
+        Photo_URL : newValue["Photo URL"],
+        Time_sent : newValue["Time"]
+    }
+
+    newPost = TeleToDatabase(TeleToDatabase_input); 
+        if (newPost) {
+            if (allPosts[newPost.id])
+            var postToUpdate = allPosts[newPost.id]
+            postToUpdate.updates[newPost.postDate] = [newPost.info, newPost.imgUrl] //add imgURL to update
+            if (newPost.lastUpdate > postToUpdate.lastUpdate) {
+                postToUpdate.lastUpdate = newPost.lastUpdate
+            }
+        } else {
+            allPosts[newPost.id] = newPost 
+        }
+
+    Object.keys(allPosts).forEach(function(key){
+        console.log(key)
+        uploadEventFirestore(key, allPosts[key])
+    }
+    );
+    //await Promise.all(promises)
+    return null
+});
+
+function TeleToDatabase(Input) {
+    var firstDate, firstText;
+    let orgName = Input.Group_Title
+    if (Input.Photo_URL) {
+        let imageURL = Input.Photo_URL
+
+        if (Input.Photo_Caption) {
+            let caption = Input.Photo_Caption
+            let post_date = moment.unix(Input.Date_posted).toDate()
+            let results = chrono.strict.parse(caption, post_date)
+            let casualResults = chrono.parse(caption, post_date)
+
+            if (results.length !== 0) {
+                for (j = 0; j < results.length; j++) {
+                    if (results[j].text !== "9/20") {
+                        if (results[j].tags) {
+                            if (results[j].tags.ENMonthNameParser) {
+                                //return admin.firestore().collection('testing').doc('testingforteletodatabase').set(
+                                //    {
+                                //        test: "Its here"
+                                //    }
+                                //)
+                                continue
+                            }
+                        }
+                        if (!firstDate | (firstDate < post_date)) {
+                            firstDate = results[j].start.date()
+                            firstText = results[j].text
+                            if (!results[j].start.knownValues.day) {
+                                if (casualResults.length !== 0) {
+                                    if ((casualResults[0].start.knownValues.weekday !== null) | casualResults[0].start.knownValues.day) {
+                                        firstDate = casualResults[0].start.date()
+                                        firstText = casualResults[0].text
+                                    }
+                                }
+                                if (results[1]) {
+                                    if (results[1].start.knownValues.day) {
+                                        firstDate = results[1].start.date()
+                                        firstText = results[1].text
+                                    }
+                                }
+                            }
+                        }
+                        if (results[j].start.knownValues.hour) {
+                            if (!results[j].start.knownValues.day) {
+                                firstDate.setHours(results[j].start.knownValues.hour)
+                                if (results[j].start.knownValues.minute) {
+                                    firstDate.setMinutes(results[j].start.knownValues.minute)
+                                }
+                            } else {
+                                firstDate = results[j].start.date()
+                                firstText = results[j].text
+                            }
+                            break;
+                        }
+                    }
+                }
+            } else if (casualResults.length !== 0) {
+                for (j = 0; j < casualResults.length; j++) {
+                    if (casualResults[j].text !== "9/20" && casualResults[j].text !== "now" && casualResults[j].text !== "Now") {
+                        firstDate = casualResults[j].start.date()
+                        firstText = casualResults[j].text
+                        break;
+                    }
+                }
+            }
+
+            if (firstDate >= post_date) {
+                stringDate = moment(firstDate).format("YYMMDD");
+
+                var updates = {}
+
+                let postDateString = moment(post_date).format("DD MMM")
+                updates[postDateString] = [caption, imageURL]
+
+                let newDoc = {
+                    image: orgName + "_" + stringDate + ".png",
+                    info: caption,
+                    time: admin.firestore.Timestamp.fromDate(firstDate),
+                    category: "Other Events",
+                    numberAttending: 0,
+                    name: orgName,
+                    org: orgName,
+                    place: "A Place",
+                    rating: 3,
+                    imgUrl: imageURL,
+                    url: "",
+                    id: orgName + "_" + stringDate,
+                    lastUpdate: post_date,
+                    postDate: postDateString,
+                    updates: updates
+                }
+
+                return newDoc
+                //return admin.firestore().collection('testing').doc('testingforteletodatabase').set(
+                //    {
+                //        newDoc
+                //    }
+                //)
+            }
+        }
+    }
+    return null
+    //return admin.firestore().collection('testing').doc('testingforteletodatabase').set(
+    //    {
+    //        imageURL : post_date
+
+    //    }
+    //)
+}
