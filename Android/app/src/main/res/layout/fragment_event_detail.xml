@@ -11,7 +11,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#E0E0E0">
+        android:background="#00FFFFFF">
 
 
         <RelativeLayout
@@ -33,6 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/back_button"
                 app:srcCompat="@drawable/ic_close_white_24px" />
@@ -90,6 +91,9 @@
                     android:layout_height="wrap_content">
 
                     <Button
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
                         android:id="@+id/rsvp_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -112,6 +116,7 @@
                     android:id="@+id/recycler_users_attending"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:background="@android:color/white"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
@@ -150,6 +155,8 @@
 
                 <com.google.android.material.tabs.TabLayout
                     android:id="@+id/posts_tab_layout"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
                     app:tabMode="scrollable"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

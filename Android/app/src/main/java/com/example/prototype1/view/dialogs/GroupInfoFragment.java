@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NClub;
 import com.example.prototype1.model.NEvent;
@@ -29,6 +31,8 @@ import com.example.prototype1.view.mainFragments.JioListFragmentDirections;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -76,6 +80,13 @@ public class GroupInfoFragment extends DialogFragment implements View.OnClickLis
                 followButton.setText("FOLLOW");
             }
         });
+
+        //Uses Glide library for loading image from Firebase Cloud Storage
+        ImageView mImage = mRootView.findViewById(R.id.groupImage);
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference(); //Get image reference from cloud storage
+        StorageReference imageRef = storageReference.child("groups/" + mGroup.getName() + ".jpg");
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(mImage)).addOnFailureListener(url -> mImage.setVisibility(View.GONE)); //TODO: Figure out how to load image without needing URL
+        mImage.setAdjustViewBounds(true);
 
         //Link Groups Events Recycler View to Adapter
         RecyclerView feedRecyclerView = mRootView.findViewById(R.id.recycler_group_events);

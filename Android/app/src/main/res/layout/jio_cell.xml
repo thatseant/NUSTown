@@ -10,9 +10,19 @@
 
         <LinearLayout
             android:id="@+id/jioInfo"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imageCell"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:transitionName="imageTrans"
+                android:layout_marginBottom="16dp">
+
+            </ImageView>
 
 
             <TextView
@@ -23,6 +33,7 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:text="@string/titleCellPlaceholder"
+                android:textStyle="bold"
                 android:textSize="16sp" />
 
             <TextView

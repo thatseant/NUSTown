@@ -348,7 +348,12 @@ public class TitleFragmentViewModel extends AndroidViewModel {
     }
 
     public void uploadPic(String collection, String fileName, Uri file, MyPhotoCallback myPhotoCallback) {
-        StorageReference imageRef = FirebaseStorage.getInstance().getReference().child(collection + "/" + fileName + ".jpg");
+        StorageReference imageRef;
+        if (collection == "updates") { //Cos Insta stored as .png
+            imageRef = FirebaseStorage.getInstance().getReference().child(collection + "/" + fileName + ".png");
+        } else {
+            imageRef = FirebaseStorage.getInstance().getReference().child(collection + "/" + fileName + ".jpg");
+        }
         UploadTask uploadTask = imageRef.putFile(file);
 
 // Register observers to listen for when the download is done or if it fails

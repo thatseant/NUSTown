@@ -1,5 +1,7 @@
 package com.example.prototype1.view.sideFragments;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +33,8 @@ public class EditEventFragment extends Fragment {
     private TitleFragmentViewModel mModel;
     private NEvent eventToEdit;
     private String eventType;
+    private int changePhotoFlag = 0;
+    private Uri photoURI;
 
     public EditEventFragment() {
         // Required empty public constructor
@@ -72,6 +76,14 @@ public class EditEventFragment extends Fragment {
         timePicker.setMinute(existingDate.getMinute());
         timePicker.setIs24HourView(true);
 
+        Button photoButton = EditEventView.findViewById(R.id.photoBtn);
+        photoButton.setOnClickListener(v -> {
+            changePhotoFlag = 1;
+            Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(pickPhoto, 1);//one can be replaced with any action code
+        });
+
         Button confirmEditButton = EditEventView.findViewById(R.id.confirmEditButton);
         confirmEditButton.setOnClickListener(v -> {
             //Sets new properties from EditText inputs
@@ -101,9 +113,14 @@ public class EditEventFragment extends Fragment {
             mModel.updateEvent(eventToEdit, eventType); //Updates Repository via ViewModel
             mModel.getEventsData();
 
+            if (photoURI != null) {
+                mModel.uploadPic("jios", newNameString, photoURI, () -> {});
+            }
+
             NavController navController = Navigation.findNavController(EditEventView);
             navController.popBackStack();
         });
+
 
         //Close EditEventFragment on buttonClose clicked
         ImageView buttonClose = EditEventView.findViewById(R.id.edit_button_back);
@@ -113,5 +130,12 @@ public class EditEventFragment extends Fragment {
         });
 
         return EditEventView;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == getActivity().RESULT_OK) {
+            photoURI = data.getData();
+        }
     }
 }

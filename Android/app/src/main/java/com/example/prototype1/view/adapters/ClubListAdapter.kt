@@ -43,10 +43,10 @@ class ClubListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, Cl
             //Sets ImageView
             if (item.imgUrl != "") {
                 Glide.with(holder.clubImage.context).load(item.imgUrl).apply(RequestOptions()
-                        .placeholder(R.drawable.nus)
+                        .placeholder(R.drawable.ic_baseline_emoji_people_50)
                 ).thumbnail(0.02f).into(clubImage)
             } else {
-                clubImage.setImageResource(R.drawable.nus)
+                clubImage.setImageResource(R.drawable.ic_baseline_emoji_people_50)
             }
 
             itemView.setOnClickListener { view ->

@@ -8,17 +8,17 @@
     <item
         android:id="@+id/eventListFragment"
         android:icon="@drawable/ic_event_24"
-        android:title="NUS Events" />
+        android:title="Events" />
 
     <item
         android:id="@+id/clubFragment"
         android:icon="@drawable/ic_emoji_people_24"
-        android:title="NUS Clubs" />
+        android:title="Clubs" />
 
     <item
         android:id="@+id/jioListFragment"
         android:icon="@drawable/ic_deck_24"
-        android:title="Casual Jios" />
+        android:title="Casuals" />
 
 
 </menu>
