@@ -33,8 +33,14 @@ public class EventClubRepository {
         }
 
         if (filters.hasSortBy()) {
-            if (!filters.getDisplayPast()) {
-                query = query.whereEqualTo("isPastEvent", false);
+            if (filters.hasDisplayPast()) {
+                if (!filters.getDisplayPast()) {
+                    if (collection == "events") {
+                        query = query.whereEqualTo("isPastEvent", false);
+                    } else if (collection == "jios"){
+                        query = query.whereEqualTo("pastEvent", false);
+                    }
+                }
             }
             query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
         }
@@ -60,6 +66,53 @@ public class EventClubRepository {
                 myDocumentsCallback.onCallback(mResults); //Callback required as Firebase query performed asynchronously; code after onCompleteListener will execute before it finishes
             }
         });
+    }
+
+    public void searchDocumentsSnapshot(Filters filters, String collection, int limit, DocumentSnapshot lastVisible, final MyDocumentsCallback myDocumentsCallback, final MyListenerCallback myListenerCallback) {
+        ArrayList<DocumentSnapshot> mResults = new ArrayList<>();
+
+        Query query = FirebaseFirestore.getInstance().collection(collection);
+
+        if (filters.hasCategory()) {
+            query = query.whereEqualTo("category", filters.getCategory());
+        }
+        if (filters.hasPlace()) {
+            query = query.whereEqualTo("place", filters.getPlace());
+        }
+
+        if (filters.hasSortBy()) {
+            if (filters.hasDisplayPast()) {
+                if (!filters.getDisplayPast()) {
+                    query = query.whereEqualTo("isPastEvent", false);
+                }
+            }
+            query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
+        }
+
+        if (filters.hasClubCategory()) {
+            if (filters.getClubCategory() != 0) {
+                query = query.whereEqualTo("cat", filters.getClubCategory());
+            }
+        }
+
+        if (lastVisible != null) {
+            query = query.startAfter(lastVisible);
+        }
+
+        if (limit != 0) {
+            query = query.limit(15);
+        }
+
+        ListenerRegistration queryListener = query.addSnapshotListener((snapshot, e) -> { //Performs query
+            if (snapshot != null) {
+                //Adds to list of NEvent objects that matches query
+                mResults.clear();
+                mResults.addAll(Objects.requireNonNull(snapshot.getDocuments()));
+                myDocumentsCallback.onCallback(mResults); //Callback required as Firebase query performed asynchronously; code after onCompleteListener will execute before it finishes
+            }
+        });
+
+        myListenerCallback.onCallback(queryListener);
     }
 
     public void multipleDocumentSearches(List<String> searchList, String searchType, String collection, final MyDocumentsCallback myDocumentsCallback) {

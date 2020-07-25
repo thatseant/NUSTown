@@ -20,6 +20,7 @@ class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent,
 
     interface OnItemSelectedListener {
         fun onItemSelected(mEvent: NEvent, view: View)
+        fun onJioSelected(mEvent: NEvent, view: View)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {//Called for every item in RecyclerView when it becomes visible
@@ -47,13 +48,17 @@ class ClubEventsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent,
             val imageRef = storageReference.child("events/" + item.ID + ".png")
 
             imageRef.downloadUrl.addOnSuccessListener {
-                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
-                        .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
+                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions().centerCrop()
+                        .placeholder(R.drawable.ic_baseline_event_50)).thumbnail(0.02f).into(eventImage)
 
-            }.addOnFailureListener { eventImage.setImageResource(R.drawable.nus); }
+            }.addOnFailureListener { eventImage.setImageResource(R.drawable.ic_baseline_event_50); }
 
             itemView.setOnClickListener { view ->
-                listener.onItemSelected(item, view)
+                if (item.ID.contains("_") || item.ID.contains(" ")) { //TODO: Temporary Solution
+                    listener.onItemSelected(item, view)
+                } else {
+                    listener.onJioSelected(item, view)
+                }
             }
         }
 

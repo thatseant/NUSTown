@@ -10,7 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#E0E0E0">
+        android:background="#00FFFFFF">
 
 
         <RelativeLayout
@@ -48,34 +48,12 @@
                 style="@style/AppTheme.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/club_rating"
-                android:layout_marginStart="8dp"
+                android:layout_above="@+id/club_category"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
                 tools:text="Some Club" />
-
-            <me.zhanghai.android.materialratingbar.MaterialRatingBar
-                android:id="@+id/club_rating"
-                style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/club_category"
-                android:layout_alignStart="@+id/club_name"
-                app:mrb_progressTint="@android:color/white"
-                app:mrb_secondaryProgressTint="@android:color/white" />
-
-            <TextView
-                style="@style/AppTheme.Body1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/club_rating"
-                android:layout_alignBottom="@+id/club_rating"
-                android:layout_marginStart="4dp"
-                android:layout_toEndOf="@+id/club_rating"
-                android:gravity="center"
-                android:textColor="@android:color/white"
-                tools:text="(10)" />
 
             <TextView
                 android:id="@+id/club_category"
@@ -103,11 +81,24 @@
 
         </RelativeLayout>
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/club_chat_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/club_top_card"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="-28dp"
+            app:srcCompat="@drawable/ic_chat_white_24" />
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/club_top_card"
-            android:layout_margin="32dp">
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -116,9 +107,23 @@
 
                 <Button
                     android:id="@+id/subscribe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Join club"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:theme="@style/ThemeOverlay.FilterButton"/>
+
+                <ProgressBar
+                    android:id="@+id/progressBar_cyclic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Join club" />
+                    android:minHeight="50dp"
+                    android:minWidth="50dp"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:visibility="gone"/>
 
 
                 <TextView
@@ -139,6 +144,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
                     android:textColor="@android:color/black"
                     android:textSize="14sp"
                     tools:text="" />

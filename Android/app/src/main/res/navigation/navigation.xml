@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_eventDetailFragment_to_editPostFragment"
             app:destination="@id/editPostFragment" />
+        <action
+            android:id="@+id/action_eventDetailFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
     </fragment>
     <fragment
         android:id="@+id/editEvent"
@@ -82,6 +85,12 @@
         <action
             android:id="@+id/action_clubDetailFragment_to_eventDetailFragment"
             app:destination="@id/eventDetailFragment" />
+        <argument
+            android:name="clubType"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_clubDetailFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
     </fragment>
     <fragment
         android:id="@+id/jioListFragment"
@@ -89,11 +98,14 @@
         android:label="JioListFragment"
         tools:layout="@layout/fragment_jio_list">
         <action
-            android:id="@+id/action_jioListFragment_to_eventDetailFragment"
-            app:destination="@id/eventDetailFragment" />
-        <action
             android:id="@+id/action_jioListFragment_to_editEvent"
             app:destination="@id/editEvent" />
+        <action
+            android:id="@+id/action_jioListFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+        <action
+            android:id="@+id/action_jioListFragment_to_addGroupFragment"
+            app:destination="@id/addGroupFragment" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
@@ -103,6 +115,12 @@
         <action
             android:id="@+id/action_homeFragment_to_eventDetailFragment"
             app:destination="@id/eventDetailFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_editEvent"
+            app:destination="@id/editEvent" />
     </fragment>
     <fragment
         android:id="@+id/editPostFragment"
@@ -122,6 +140,25 @@
             android:name="Post Caption"
             app:argType="java.util.ArrayList" />
     </fragment>
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.example.prototype1.view.sideFragments.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" >
+        <argument
+            android:name="docid"
+            app:argType="string" />
+        <argument
+            android:name="docname"
+            app:argType="string" />
+        <argument
+            android:name="collection"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/addGroupFragment"
+        android:name="com.example.prototype1.view.sideFragments.AddGroupFragment"
+        android:label="AddGroupFragment" />
 
 
 </navigation>

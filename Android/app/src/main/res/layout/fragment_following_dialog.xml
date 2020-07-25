@@ -7,11 +7,28 @@
     android:padding="16dp">
 
     <TextView
+        android:id="@+id/org_type_title"
         style="@style/AppTheme.Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:text="Clubs Following" />
+
+    <TextView
+        android:id="@+id/no_groups_placeholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Groups Followed Yet. \n\nSee the groups you followed here."
+        android:visibility="gone">
+    </TextView>
+
+    <TextView
+        android:id="@+id/no_clubs_placeholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Clubs Followed Yet. \n\nSee the clubs you followed here."
+        android:visibility="gone">
+    </TextView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_followed_clubs"

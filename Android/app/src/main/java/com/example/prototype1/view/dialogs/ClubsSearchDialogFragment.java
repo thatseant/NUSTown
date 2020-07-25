@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.prototype1.R;
 import com.example.prototype1.model.Filters;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
+import com.google.firebase.firestore.Query;
 
 import java.util.Objects;
 
@@ -24,6 +25,7 @@ public class ClubsSearchDialogFragment extends DialogFragment implements View.On
     public int resetFlag = 0; //resetFlag due to bug where Spinner setSelection does not save
     private View mRootView;
     private Spinner mCategorySpinner;
+    private Spinner mSortSpinner;
 
     private TitleFragmentViewModel mModel;
 
@@ -35,6 +37,7 @@ public class ClubsSearchDialogFragment extends DialogFragment implements View.On
         mRootView = inflater.inflate(R.layout.fragment_clubs_search_dialog, container, false);
 
         mCategorySpinner = mRootView.findViewById(R.id.spinner_category);
+        mSortSpinner = mRootView.findViewById(R.id.spinner_sort);
 
         mRootView.findViewById(R.id.button_search).setOnClickListener(this);
         mRootView.findViewById(R.id.button_cancel).setOnClickListener(this);
@@ -71,6 +74,7 @@ public class ClubsSearchDialogFragment extends DialogFragment implements View.On
     private void onSearchClicked() {
         mModel.changeClubFilter(getFilters()); //Filters saved in ViewModel and getClubsData applies same filters until changed
         mModel.mClubSearchCat.setValue(getFilters().getClubSearchDescription(requireContext())); //Updates search box text (stored in ViewModel)
+        mModel.mClubSearchSort.setValue(getFilters().getOrderDescription(requireContext())); //Updates search box text (stored in ViewModel)
         dismiss();
     }
 
@@ -86,6 +90,8 @@ public class ClubsSearchDialogFragment extends DialogFragment implements View.On
         if (mRootView != null) {
             filters.setClubCategory(getSelectedCategory());
             filters.setClubCategoryText(getSelectedCategoryText());
+            filters.setSortBy(getSelectedSortBy());
+            filters.setSortDirection(getSortDirection());
         }
 
         return filters;
@@ -107,14 +113,42 @@ public class ClubsSearchDialogFragment extends DialogFragment implements View.On
         }
     }
 
+    @Nullable
+    private String getSelectedSortBy() {
+        String selected = (String) mSortSpinner.getSelectedItem();
+        if (getString(R.string.sort_by_popularity).equals(selected)) {
+            return "followers";
+        }
+        if (getString(R.string.sort_by_name).equals(selected)) {
+            return "name";
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private Query.Direction getSortDirection() {
+        String selected = (String) mSortSpinner.getSelectedItem();
+        if (getString(R.string.sort_by_popularity).equals(selected)) {
+            return Query.Direction.DESCENDING;
+        }
+        if (getString(R.string.sort_by_name).equals(selected)) {
+            return Query.Direction.ASCENDING;
+        }
+        return null;
+    }
+
+
 
     private void resetFilters() {
         if (mRootView != null) {
             mCategorySpinner.setSelection(0, true);
+            mSortSpinner.setSelection(0, true);
         }
 
         mModel.changeClubFilter(new Filters(true));
-        mModel.mClubSearchCat.setValue("<b> All Events <b>");
+        mModel.mClubSearchCat.setValue("<b> All Clubs <b>");
+        mModel.mClubSearchSort.setValue("Sorted by Name");
     }
 
 

@@ -30,7 +30,6 @@ public class EditPostFragment extends Fragment {
     private TitleFragmentViewModel mModel;
     private ArrayList<String> captionToEdit;
     private String postDate;
-    private NEvent updatedEvent;
     private Uri photoURI;
     private int changePhotoFlag = 0;
 
@@ -54,7 +53,7 @@ public class EditPostFragment extends Fragment {
         postDate = EditPostFragmentArgs.fromBundle(getArguments()).getPostDate();
         mEvent = EditPostFragmentArgs.fromBundle(getArguments()).getEventToEdit();
 
-        if (postDate.equals("")) {
+        if (postDate.equals("")) { //If post to edit is a new post
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", Locale.ENGLISH);
             postDate = dateFormat.format(new Date());
         }
@@ -65,33 +64,25 @@ public class EditPostFragment extends Fragment {
         TextView captionTitle = editEventView.findViewById(R.id.postDate);
         captionTitle.setText(postDate);
 
-        if (captionToEdit.size() != 0) {
-            captionBox.setText(captionToEdit.get(0).toString());
-        }
-        updatedEvent = mEvent;
-        existingUpdates = updatedEvent.getUpdates();
+        String cleaned_text = captionToEdit.get(0).replaceAll("&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});", " "); //Remove &...; html
+            captionBox.setText(cleaned_text);
+
+        existingUpdates = mEvent.getUpdates();
 
         Button submitButton = editEventView.findViewById(R.id.confirmEditButton);
 
         submitButton.setOnClickListener(v -> {
-            String newCaption = captionBox.getText().toString();
-            ArrayList<String> newUpdate = new ArrayList<>();
-            newUpdate.add(newCaption);
+             captionToEdit.set(0, captionBox.getText().toString());
+             if (changePhotoFlag == 1) {
+                 captionToEdit.set(1, mEvent.getID() + "/" + postDate);
+             }
 
-            if (changePhotoFlag == 0) {
-                if (captionToEdit.size() != 0) {
-                    newUpdate.add(captionToEdit.get(1).toString());
-                }
-            } else {
-                newUpdate.add(mEvent.getID() + "/" + postDate);
-            }
-
-            existingUpdates.put(postDate, newUpdate);
-            updatedEvent.setUpdates(existingUpdates);
-            mModel.updateEvent(updatedEvent, "events");
+            existingUpdates.put(postDate, captionToEdit);
+            mEvent.setUpdates(existingUpdates);
+            mModel.updateEvent(mEvent, "events");
 
             if (photoURI != null) {
-                mModel.uploadPic("updates", mEvent.getID() + "/" + postDate, photoURI);
+                mModel.uploadPic("updates", mEvent.getID() + "/" + postDate, photoURI, () -> {});
             }
             NavController navController = Navigation.findNavController(editEventView);
             navController.popBackStack();

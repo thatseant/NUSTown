@@ -38,6 +38,12 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 
+    testOptions.unitTests {
+        includeAndroidResources = true
+
+        // ...
+    }
+
 }
 
 dependencies {
@@ -53,6 +59,7 @@ dependencies {
     implementation 'me.zhanghai.android.materialratingbar:library:1.4.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0'
+    implementation 'com.google.firebase:firebase-dynamic-links-ktx:19.1.0'
     implementation 'com.mikhaellopez:circularimageview:4.2.0'
     implementation 'com.firebaseui:firebase-ui-firestore:6.2.1'
     // Java language implementation
@@ -85,4 +92,12 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    // AndroidX Test - JVM testing
+    testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+
+    testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+
+    testImplementation "org.robolectric:robolectric:$robolectricVersion"
+
+    testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
 }

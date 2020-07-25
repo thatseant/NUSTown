@@ -3,12 +3,6 @@ const functions = require('firebase-functions');
 
 // The Firebase Admin SDK to access Cloud Firestore.
 const admin = require('firebase-admin');
-const path = require('path');
-const os = require('os');
-const fs = require("fs");
-var allSettled = require('promise.allsettled');
-
-
 const serviceAccount = require("./NUSTown-ffc8c62cae11.json");
 
 const { v4: uuidv4 } = require('uuid');
@@ -16,6 +10,7 @@ admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: "nustown.appspot.com"
 });
+
 
 const axios = require('axios').default;
 const bucket = admin.storage().bucket();
@@ -25,6 +20,7 @@ const { userRecordConstructor } = require('firebase-functions/lib/providers/auth
 
 var chrono = require('chrono-node');
 const { unix } = require('moment');
+
 
 exports.isPastEvent = functions.https.onRequest(async (req, res) => {
 
@@ -68,11 +64,11 @@ exports.isPastJio = functions.https.onRequest(async (req, res) => {
                 var data = doc.data()
                 if (data.time.toDate()  < new Date()) {
                     promises.push(doc.ref.update({
-                        "isPastEvent": true
+                        "pastEvent": true
                     }))
                 } else {
                     promises.push(doc.ref.update({
-                        "isPastEvent": false
+                        "pastEvent": false
                     }))
                 }
             }
@@ -141,6 +137,8 @@ exports.nusClubs = functions.https.onRequest(async (req, res) => {
 })
 
 exports.allInsta = functions.https.onRequest(async (req, res) => {
+    var allSettled = require('promise.allsettled');
+    const axios = require('axios').default;
     try {
         let apiURL = "https://nus.campuslabs.com/engage/api/discovery/organization?take=500"
         const JSONData = await axios.get(apiURL)
@@ -163,6 +161,49 @@ exports.allInsta = functions.https.onRequest(async (req, res) => {
         res.status(500).send(err);
     }
 })
+
+async function instaFollowers() {
+    var allSettled = require('promise.allsettled');
+    const axios = require('axios').default;
+        let apiURL = "https://nus.campuslabs.com/engage/api/discovery/organization?take=500"
+        const JSONData = await axios.get(apiURL)
+        let numberOfClubs = JSONData.data.items
+        promises = []
+        for (let i=0; i<numberOfClubs.length; i++) {
+            let clubData = JSONData.data.items[i]
+            /* eslint-disable no-await-in-loop */
+            promises.push(getInsta(clubData))
+            /* eslint-enable no-await-in-loop */
+        }
+        await allSettled(promises)
+        allSettled.shim()
+}
+
+async function getInsta(clubData) {
+
+    try {
+        const axios = require('axios').default;
+        let instaUrl = clubData.socialMedia.InstagramUrl
+        let orgName = clubData.name
+        if (instaUrl) {
+            let instaUsernamePre = instaUrl.split(".com/")[1]
+            let instaUsername = instaUsernamePre.split("/")[0]
+            console.log(instaUsername)
+            let apiURL = "http://instagram.com/" + instaUsername + "?__a=1"
+            const JSONData = await axios.get(apiURL)
+            console.log(JSONData.data.graphql.user.edge_followed_by.count)
+            let followers = JSONData.data.graphql.user.edge_followed_by.count
+            const clubDoc = admin.firestore().collection('clubs').doc(orgName);
+            await clubDoc.update({
+                followers: followers
+            });
+        }
+    } catch (err) {
+       console.log(err);
+   }
+}
+
+    instaFollowers();
 
 //async function allInsta() { //Run Locally
 //    try {
@@ -203,6 +244,7 @@ async function getInstaFromUsername(clubData, numberOfPosts) {
 }
 
 async function createNSync(URL, type) {
+    const axios = require('axios').default;
     let promises = []
     const JSONData = await axios.get(URL)
     const numberResults = JSONData.data.value
@@ -281,6 +323,8 @@ async function NSyncClubToDatabase(allClubs, i) {
 }
 
 async function NSyncEventToDatabase(allEvents, i) {
+    const axios = require('axios').default;
+    const moment = require('moment');
     let event = allEvents[i]
     let eventStartDateTime = new Date(event.startsOn)
     let eventStartDate = moment(eventStartDateTime).format("YYMMDD")
@@ -295,6 +339,8 @@ async function NSyncEventToDatabase(allEvents, i) {
     let description = event.description
     let description_text = description.replace(/(<([^>]+)>)/ig, '', "")
     const JSONAttendees = await axios.get("https://nus.campuslabs.com/engage/api/discovery/event/"+ event.id +"/rsvpstatistics?")
+    var updates = {}
+    updates["NUSync"] = [description_text, "", ""]
     let newDoc = {
         // org: event.organizationName,
         // syncEventID: event.id,
@@ -311,18 +357,19 @@ async function NSyncEventToDatabase(allEvents, i) {
         // id: id,
         // imgUrl: imageURL
 
-            org: event.organizationName,
-            syncEventID: event.id,
-            syncOrgID: event.organizationId,
-            info: description_text,
-            time: admin.firestore.Timestamp.fromDate(new Date(event.startsOn)),
-            numberAttending: JSONAttendees.data.yesUserCount,
-            name: event.name,
-            place: event.location,
-            rating: 3,
-            url: "https://nus.campuslabs.com/engage/event/" + event.id,
-            id: id,
-            imgUrl: imageURL
+        org: event.organizationName,
+        syncEventID: event.id,
+        syncOrgID: event.organizationId,
+        info: description_text,
+        time: admin.firestore.Timestamp.fromDate(new Date(event.startsOn)),
+        numberAttending: JSONAttendees.data.yesUserCount,
+        name: event.name,
+        place: event.location,
+        url: "https://nus.campuslabs.com/engage/event/" + event.id,
+        id: id,
+        imgUrl: imageURL,
+        updates: updates,
+        lastUpdate: new Date()
     }
 
     await admin.firestore().collection('events').doc(id).get().then(
@@ -338,6 +385,7 @@ async function NSyncEventToDatabase(allEvents, i) {
 }
 
 async function createInstaEvents (orgName, userID, numberOfPosts) {
+    const axios = require('axios').default;
     let promises = []
     let allPosts = {}
     let apiURL = "https://www.instagram.com/graphql/query/?query_hash=f2405b236d85e8296cf30347c9f08c2a&variables=%7B%22id%22%3A%22" + userID + "%22%2C%22first%22%3A" + numberOfPosts + "%2C%22after%22%3A%22%22%7D"
@@ -353,7 +401,7 @@ async function createInstaEvents (orgName, userID, numberOfPosts) {
             if (newPost) {
                 if (allPosts[newPost.id]) {
                     var postToUpdate = allPosts[newPost.id]
-                    postToUpdate.updates[newPost.postDate] = [newPost.info, newPost.imgUrl] //add imgURL to update
+                    postToUpdate.updates[newPost.postDate] = [newPost.info, newPost.imgUrl, newPost.id + "_" + newPost.postDate] //add imgURL to update
                     if (newPost.lastUpdate > postToUpdate.lastUpdate) {
                         postToUpdate.lastUpdate = newPost.lastUpdate
                     }
@@ -372,6 +420,8 @@ async function createInstaEvents (orgName, userID, numberOfPosts) {
 }
 
 function InstaToDatabase(orgName, allMedia, i, userID) {
+    const moment = require('moment');
+    var chrono = require('chrono-node');
     var id, cat, name, place, url;
     var firstDate, firstText;
     if (allMedia.edges[i]) {
@@ -476,7 +526,7 @@ function InstaToDatabase(orgName, allMedia, i, userID) {
                 var updates = {}
 
                 let postDateString = moment(post_date).format("DD MMM")
-                updates[postDateString] = [caption, imageURL]
+                updates[postDateString] = [caption, imageURL, orgName + "_" + stringDate + "_" + postDateString]
 
                 let newDoc = {
                     image: orgName + "_" + stringDate + ".png",
@@ -506,10 +556,10 @@ function InstaToDatabase(orgName, allMedia, i, userID) {
 }
 
 async function uploadEventFirestore(id, newDoc) {
-    await admin.firestore().collection('events3').doc(id).get().then(
+    await admin.firestore().collection('events').doc(id).get().then(
         async (doc) => {
             if (!doc.exists) {
-                await admin.firestore().collection('events3').doc(id).set(newDoc)
+                await admin.firestore().collection('events').doc(id).set(newDoc)
             } else if (doc.exists) {
                 if (doc.data().lastUpdate) {
                     if (newDoc.lastUpdate < doc.data().lastUpdate.toDate()) {
@@ -517,7 +567,7 @@ async function uploadEventFirestore(id, newDoc) {
                         newDoc.lastUpdate = doc.data().lastUpdate.toDate()
                     }
                 }
-                await admin.firestore().collection('events3').doc(id).update({["updates." + newDoc.postDate]: [newDoc.info, newDoc.imgUrl], "org": newDoc.org, "lastUpdate": newDoc.lastUpdate})
+                await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: [newDoc.info, newDoc.imgUrl, newDoc.id + "_" + newDoc.postDate], "org": newDoc.org, "lastUpdate": newDoc.lastUpdate})
             }
             return null;
         }
@@ -536,7 +586,8 @@ exports.newUserSignUp = functions.auth.user().onCreate(user => {
       displayname : user.email,
       eventAttending: [],
       jioEventAttending: [],
-      clubsSubscribedTo : []
+      clubsSubscribedTo : [],
+      groupsSubscribedTo : []
     });
   });
 
@@ -558,24 +609,24 @@ exports.userDeleted = functions.auth.user().onDelete(user => {
 
 exports.rsvpFunction = functions.https.onCall(async (data, context) => {
 
-  const userdoc = admin.firestore().collection('users').doc(data.email); 
+  const userdoc = admin.firestore().collection('users').doc(data.user_id);
   const eventdoc = admin.firestore().collection('events').doc(data.event_id);
   const event = await eventdoc.get();
   const user = await userdoc.get();
 
   //checking if the user is already attending
   if(user.data().eventAttending.includes(data.event_id)){ //if this is true, the user is attending
-  await userdoc.update({
-    eventAttending: admin.firestore.FieldValue.arrayRemove(data.event_id)
-  });
+      await userdoc.update({
+        eventAttending: admin.firestore.FieldValue.arrayRemove(data.event_id)
+      });
 
-  await eventdoc.update({
-    usersAttending: admin.firestore.FieldValue.arrayRemove(data.email)
-  });
-  
-  return eventdoc.update({
-    numberAttending: admin.firestore.FieldValue.increment(-1)
-  });
+      await eventdoc.update({
+        usersAttending: admin.firestore.FieldValue.arrayRemove(data.display_name + "_" + data.user_id)
+      });
+
+      return eventdoc.update({
+        numberAttending: admin.firestore.FieldValue.increment(-1)
+      });
   }
   else {
   await userdoc.update({
@@ -583,7 +634,7 @@ exports.rsvpFunction = functions.https.onCall(async (data, context) => {
   });
 
   await eventdoc.update({
-    usersAttending: admin.firestore.FieldValue.arrayUnion(data.email)
+    usersAttending: admin.firestore.FieldValue.arrayUnion(data.display_name + "_" + data.user_id)
   });
 
   return eventdoc.update({
@@ -596,7 +647,7 @@ exports.rsvpFunction = functions.https.onCall(async (data, context) => {
 
 exports.rsvpJioFunction = functions.https.onCall(async (data, context) => {
 
-    const userdoc = admin.firestore().collection('users').doc(data.email); 
+    const userdoc = admin.firestore().collection('users').doc(data.user_id);
     const eventdoc = admin.firestore().collection('jios').doc(data.event_id);
     const event = await eventdoc.get();
     const user = await userdoc.get();
@@ -608,7 +659,7 @@ exports.rsvpJioFunction = functions.https.onCall(async (data, context) => {
     });
   
     await eventdoc.update({
-      usersAttending: admin.firestore.FieldValue.arrayRemove(data.email)
+      usersAttending: admin.firestore.FieldValue.arrayRemove(data.display_name + "_" + data.user_id)
     });
     
     return eventdoc.update({
@@ -619,9 +670,9 @@ exports.rsvpJioFunction = functions.https.onCall(async (data, context) => {
     await userdoc.update({
       jioEventAttending: admin.firestore.FieldValue.arrayUnion(data.event_id)
     });
-  
+
     await eventdoc.update({
-      usersAttending: admin.firestore.FieldValue.arrayUnion(data.email)
+      usersAttending: admin.firestore.FieldValue.arrayUnion(data.display_name + "_" + data.user_id)
     });
   
     return eventdoc.update({
@@ -637,36 +688,57 @@ exports.rsvpJioFunction = functions.https.onCall(async (data, context) => {
       const user = await userdoc.get();
       const club = await clubdoc.get();
 
-      //checking if the user is already part of the club
-      if(user.data().clubsSubscribedTo.includes(data.club_name)){
-      return userdoc.update({
-        clubsSubscribedTo: admin.firestore.FieldValue.arrayRemove(data.club_name)
-      });
+      if (data.orgType==='clubs') {
+          //checking if the user is already part of the club
+          if (user.data().clubsSubscribedTo.includes(data.club_name)) {
+              return userdoc.update({
+                  clubsSubscribedTo: admin.firestore.FieldValue.arrayRemove(data.club_name)
+              });
 
-      //return clubdoc.update({
-      //  members: admin.firestore.FieldValue.arrayRemove(data.email)
-      //});
-      }
-      else {
-      return userdoc.update({
-        clubsSubscribedTo: admin.firestore.FieldValue.arrayUnion(data.club_name)
-      });
+              //return clubdoc.update({
+              //  members: admin.firestore.FieldValue.arrayRemove(data.email)
+              //});
+          } else {
+              return userdoc.update({
+                  clubsSubscribedTo: admin.firestore.FieldValue.arrayUnion(data.club_name)
+              });
 
-      //return clubdoc.update({
-      //  members: admin.firestore.FieldValue.arrayUnion(data.email)
-      //});
-   
+              //return clubdoc.update({
+              //  members: admin.firestore.FieldValue.arrayUnion(data.email)
+              //});
+
+          }
+      } else {
+          //checking if the user is already part of the club
+          if (user.data().groupsSubscribedTo.includes(data.club_name)) {
+              return userdoc.update({
+                  groupsSubscribedTo: admin.firestore.FieldValue.arrayRemove(data.club_name)
+              });
+
+              //return clubdoc.update({
+              //  members: admin.firestore.FieldValue.arrayRemove(data.email)
+              //});
+          } else {
+              return userdoc.update({
+                  groupsSubscribedTo: admin.firestore.FieldValue.arrayUnion(data.club_name)
+              });
+
+              //return clubdoc.update({
+              //  members: admin.firestore.FieldValue.arrayUnion(data.email)
+              //});
+          }
       }
   })
 
 exports.downloadEventsPhoto = functions.https.onRequest(async (req, res) => {
+    var allSettled = require('promise.allsettled');
     try {
         promises = []
         await admin.firestore().collection("events").get().then(async (querySnapshot) => {
 
             for (const doc of querySnapshot.docs) {
                 promises.push(
-                    downloadToCloud(doc.data().id, doc.data().imgUrl)
+                    downloadToCloud(doc.data().id, doc.data().imgUrl, "events")
                 )
             }
 
@@ -685,12 +757,45 @@ exports.downloadEventsPhoto = functions.https.onRequest(async (req, res) => {
     }
 })
 
-async function downloadToCloud(id, imageURL) {
+exports.downloadUpdatesPhoto = functions.https.onRequest(async (req, res) => {
+    var allSettled = require('promise.allsettled');
+    try {
+        promises = []
+        await admin.firestore().collection("events").get().then(async (querySnapshot) => {
+
+            for (const doc of querySnapshot.docs) {
+
+                for (let [key, value] of Object.entries(doc.data().updates)) {
+                    promises.push(
+                        downloadToCloud(doc.data().id + "_" + key, value[1], "updates")
+                    )
+                }
+            }
+
+            await allSettled(promises)
+            allSettled.shim()
+
+
+            return null;
+        });
+
+
+        res.status(200).json({result: `Success`});
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+})
+
+async function downloadToCloud(id, imageURL, collection) {
+    const path = require('path');
+    const os = require('os');
+    const bucket = admin.storage().bucket();
       if (imageURL!== "") {
           const picName = id + ".png";
           const tempFilePath = path.join(os.tmpdir(), picName);
           await download(imageURL, tempFilePath).then(() => bucket.upload(tempFilePath,
-              {destination: "events/"+ picName,  metadata: {metadata :{
+              {destination: collection + "/" + picName,  metadata: {metadata :{
                           firebaseStorageDownloadTokens: uuidv4(),
                       }
                   },}))
@@ -700,6 +805,8 @@ async function downloadToCloud(id, imageURL) {
 
 
 async function download (newURL, downloadPath) {
+    const fs = require("fs");
+    const axios = require('axios').default;
     const url = newURL
     const path = downloadPath
     const writer = fs.createWriteStream(path)

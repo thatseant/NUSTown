@@ -48,10 +48,10 @@ class EventListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NEvent, 
             val imageRef = storageReference.child("events/" + item.ID + ".png")
 
             imageRef.downloadUrl.addOnSuccessListener {
-                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions()
-                        .placeholder(R.drawable.nus)).thumbnail(0.02f).into(eventImage)
+                Glide.with(holder.eventImage.context).load(it).apply(RequestOptions().centerCrop()
+                        .placeholder(R.drawable.ic_baseline_event_50)).thumbnail(0.02f).into(eventImage)
 
-            }.addOnFailureListener { eventImage.setImageResource(R.drawable.nus); }
+            }.addOnFailureListener { eventImage.setImageResource(R.drawable.ic_baseline_event_50); }
 
             itemView.setOnClickListener { view ->
                 listener.onItemSelected(item, view)

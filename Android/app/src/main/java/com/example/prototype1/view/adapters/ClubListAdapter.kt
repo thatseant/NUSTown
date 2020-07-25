@@ -38,15 +38,15 @@ class ClubListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, Cl
 
         fun bind(item: NClub, holder: ViewHolder, listener: OnItemSelectedListener) {
             clubName.text = item.name
-            clubCat.text = item.catName
+            clubCat.visibility = View.GONE
 
             //Sets ImageView
             if (item.imgUrl != "") {
                 Glide.with(holder.clubImage.context).load(item.imgUrl).apply(RequestOptions()
-                        .placeholder(R.drawable.nus)
+                        .placeholder(R.drawable.ic_baseline_emoji_people_50)
                 ).thumbnail(0.02f).into(clubImage)
             } else {
-                clubImage.setImageResource(R.drawable.nus)
+                clubImage.setImageResource(R.drawable.ic_baseline_emoji_people_50)
             }
 
             itemView.setOnClickListener { view ->
@@ -69,7 +69,7 @@ class ClubListAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, Cl
 class NClubDiffCallback : DiffUtil.ItemCallback<NClub>() {
 
     override fun areItemsTheSame(oldItem: NClub, newItem: NClub): Boolean {
-        return oldItem.id == newItem.id
+        return oldItem.ID == newItem.ID
     }
 
     override fun areContentsTheSame(oldItem: NClub, newItem: NClub): Boolean {

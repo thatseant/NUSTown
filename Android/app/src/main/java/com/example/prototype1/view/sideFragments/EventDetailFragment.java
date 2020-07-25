@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -24,6 +25,7 @@ import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.UpdatesPagerAdapter;
 import com.example.prototype1.view.adapters.UsersAttendingAdapter;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,6 +36,7 @@ import com.google.firebase.storage.StorageReference;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
@@ -43,6 +46,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
     private String eventType;
     NEvent mEvent;
     Button rsvpButton;
+    ProgressBar progress;
 
 
     @Override
@@ -68,36 +72,58 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         StorageReference storageReference = FirebaseStorage.getInstance().getReference(); //Get image reference from cloud storage
         StorageReference imageRef = storageReference.child("events/" + mEvent.getID() + ".png");
         imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(mImage)).addOnFailureListener(url -> mImage.setImageResource(R.drawable.nus)); //TODO: Figure out how to load image without needing URL
-
+        mImage.setAdjustViewBounds(true);
         //Sets text in TextView
-        TextView orgClub = rootView.findViewById(R.id.event_club);
-        orgClub.setText(mEvent.getOrg());
-        TextView mTime = rootView.findViewById(R.id.event_time);
-        mTime.setText(mEvent.getTime().toString());
-        TextView mPlace = rootView.findViewById(R.id.event_city);
-        mPlace.setText(mEvent.getPlace());
-        TextView mName = rootView.findViewById(R.id.event_name);
-        mName.setText(mEvent.getName());
-        TextView mNum = rootView.findViewById(R.id.event_number_attend);
-        mNum.setText("NUSync Signups: " + mEvent.getNumberAttending());
+//        TextView orgClub = rootView.findViewById(R.id.event_club);
+//        orgClub.setText(mEvent.getOrg());
+//        TextView mTime = rootView.findViewById(R.id.event_time);
+//        mTime.setText(mEvent.getTime().toString());
+//        TextView mPlace = rootView.findViewById(R.id.event_city);
+//        mPlace.setText(mEvent.getPlace());
+//        TextView mName = rootView.findViewById(R.id.event_name);
+//        mName.setText(mEvent.getName());
+//        TextView mNum = rootView.findViewById(R.id.event_number_attend);
+//        mNum.setText("NUSync Signups: " + mEvent.getNumberAttending());
         TextView mURL = rootView.findViewById(R.id.event_url_text);
         mURL.setText(mEvent.getUrl());
+        if (mEvent.getUrl()=="") {
+            mURL.setVisibility(View.GONE);
+        }
         Linkify.addLinks(mURL, Linkify.WEB_URLS); //Allows link in mURL EditText to be clickable
 
-        //RSVP Button text reflects if user attendance status by checking mEvent against his list of attending events
-        rsvpButton = rootView.findViewById(R.id.rsvp_button);
-        mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Attendance status is always updated as fetch from repository attaches SnapshotListener
-            if (mUser.getEventAttending().contains(mEvent.getID())) {
-                rsvpButton.setText("Attending");
-            } else {
-                rsvpButton.setText("RSVP");
-            }
-        });
+        if (mEvent.getTime().compareTo(new Date()) > 0) {
+            //RSVP Button text reflects user attendance status by checking mEvent against his list of attending events
+            rsvpButton = rootView.findViewById(R.id.rsvp_button);
+            mModel.getUser().observe(getViewLifecycleOwner(), mUser -> { //Attendance status is always updated as fetch from repository attaches SnapshotListener
+                progress = rootView.findViewById(R.id.progressBar_cyclic);
+                progress.setVisibility(View.GONE);
+                rsvpButton.setEnabled(true);
+                if (mUser.getEventAttending().contains(mEvent.getID())) {
+                    rsvpButton.setText("Attending");
+                } else {
+                    rsvpButton.setText("RSVP");
+                }
+            });
 
-        //RSVP Button passes user email and event ID to cloud function
-        rsvpButton.setOnClickListener(v ->
-                mModel.rsvpFunction(mEvent.getID())
-        );
+            //RSVP Button passes user email and event ID to cloud function
+            rsvpButton.setOnClickListener(v -> {
+                        mModel.rsvpFunction(mEvent.getID());
+                        progress.setVisibility(View.VISIBLE);
+                        rsvpButton.setEnabled(false);
+                    }
+            );
+        } else {
+            rsvpButton = rootView.findViewById(R.id.rsvp_button);
+            rsvpButton.setEnabled(false);
+            rsvpButton.setText("This is a Past Event");
+        }
+
+        //Chat Button
+        FloatingActionButton chatButton  = rootView.findViewById(R.id.chat_button);
+        chatButton.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(rootView);
+            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToChatFragment(mEvent.getID(), mEvent.getName(), "events"));
+        });
 
         //Club/Organiser name and image displayed; navigates to club when clicked
         mModel.getClubFromEvent(mEvent).observe(getViewLifecycleOwner(), mClub -> {
@@ -115,7 +141,7 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
                 View clubCard = rootView.findViewById(R.id.clubCard);
                 clubCard.setOnClickListener(v -> {
                     NavController navController = Navigation.findNavController(rootView);
-                    navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToClubDetailFragment(mClub));
+                    navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToClubDetailFragment(mClub, "clubs"));
                 });
             }
         });
@@ -147,8 +173,9 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
         final UsersAttendingAdapter mUserAdapter = new UsersAttendingAdapter();
         recyclerView.setAdapter(mUserAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> //List always updated as repository's getDoc() is called.
-                mUserAdapter.submitList(event.getUsersAttending()));
+        mModel.getUpdatedEvent(mEvent.getID(), "events").observe(getViewLifecycleOwner(), event -> { //List always updated as repository's getDoc() is called.
+            mUserAdapter.submitList(event.getUsersAttending());
+        });
 
 
         //Allows organisers to delete events
@@ -172,10 +199,10 @@ public class EventDetailFragment extends Fragment implements UpdatesPagerAdapter
 
         //Allows Organisers to create new posts
         Button createNewPost = rootView.findViewById(R.id.new_post_button);
-        createNewPost.setVisibility(View.VISIBLE);//TODO: Visible only to organisers
+//        createNewPost.setVisibility(View.VISIBLE);//TODO: Visible only to organisers
         createNewPost.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(rootView);
-            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", mEvent, new ArrayList<String>()));
+            navController.navigate(EventDetailFragmentDirections.actionEventDetailFragmentToEditPostFragment("", mEvent, new ArrayList<String>(){{add(""); add("");}}));
         });
 
         //Close EventDetailFragment on buttonClose clicked
