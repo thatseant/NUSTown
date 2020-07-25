@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.prototype1.R
 import com.example.prototype1.model.NClub
+import com.google.firebase.storage.FirebaseStorage
 
 class GroupsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, GroupsAdapter.ViewHolder>(NClubDiffCallback()) {
     private val newListener: OnItemSelectedListener = mListener
@@ -38,16 +39,19 @@ class GroupsAdapter(mListener: OnItemSelectedListener) : ListAdapter<NClub, Grou
 
         fun bind(item: NClub, holder: ViewHolder, listener: OnItemSelectedListener) {
             clubName.text = item.name
-            clubCat.text = item.catName
+            clubCat.visibility = View.GONE
 
             //Sets ImageView
-            if (item.imgUrl != "") {
-                Glide.with(holder.clubImage.context).load(item.imgUrl).apply(RequestOptions()
-                        .placeholder(R.drawable.nus)
-                ).thumbnail(0.02f).into(clubImage)
-            } else {
-                clubImage.setImageResource(R.drawable.nus)
-            }
+
+            //Sets ImageView
+            val storageReference = FirebaseStorage.getInstance().reference
+            val imageRef = storageReference.child("groups/" + item.name + ".jpg")
+
+            imageRef.downloadUrl.addOnSuccessListener {
+                Glide.with(holder.clubImage.context).load(it).apply(RequestOptions().centerCrop()
+                        .placeholder(R.drawable.ic_baseline_deck_50)).thumbnail(0.02f).into(clubImage)
+
+            }.addOnFailureListener { clubImage.setImageResource(R.drawable.ic_baseline_deck_50) }
 
             itemView.setOnClickListener { view ->
                 listener.onItemSelected(item, view)

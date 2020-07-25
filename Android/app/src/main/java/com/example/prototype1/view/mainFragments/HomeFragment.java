@@ -112,7 +112,7 @@ public class HomeFragment extends Fragment implements ClubEventsAdapter.OnItemSe
 
         //Link Groups Feed Recycler View to Adapter
         RecyclerView feedGroupsRecycler = rootView.findViewById(R.id.recycler_group_feed);
-        final ClubEventsAdapter mGroupFeedAdapter = new ClubEventsAdapter(this);
+        final JioGridAdapter mGroupFeedAdapter = new JioGridAdapter(this);
         feedGroupsRecycler.setAdapter(mGroupFeedAdapter);
         feedGroupsRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         mModel.getUserGroupsFeed().observe(getViewLifecycleOwner(), list -> {

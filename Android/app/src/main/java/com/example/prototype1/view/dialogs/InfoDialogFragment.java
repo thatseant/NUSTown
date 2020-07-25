@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -18,6 +19,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.prototype1.R;
 import com.example.prototype1.model.NEvent;
 import com.example.prototype1.view.adapters.UsersAttendingAdapter;
@@ -27,6 +29,8 @@ import com.example.prototype1.view.mainFragments.JioListFragmentDirections;
 import com.example.prototype1.viewmodel.TitleFragmentViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -91,6 +95,12 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         mModel.getUpdatedEvent(mEvent.getID(), "jios").observe(getViewLifecycleOwner(), event -> mUserAdapter.submitList(event.getUsersAttending()));
 
+        //Uses Glide library for loading image from Firebase Cloud Storage
+        ImageView mImage = mRootView.findViewById(R.id.jioImage);
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference(); //Get image reference from cloud storage
+        StorageReference imageRef = storageReference.child("jios/" + mEvent.getName() + ".jpg");
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> Glide.with(requireContext()).load(uri).thumbnail(0.02f).into(mImage)).addOnFailureListener(url -> mImage.setVisibility(View.GONE));
+        mImage.setAdjustViewBounds(true);
 
         //RSVP/Edit/Cancel onClickListeners
         mRootView.findViewById(R.id.button_jio_rsvp).setOnClickListener(this);
@@ -101,6 +111,7 @@ public class InfoDialogFragment extends DialogFragment implements View.OnClickLi
             mRootView.findViewById(R.id.edit_jio_button).setVisibility(View.VISIBLE);
             mRootView.findViewById(R.id.edit_jio_button).setOnClickListener(this);
         }
+
 
         return mRootView;
     }

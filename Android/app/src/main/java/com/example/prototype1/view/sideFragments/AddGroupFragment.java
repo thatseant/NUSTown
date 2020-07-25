@@ -1,5 +1,7 @@
 package com.example.prototype1.view.sideFragments;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +34,8 @@ public class AddGroupFragment extends Fragment {
     private TitleFragmentViewModel mModel;
     private NClub mClub = new NClub();
     private String eventType;
+    private Uri photoURI;
+    private int changePhotoFlag = 0;
 
     public AddGroupFragment() {
         // Required empty public constructor
@@ -51,6 +55,14 @@ public class AddGroupFragment extends Fragment {
         EditText newGroupCat = AddGroupView.findViewById(R.id.newGroupCat);
         EditText newGroupInfo = AddGroupView.findViewById(R.id.newGroupDescription);
 
+        Button photoButton = AddGroupView.findViewById(R.id.photoBtn);
+        photoButton.setOnClickListener(v -> {
+            changePhotoFlag = 1;
+            Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(pickPhoto, 1);//one can be replaced with any action code
+        });
+
         Button confirmEditButton = AddGroupView.findViewById(R.id.confirmEditButton);
         confirmEditButton.setOnClickListener(v -> {
             //Sets new properties from EditText inputs
@@ -67,6 +79,10 @@ public class AddGroupFragment extends Fragment {
             mModel.addDoc(mClub, "groups"); //Updates Repository via ViewModel
             mModel.getGroups();
 
+            if (photoURI != null) {
+                mModel.uploadPic("groups", newNameString, photoURI, () -> {});
+            }
+
             NavController navController = Navigation.findNavController(AddGroupView);
             navController.popBackStack();
         });
@@ -79,5 +95,12 @@ public class AddGroupFragment extends Fragment {
         });
 
         return AddGroupView;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == getActivity().RESULT_OK) {
+            photoURI = data.getData();
+        }
     }
 }
