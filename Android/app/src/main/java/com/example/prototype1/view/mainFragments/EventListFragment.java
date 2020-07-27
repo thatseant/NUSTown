@@ -94,20 +94,12 @@ public class EventListFragment extends Fragment implements EventListAdapter.OnIt
         clearFilter.setOnClickListener(v -> {
             mSearchDialog.resetFlag = 1; //Flag needed due to bug where resetting spinner setSelection is not saved; reset later onResume
             mModel.changeEventFilter(new Filters()); //Reset mFilter in ViewModel as mFilter is parameter of getData()
-            mModel.mEventSearchCat.setValue("<b> All Events <b>");
             mModel.mEventSearchSort.setValue("sorted by date");
             mModel.getEventsData();
         });
 
         //Automatically changes text to in search box to reflect current filter
-        TextView mSearchCat = rootView.findViewById(R.id.text_current_search);
-        mSearchCat.setText(HtmlCompat.fromHtml("<b>All Events<b>", HtmlCompat.FROM_HTML_MODE_LEGACY));
         TextView mSearchSort = rootView.findViewById(R.id.text_current_sort_by);
-        final Observer<String> searchCatObserver = searchCat -> {
-            // Update the UI, in this case, a TextView.
-            mSearchCat.setText(HtmlCompat.fromHtml(searchCat, HtmlCompat.FROM_HTML_MODE_LEGACY));
-        };
-        mModel.mEventSearchCat.observe(getViewLifecycleOwner(), searchCatObserver);
 
         // Update the UI, in this case, a TextView.
         final Observer<String> searchSortObserver = mSearchSort::setText;

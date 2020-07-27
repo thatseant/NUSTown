@@ -81,7 +81,8 @@
                             android:layout_height="wrap_content"
                             android:text="@string/all_events"
                             android:textColor="@color/greySecondary"
-                            tools:text="Filter" />
+                            tools:text="Filter"
+                            android:textStyle="bold"/>
 
                         <TextView
                             android:id="@+id/text_current_sort_by"

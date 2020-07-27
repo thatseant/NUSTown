@@ -145,6 +145,9 @@ public class Filters {
         } else if (sortBy.equals("followers")) {
             return "sorted by popularity";
         }
+        else if (sortBy.equals("likes")) {
+            return "sorted by popularity";
+        }
 
         else {
             return context.getString(R.string.sorted_by_date);

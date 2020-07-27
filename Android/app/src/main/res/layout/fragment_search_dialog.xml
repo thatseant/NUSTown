@@ -17,12 +17,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <Spinner
-            android:id="@+id/spinner_category"
-            style="@style/AppTheme.FilterSpinner"
-            android:layout_centerVertical="true"
-            android:entries="@array/categories" />
-
     </RelativeLayout>
 
     <!--    &lt;!&ndash; Location &ndash;&gt;-->

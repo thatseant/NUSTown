@@ -66,6 +66,7 @@
     <!-- Ways you can sort restaurants -->
     <string-array name="sort_by">
         <item>@string/sort_by_date</item>
+        <item>@string/sort_by_popularity</item>
         <item>@string/sort_by_post_date</item>
         <item>@string/sort_by_name</item>
     </string-array>

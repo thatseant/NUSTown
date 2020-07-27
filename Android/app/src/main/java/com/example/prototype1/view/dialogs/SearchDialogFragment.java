@@ -25,8 +25,6 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
     static public final String TAG = "FilterDialog";
     public int resetFlag = 0; //resetFlag due to bug where Spinner setSelection does not save
     private View mRootView;
-    private Spinner mCategorySpinner;
-    private Spinner mPlaceSpinner;
     private Spinner mSortSpinner;
     private Switch mPastSwitch;
     String eventType;
@@ -40,8 +38,6 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
                              @Nullable Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_search_dialog, container, false);
 
-        mCategorySpinner = mRootView.findViewById(R.id.spinner_category);
-//        mPlaceSpinner = mRootView.findViewById(R.id.spinner_place);
         mSortSpinner = mRootView.findViewById(R.id.spinner_sort);
         mPastSwitch = mRootView.findViewById(R.id.showPastEventsSwitch);
 
@@ -84,11 +80,9 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
     private void onSearchClicked() {
         if (eventType.equals("jios")) {
             mModel.changeJioFilter(getFilters()); //Filters saved in ViewModel and getEventsData applies same filters until changed
-            mModel.mJioSearchCat.setValue(getFilters().getSearchDescription(requireContext())); //Updates search box text (stored in ViewModel)
             mModel.mJioSearchSort.setValue(getFilters().getOrderDescription(requireContext()));
         } else {
             mModel.changeEventFilter(getFilters());
-            mModel.mEventSearchCat.setValue(getFilters().getSearchDescription(requireContext())); //Updates search box text (stored in ViewModel)
             mModel.mEventSearchSort.setValue(getFilters().getOrderDescription(requireContext()));
         }
         dismiss();
@@ -108,7 +102,6 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         Filters filters = new Filters();
 
         if (mRootView != null) {
-            filters.setCategory(getSelectedCategory());
 //            filters.setPlace(getSelectedPlace());
             filters.setSortBy(getSelectedSortBy());
             filters.setSortDirection(getSortDirection());
@@ -118,16 +111,6 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         return filters;
     }
 
-    //The following get functions retrieves Spinner selections and are called in getFilters()
-    @Nullable
-    private String getSelectedCategory() {
-        String selected = (String) mCategorySpinner.getSelectedItem();
-        if (getString(R.string.value_any_category).equals(selected)) {
-            return null;
-        } else {
-            return selected;
-        }
-    }
 
 //    @Nullable
 //    private String getSelectedPlace() {
@@ -147,6 +130,9 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         }
         if (getString(R.string.sort_by_name).equals(selected)) {
             return "name";
+        }
+        if (getString(R.string.sort_by_popularity).equals(selected)) {
+            return "likes";
         }
         if (getString(R.string.sort_by_date).equals(selected)) {
             return "time";
@@ -172,12 +158,14 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
         if (getString(R.string.sort_by_date).equals(selected)) {
             return Query.Direction.ASCENDING;
         }
+        if (getString(R.string.sort_by_popularity).equals(selected)) {
+            return Query.Direction.DESCENDING;
+        }
         return null;
     }
 
     private void resetFilters() {
         if (mRootView != null) {
-            mCategorySpinner.setSelection(0, true);
 //            mPlaceSpinner.setSelection(0, true);
             mSortSpinner.setSelection(0, true);
             mPastSwitch.setChecked(false);
@@ -185,11 +173,9 @@ public class SearchDialogFragment extends DialogFragment implements View.OnClick
 
         if (eventType.equals("jios")) {
             mModel.changeJioFilter(new Filters());
-            mModel.mJioSearchCat.setValue("<b> All Events <b>");
             mModel.mJioSearchSort.setValue("sorted by date");
         } else {
             mModel.changeEventFilter(new Filters());
-            mModel.mEventSearchCat.setValue("<b> All Events <b>");
             mModel.mEventSearchSort.setValue("sorted by date");
         }
     }

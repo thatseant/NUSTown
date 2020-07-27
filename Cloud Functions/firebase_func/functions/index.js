@@ -32,11 +32,11 @@ exports.isPastEvent = functions.https.onRequest(async (req, res) => {
                 var data = doc.data()
                 if (data.time.toDate()  < new Date()) {
                     promises.push(doc.ref.update({
-                        "isPastEvent": true
+                        "pastEvent": true
                     }))
                 } else {
                     promises.push(doc.ref.update({
-                        "isPastEvent": false
+                        "pastEvent": false
                     }))
                 }
             }
@@ -115,7 +115,7 @@ exports.createEvent = functions.https.onRequest(async (req, res) => {
 
 exports.nusSync = functions.https.onRequest(async (req, res) => {
     try {
-        let todayDate = "2020-06-01"
+        let todayDate = req.query.text
         let apiURL = "https://nus.campuslabs.com/engage/api/discovery/event/search?endsAfter="+ todayDate +"T12%3A17%3A23%2B08%3A00&orderByField=endsOn&orderByDirection=ascending&status=&take=1000&query="
         await createNSync(apiURL, "event")
         res.status(200).json({ result: `Success` });
@@ -143,7 +143,7 @@ exports.allInsta = functions.https.onRequest(async (req, res) => {
         let apiURL = "https://nus.campuslabs.com/engage/api/discovery/organization?take=500"
         const JSONData = await axios.get(apiURL)
         let numberOfClubs = JSONData.data.items
-        let numberOfPosts = "5"
+        let numberOfPosts = "10"
         promises = []
         for (let i=0; i<numberOfClubs.length; i++) {
             console.log("In the for loop");
@@ -330,6 +330,9 @@ async function NSyncEventToDatabase(allEvents, i) {
     let eventStartDate = moment(eventStartDateTime).format("YYMMDD")
     let id = event.organizationName + "_" + eventStartDate //ID consists of CCA and Event Date (without whitespace)
     let imageURL;
+    if (event.organizationName === "Prince George's Park Residences") {
+        return null;
+    }
     if (event.imagePath) {
         imageURL = "https://se-infra-imageserver2.azureedge.net/clink/images/"+ event.imagePath
     } else {
@@ -426,6 +429,7 @@ function InstaToDatabase(orgName, allMedia, i, userID) {
     var firstDate, firstText;
     if (allMedia.edges[i]) {
         let imageURL = allMedia.edges[i].node.display_resources[2].src //get url for ith image
+        let likes = allMedia.edges[i].node.edge_media_preview_like.count
 
         if (allMedia.edges[i].node.edge_media_to_caption.edges[0]) {
             let caption = allMedia.edges[i].node.edge_media_to_caption.edges[0].node.text
@@ -527,7 +531,9 @@ function InstaToDatabase(orgName, allMedia, i, userID) {
 
                 let postDateString = moment(post_date).format("DD MMM")
                 updates[postDateString] = [caption, imageURL, orgName + "_" + stringDate + "_" + postDateString]
-
+                let moment_zoneDate = moment(firstDate)
+                moment_zoneDate.subtract(8, 'hours')
+                firstDate = moment_zoneDate.toDate()
                 let newDoc = {
                     image: orgName + "_" + stringDate + ".png",
                     info: caption,
@@ -543,7 +549,8 @@ function InstaToDatabase(orgName, allMedia, i, userID) {
                     id: orgName + "_" + stringDate,
                     lastUpdate: post_date,
                     postDate: postDateString,
-                    updates: updates
+                    updates: updates,
+                    likes: likes
                 }
 
                 return newDoc
@@ -566,8 +573,12 @@ async function uploadEventFirestore(id, newDoc) {
                         console.log(doc.data().lastUpdate.toDate())
                         newDoc.lastUpdate = doc.data().lastUpdate.toDate()
                     }
+                } if (doc.data().likes) {
+                    if (newDoc.likes < doc.data().likes) {
+                        newDoc.likes = doc.data().likes
+                    }
                 }
-                await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: [newDoc.info, newDoc.imgUrl, newDoc.id + "_" + newDoc.postDate], "org": newDoc.org, "lastUpdate": newDoc.lastUpdate})
+                await admin.firestore().collection('events').doc(id).update({["updates." + newDoc.postDate]: [newDoc.info, newDoc.imgUrl, newDoc.id + "_" + newDoc.postDate], "org": newDoc.org, "lastUpdate": newDoc.lastUpdate, "likes": newDoc.likes})
             }
             return null;
         }

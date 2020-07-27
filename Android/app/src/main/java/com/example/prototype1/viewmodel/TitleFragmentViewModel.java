@@ -280,11 +280,10 @@ public class TitleFragmentViewModel extends AndroidViewModel {
         for (DocumentSnapshot document : documents) {
             int newEventIndex = -1;
             NEvent newEvent = document.toObject(NEvent.class);
-            if ((newEvent.getTime().compareTo(new Date()) < 0) && displayPast==false) {//newEvent is past event
-            }
-            else {
-                //Ensures Events are in Chronological Order
-                if (newEvent != null) {
+            if (newEvent != null) {
+                if ((newEvent.getTime().compareTo(new Date()) < 0) && displayPast == false) {//newEvent is past event
+                } else {
+                    //Ensures Events are in Chronological Order
                     for (int i = 0; i < mResults.size(); i++) {
                         Date prevEventTime = mResults.get(i).getTime();
                         if (prevEventTime.compareTo(newEvent.getTime()) > 0) {//prevEvent is after newEvent
